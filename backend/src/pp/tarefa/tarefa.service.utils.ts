@@ -20,10 +20,12 @@ export class TarefaUtilsService {
         },
         prismaTx: Prisma.TransactionClient,
         tarefa_cronograma_id: number,
-        maiorNumero: number | null
+        _maiorNumero?: number | null
     ) {
-        if (maiorNumero == null || dto.numero >= maiorNumero) return; // já está no final
-
+        // Não faz mais early-return baseado em maiorNumero.
+        // O UPDATE é no-op quando não há tarefas com numero > dto.numero no mesmo pai,
+        // e o early-return anterior causava gaps quando maiorNumero vinha do pai errado
+        // (ex: ao mover tarefa entre pais, passava maiorNumero do pai novo para decrementar o pai antigo).
         await prismaTx.$executeRaw`
             UPDATE tarefa
             SET numero = numero - 1

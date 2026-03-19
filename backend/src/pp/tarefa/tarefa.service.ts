@@ -1358,9 +1358,7 @@ export class TarefaService {
                         );
                     }
 
-                    const maiorNumero = await this.utils.maiorNumeroDoNivel(prismaTx, dto.tarefa_pai_id, tarefaCronoId);
-
-                    // abaixa o numero de onde era
+                    // abaixa o numero de onde era (pai antigo)
                     await this.utils.decrementaNumero(
                         {
                             id: tarefa.id,
@@ -1368,11 +1366,11 @@ export class TarefaService {
                             tarefa_pai_id: tarefa.tarefa_pai_id,
                         },
                         prismaTx,
-                        tarefaCronoId,
-                        maiorNumero
+                        tarefaCronoId
                     );
 
-                    // aumenta o numero de onde vai entrar
+                    // aumenta o numero de onde vai entrar (pai novo)
+                    const maiorNumeroNovoPai = await this.utils.maiorNumeroDoNivel(prismaTx, dto.tarefa_pai_id, tarefaCronoId);
                     dto.numero = await this.utils.incrementaNumero(
                         {
                             numero: dto.numero,
@@ -1381,7 +1379,7 @@ export class TarefaService {
                         prismaTx,
                         tarefaCronoId,
                         tarefa.id,
-                        maiorNumero
+                        maiorNumeroNovoPai
                     );
                     logger.log(`Novo numero após incrementa: ${dto.numero}`);
 
@@ -1389,8 +1387,6 @@ export class TarefaService {
                 } else {
                     // mudou apenas o numero
                     logger.log(`Mudança de número: ${tarefa.numero} -> ${dto.numero}`);
-
-                    const maiorNumero = await this.utils.maiorNumeroDoNivel(prismaTx, dto.tarefa_pai_id, tarefaCronoId);
 
                     // abaixa o numero de onde era
                     await this.utils.decrementaNumero(
@@ -1400,9 +1396,10 @@ export class TarefaService {
                             tarefa_pai_id: tarefa.tarefa_pai_id,
                         },
                         prismaTx,
-                        tarefaCronoId,
-                        maiorNumero
+                        tarefaCronoId
                     );
+
+                    const maiorNumero = await this.utils.maiorNumeroDoNivel(prismaTx, dto.tarefa_pai_id, tarefaCronoId);
 
                     // aumenta o numero de onde vai entrar
                     dto.numero = await this.utils.incrementaNumero(
@@ -1713,7 +1710,7 @@ export class TarefaService {
                 };
 
                 logger.log(`Decrementando números e removendo dependências`);
-                await this.utils.decrementaNumero(dto, prismaTx, tarefaCronoId, Number.MAX_SAFE_INTEGER);
+                await this.utils.decrementaNumero(dto, prismaTx, tarefaCronoId);
 
                 await prismaTx.tarefa.update({
                     where: {

@@ -1399,7 +1399,7 @@ export class TarefaService {
                         tarefaCronoId
                     );
 
-                    const maiorNumero = await this.utils.maiorNumeroDoNivel(prismaTx, dto.tarefa_pai_id, tarefaCronoId);
+                    const maiorNumero = await this.utils.maiorNumeroDoNivel(prismaTx, dto.tarefa_pai_id, tarefaCronoId, tarefa.id);
 
                     // aumenta o numero de onde vai entrar
                     dto.numero = await this.utils.incrementaNumero(

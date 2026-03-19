@@ -107,7 +107,8 @@ export class TarefaUtilsService {
     async maiorNumeroDoNivel(
         prismaTx: Prisma.TransactionClient,
         tarefa_pai_id: number | null,
-        tarefa_cronograma_id: number
+        tarefa_cronograma_id: number,
+        excludeId?: number
     ): Promise<number | null> {
         const lookup = await prismaTx.tarefa.aggregate({
             _max: { numero: true },
@@ -115,6 +116,7 @@ export class TarefaUtilsService {
                 removido_em: null,
                 tarefa_pai_id: tarefa_pai_id,
                 tarefa_cronograma_id: tarefa_cronograma_id,
+                id: excludeId ? { not: excludeId } : undefined,
             },
         });
         return lookup._max.numero;

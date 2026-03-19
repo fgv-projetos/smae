@@ -1308,7 +1308,7 @@ export class TarefaService {
 
             let recalcNivel = false;
             if (
-                'dependencias' in dto &&
+                'tarefa_pai_id' in dto &&
                 ((dto.tarefa_pai_id !== undefined && dto.tarefa_pai_id !== tarefa.tarefa_pai_id) ||
                     (dto.numero !== undefined && dto.numero !== tarefa.numero))
             ) {
@@ -1370,7 +1370,11 @@ export class TarefaService {
                     );
 
                     // aumenta o numero de onde vai entrar (pai novo)
-                    const maiorNumeroNovoPai = await this.utils.maiorNumeroDoNivel(prismaTx, dto.tarefa_pai_id, tarefaCronoId);
+                    const maiorNumeroNovoPai = await this.utils.maiorNumeroDoNivel(
+                        prismaTx,
+                        dto.tarefa_pai_id,
+                        tarefaCronoId
+                    );
                     dto.numero = await this.utils.incrementaNumero(
                         {
                             numero: dto.numero,
@@ -1399,7 +1403,12 @@ export class TarefaService {
                         tarefaCronoId
                     );
 
-                    const maiorNumero = await this.utils.maiorNumeroDoNivel(prismaTx, dto.tarefa_pai_id, tarefaCronoId, tarefa.id);
+                    const maiorNumero = await this.utils.maiorNumeroDoNivel(
+                        prismaTx,
+                        dto.tarefa_pai_id,
+                        tarefaCronoId,
+                        tarefa.id
+                    );
 
                     // aumenta o numero de onde vai entrar
                     dto.numero = await this.utils.incrementaNumero(

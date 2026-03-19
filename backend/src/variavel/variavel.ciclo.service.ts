@@ -10,7 +10,6 @@ import { IdTituloDto } from '../common/dto/IdTitulo.dto';
 import { JOB_CICLO_VARIAVEL } from '../common/dto/locks';
 import { LoggerWithLog } from '../common/LoggerWithLog';
 import { AddTaskRefreshMeta } from '../meta/meta.service';
-import { TEMPO_EXPIRACAO_ARQUIVO } from '../mf/metas/metas.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
     BuildArquivoBaseDto,

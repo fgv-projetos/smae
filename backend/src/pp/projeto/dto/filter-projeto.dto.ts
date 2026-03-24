@@ -54,7 +54,6 @@ export class FilterProjetoDto {
     @IsOptional()
     @IsInt()
     @Transform((a: TransformFnParams) => (a.value === null ? null : +a.value))
-    @Expose()
     orgao_responsavel_id?: number;
 
     /**

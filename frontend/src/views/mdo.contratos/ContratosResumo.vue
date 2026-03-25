@@ -51,7 +51,6 @@ const dadosPrincipais = computed(() => [
     metadados: { descricao: emFoco.value?.orgao?.descricao },
   },
   { chave: 'modalidade_contratacao_id', valor: emFoco.value?.modalidade_contratacao?.nome, larguraBase: '25em' },
-  { chave: 'data_termino', valor: emFoco.value?.data_termino ? dateToShortDate(emFoco.value.data_termino) : null, larguraBase: '25em' },
   {
     chave: 'fontes_recurso',
     valor: emFoco.value?.fontes_recurso?.length ? ' ' : null,
@@ -81,6 +80,7 @@ const dadosPrincipais = computed(() => [
     larguraBase: '25em',
   },
   { chave: 'data_inicio', valor: emFoco.value?.data_inicio ? dateToShortDate(emFoco.value.data_inicio) : null, larguraBase: '25em' },
+  { chave: 'data_termino', valor: emFoco.value?.data_termino ? dateToShortDate(emFoco.value.data_termino) : null, larguraBase: '25em' },
   { chave: 'valor', valor: emFoco.value?.valor ? `R$ ${dinheiro(emFoco.value.valor)}` : null, larguraBase: '25em' },
   {
     chave: 'total_aditivos',

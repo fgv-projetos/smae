@@ -1434,11 +1434,7 @@ export class TarefaService {
                 delete dto.tarefa_pai_id;
             }
 
-            const updatedSelf = await prismaTx.tarefa.update({
-                where: {
-                    id: tarefa.id,
-                },
-                data: {
+            const updateData = {
                     ...dto,
                     ...this.buildCustoUpdateDto(
                         (dto as any).custo_estimado,
@@ -1450,7 +1446,14 @@ export class TarefaService {
                     atualizado_em: now,
                     atualizado_por: user.id,
                     atualizado_em_usuario: now,
+                };
+            logger.log(`Dados para update tarefa ${tarefa.id}: ${JSON.stringify(updateData)}`);
+
+            const updatedSelf = await prismaTx.tarefa.update({
+                where: {
+                    id: tarefa.id,
                 },
+                data: updateData,
                 select: {
                     transferencia_fase_id: true,
                     transferencia_tarefa_id: true,

@@ -1048,6 +1048,12 @@ BEGIN
         IF NEW.custo_estimado_anualizado IS NULL THEN
             NEW.custo_estimado := NULL;
         ELSE
+            IF json_typeof(NEW.custo_estimado_anualizado::json) != 'object' THEN
+                RAISE EXCEPTION 'tarefa id=% custo_estimado_anualizado nao e um objeto JSON (tipo=%, valor=%)',
+                    NEW.id,
+                    json_typeof(NEW.custo_estimado_anualizado::json),
+                    NEW.custo_estimado_anualizado;
+            END IF;
             SELECT SUM((kv.val)::numeric) INTO NEW.custo_estimado
             FROM json_each_text(NEW.custo_estimado_anualizado::json) AS kv(key, val);
         END IF;
@@ -1059,6 +1065,12 @@ BEGIN
         IF NEW.custo_real_anualizado IS NULL THEN
             NEW.custo_real := NULL;
         ELSE
+            IF json_typeof(NEW.custo_real_anualizado::json) != 'object' THEN
+                RAISE EXCEPTION 'tarefa id=% custo_real_anualizado nao e um objeto JSON (tipo=%, valor=%)',
+                    NEW.id,
+                    json_typeof(NEW.custo_real_anualizado::json),
+                    NEW.custo_real_anualizado;
+            END IF;
             SELECT SUM((kv.val)::numeric) INTO NEW.custo_real
             FROM json_each_text(NEW.custo_real_anualizado::json) AS kv(key, val);
         END IF;

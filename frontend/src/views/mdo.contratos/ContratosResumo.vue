@@ -67,12 +67,12 @@ const dadosPrincipais = computed(() => [
   { chave: 'contratante', valor: emFoco.value?.contratante, larguraBase: '25em' },
   { chave: 'empresa_contratada', valor: emFoco.value?.empresa_contratada, larguraBase: '25em' },
   { chave: 'cnpj_contratada', valor: emFoco.value?.cnpj_contratada, larguraBase: '25em' },
-  { chave: 'data_assinatura', valor: emFoco.value?.data_assinatura ? dateToShortDate(emFoco.value.data_assinatura) : null, larguraBase: '25em' },
   {
     chave: 'prazo_numero',
     valor: emFoco.value?.prazo_numero ? `${emFoco.value.prazo_numero} ${emFoco.value.prazo_unidade || ''}` : null,
     larguraBase: '25em',
   },
+  { chave: 'data_assinatura', valor: emFoco.value?.data_assinatura ? dateToShortDate(emFoco.value.data_assinatura) : null, larguraBase: '25em' },
   {
     chave: 'data_base',
     titulo: schema.value?.fields?.data_base_mes?.spec?.label,

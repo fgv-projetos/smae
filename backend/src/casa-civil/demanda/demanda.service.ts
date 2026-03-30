@@ -1444,11 +1444,13 @@ export class DemandaService {
             // Monta nomes dos parlamentares separados por vírgula
             const nomesParlamentares = mandatos.map((m) => m.parlamentar.nome_popular || m.parlamentar.nome).join(', ');
 
+            const assuntoFinal = dto.assunto || 'Propostas de Demandas - Emendas Parlamentares';
+
             // Cria registro do lote de envio
             const lote = await prismaTxn.demandaEmailParlamentar.create({
                 data: {
-                    assunto: dto.assunto,
-                    corpo: dto.corpo,
+                    assunto: dto.assunto || null,
+                    corpo: dto.corpo || null,
                     nomes_parlamentares: nomesParlamentares,
                     criado_por: user.id,
                 },
@@ -1463,7 +1465,7 @@ export class DemandaService {
                     data: {
                         id: emailId,
                         config_id: 1,
-                        subject: dto.assunto,
+                        subject: assuntoFinal,
                         template: 'parlamentar-convite-emendas.html',
                         to: mandato.email!,
                         variables: {
@@ -1514,17 +1516,12 @@ export class DemandaService {
         delete filtersForHash.pagina;
         delete filtersForHash.token_paginacao;
 
-        // Busca por palavras-chave via tsvector
-        const palavrasChave = await PrismaHelpers.buscaIdsPalavraChave(
-            this.prisma,
-            'demanda_email_parlamentar',
-            filters.palavra_chave
-        );
+        // Construir condições de busca combinada (data + palavras-chave)
+        const searchConditions = await this.buildEmailParlamentarSearchConditions(filters.palavra_chave);
 
-        const where: Prisma.DemandaEmailParlamentarWhereInput = {};
-        if (palavrasChave !== undefined) {
-            where.id = { in: palavrasChave };
-        }
+        const where: Prisma.DemandaEmailParlamentarWhereInput = {
+            ...(searchConditions ? { OR: searchConditions } : {}),
+        };
 
         if (filterToken) {
             const decoded = this.decodeNextPageToken(filterToken, filtersForHash);
@@ -1574,7 +1571,7 @@ export class DemandaService {
         return {
             linhas: linhas.map((l) => ({
                 id: l.id,
-                assunto: l.assunto,
+                assunto: l.assunto!,
                 nomes_parlamentares: l.nomes_parlamentares,
                 criado_por: {
                     id: l.criador.id,
@@ -1589,6 +1586,52 @@ export class DemandaService {
             token_paginacao: retToken ?? null,
             token_ttl: PAGINATION_TOKEN_TTL,
         };
+    }
+
+    /**
+     * Constrói condições de busca combinada para e-mails de parlamentares.
+     * Detecta padrão de data (YYYY-MM-DD ou DD/MM/YYYY) para buscar por criado_em,
+     * e busca nos vetores de palavras-chave (tsvector) por assunto e nomes.
+     */
+    private async buildEmailParlamentarSearchConditions(
+        palavraChave: string | undefined
+    ): Promise<Prisma.DemandaEmailParlamentarWhereInput[] | undefined> {
+        if (!palavraChave) return undefined;
+
+        const searchConditions: Prisma.DemandaEmailParlamentarWhereInput[] = [];
+
+        // Detectar padrão de data: YYYY-MM-DD ou DD/MM/YYYY
+        const matchIso = palavraChave.match(/\b(\d{4}-\d{2}-\d{2})\b/);
+        const matchBr = palavraChave.match(/\b(\d{2})\/(\d{2})\/(\d{4})\b/);
+
+        if (matchIso) {
+            const date = new Date(matchIso[1] + 'T00:00:00');
+            if (!isNaN(date.getTime())) {
+                const end = new Date(date);
+                end.setDate(end.getDate() + 1);
+                searchConditions.push({ criado_em: { gte: date, lt: end } });
+            }
+        } else if (matchBr) {
+            const date = new Date(`${matchBr[3]}-${matchBr[2]}-${matchBr[1]}T00:00:00`);
+            if (!isNaN(date.getTime())) {
+                const end = new Date(date);
+                end.setDate(end.getDate() + 1);
+                searchConditions.push({ criado_em: { gte: date, lt: end } });
+            }
+        }
+
+        // Buscar nos vetores (palavras-chave)
+        const idsPalavrasChave = await PrismaHelpers.buscaIdsPalavraChave(
+            this.prisma,
+            'demanda_email_parlamentar',
+            palavraChave
+        );
+
+        if (idsPalavrasChave !== undefined && idsPalavrasChave.length > 0) {
+            searchConditions.push({ id: { in: idsPalavrasChave } });
+        }
+
+        return searchConditions.length > 0 ? searchConditions : undefined;
     }
 
     private decodeNextPageToken(jwt: string | undefined, filters: Record<string, any>): AnyPageTokenJwtBody {

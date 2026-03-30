@@ -28,5 +28,5 @@ export class DemandaEmailParlamentarDto {
 
 export class ListDemandaEmailParlamentarDto extends PaginatedWithPagesDto<DemandaEmailParlamentarDto> {
     @ApiProperty({ type: [DemandaEmailParlamentarDto] })
-    linhas: DemandaEmailParlamentarDto[];
+    declare linhas: DemandaEmailParlamentarDto[];
 }

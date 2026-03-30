@@ -7,10 +7,14 @@ import {
     Logger,
     NotFoundException,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { DemandaSituacao, DemandaStatus, Prisma } from '@prisma/client';
 import { PessoaFromJwt } from 'src/auth/models/PessoaFromJwt';
 import { Date2YMD } from 'src/common/date2ymd';
+import { AnyPageTokenJwtBody, PAGINATION_TOKEN_TTL } from 'src/common/dto/paginated.dto';
 import { RecordWithId } from 'src/common/dto/record-with-id.dto';
+import { Object2Hash } from 'src/common/object2hash';
+import { PrismaHelpers } from 'src/common/PrismaHelpers';
 import { SmaeConfigService } from 'src/common/services/smae-config.service';
 import { ReadOnlyBooleanType } from 'src/common/TypeReadOnly';
 import { CreateGeoEnderecoReferenciaDto, FindGeoEnderecoReferenciaDto } from 'src/geo-loc/entities/geo-loc.entity';
@@ -23,7 +27,9 @@ import { ObjectDiff } from '../../common/objectDiff';
 import { CacheKVService } from '../../common/services/cache-kv.service';
 import { CreateDemandaAcaoDto } from './dto/acao.dto';
 import { CreateDemandaDto, UpdateDemandaDto } from './dto/create-demanda.dto';
+import { EnviarEmailParlamentaresDto } from './dto/enviar-email-parlamentares.dto';
 import { FilterDemandaDto } from './dto/filter-demanda.dto';
+import { FilterDemandaEmailParlamentarDto } from './dto/filter-demanda-email-parlamentar.dto';
 import { DemandaDetailDto, DemandaHistoricoDto, DemandaPermissoesDto, ListDemandaDto } from './entities/demanda.entity';
 import { ListDemandaEmailParlamentarDto } from './entities/demanda-email-parlamentar.entity';
 import { TaskService } from '../../task/task.service';
@@ -71,7 +77,9 @@ export class DemandaService {
         private readonly taskService: TaskService,
         //
         @Inject(forwardRef(() => OrgaoService))
-        private readonly orgaoService: OrgaoService
+        private readonly orgaoService: OrgaoService,
+        //
+        private readonly jwtService: JwtService
     ) {}
 
     async create(dto: CreateDemandaDto, user: PessoaFromJwt): Promise<RecordWithId> {
@@ -1355,19 +1363,29 @@ export class DemandaService {
     }
 
     /**
-     * Envia e-mail de uma demanda para todos os parlamentares eleitos na eleição vigente
-     * que não são suplentes.
+     * Envia e-mail global de novas oportunidades para todos os parlamentares eleitos na eleição vigente
+     * que não são suplentes. Limite de 1 envio por dia (global, timezone America/Sao_Paulo).
      */
-    async enviarEmailParaParlamentares(demandaId: number, user: PessoaFromJwt): Promise<{ id: string }[]> {
-        // Verifica se demanda existe e se usuário tem permissão
-        const demanda = await this.findOne(demandaId, user, 'ReadOnly');
+    async enviarEmailParaParlamentares(dto: EnviarEmailParlamentaresDto, user: PessoaFromJwt): Promise<RecordWithId> {
+        const result = await this.prisma.$transaction(async (prismaTxn: Prisma.TransactionClient) => {
+            // Verifica limite diário global (timezone America/Sao_Paulo)
+            const hoje = await prismaTxn.$queryRaw<[{ inicio: Date; fim: Date }]>`
+                SELECT
+                    (now() AT TIME ZONE 'America/Sao_Paulo')::date::timestamptz AS inicio,
+                    ((now() AT TIME ZONE 'America/Sao_Paulo')::date + interval '1 day')::timestamptz AS fim
+            `;
+            const envioHoje = await prismaTxn.demandaEmailParlamentar.findFirst({
+                where: {
+                    criado_em: {
+                        gte: hoje[0].inicio,
+                        lt: hoje[0].fim,
+                    },
+                },
+            });
+            if (envioHoje) {
+                throw new HttpException('Já foi realizado um envio de e-mail para parlamentares hoje', 400);
+            }
 
-        // Apenas demandas publicadas podem ter emails enviados
-        if (demanda.status !== DemandaStatus.Publicado) {
-            throw new HttpException('Apenas demandas publicadas podem ter e-mails enviados aos parlamentares', 400);
-        }
-
-        const results = await this.prisma.$transaction(async (prismaTxn: Prisma.TransactionClient) => {
             // Busca a eleição vigente
             const eleicaoVigente = await prismaTxn.eleicao.findFirst({
                 where: { atual_para_mandatos: true },
@@ -1382,9 +1400,9 @@ export class DemandaService {
                 where: {
                     eleicao_id: eleicaoVigente.id,
                     eleito: true,
-                    suplencia: null, // Não é suplente
+                    suplencia: null,
                     removido_em: null,
-                    email: { not: null }, // Precisa ter email
+                    email: { not: null },
                 },
                 include: {
                     parlamentar: {
@@ -1421,138 +1439,175 @@ export class DemandaService {
             }
 
             const smaeUrl = await this.smaeConfigService.getBaseUrl('URL_LOGIN_SMAE');
-
-            // TODO: URL do portfólio de demandas públicas (quando estiver implementado)
             const linkPortfolio = `${smaeUrl}/demandas-publicas`;
 
-            const results: { id: string }[] = [];
+            // Monta nomes dos parlamentares separados por vírgula
+            const nomesParlamentares = mandatos.map((m) => m.parlamentar.nome_popular || m.parlamentar.nome).join(', ');
 
-            // Para cada parlamentar, envia o e-mail
+            // Cria registro do lote de envio
+            const lote = await prismaTxn.demandaEmailParlamentar.create({
+                data: {
+                    assunto: dto.assunto,
+                    corpo: dto.corpo,
+                    nomes_parlamentares: nomesParlamentares,
+                    criado_por: user.id,
+                },
+            });
+
+            // Para cada parlamentar, envia o e-mail e cria item
             for (const mandato of mandatos) {
                 const cargoTexto = this.formatarCargoParlamentar(mandato.cargo);
-
                 const emailId = uuidv7();
-                const assunto = 'Propostas de Demandas - Emendas Parlamentares';
 
-                // Envia o e-mail com variáveis contendo IDs para rastreamento
                 await prismaTxn.emaildbQueue.create({
                     data: {
                         id: emailId,
                         config_id: 1,
-                        subject: assunto,
+                        subject: dto.assunto,
                         template: 'parlamentar-convite-emendas.html',
                         to: mandato.email!,
                         variables: {
-                            // Dados para o template
                             cargo_parlamentar: cargoTexto,
                             nome_parlamentar: mandato.parlamentar.nome,
+                            corpo: dto.corpo,
                             link_portfolio: linkPortfolio,
                             orgao_nome: orgao.descricao,
-                            // Metadados para rastreamento (não aparecem no email)
-                            _metadata: {
-                                demanda_id: demandaId,
-                                parlamentar_id: mandato.parlamentar.id,
-                                mandato_id: mandato.id,
-                                tipo_email: 'parlamentar_convite_emendas',
-                            },
                         },
                     },
                 });
 
-                results.push({ id: emailId });
+                await prismaTxn.demandaEmailParlamentarItem.create({
+                    data: {
+                        demanda_email_parlamentar_id: lote.id,
+                        parlamentar_id: mandato.parlamentar.id,
+                        email: mandato.email!,
+                        emaildb_queue_id: emailId,
+                    },
+                });
             }
 
-            return results;
+            return { id: lote.id };
         });
 
-        return results;
+        return result;
     }
 
     /**
-     * Lista os e-mails enviados para parlamentares de uma demanda
+     * Lista os lotes de e-mails enviados para parlamentares, com paginação e busca textual.
      */
-    async listarEmailsParlamentares(demandaId: number, user: PessoaFromJwt): Promise<ListDemandaEmailParlamentarDto> {
-        // Verifica se demanda existe e se usuário tem permissão
-        await this.findOne(demandaId, user, 'ReadOnly');
+    async listarEmailsParlamentares(
+        filters: FilterDemandaEmailParlamentarDto,
+        user: PessoaFromJwt
+    ): Promise<ListDemandaEmailParlamentarDto> {
+        const ipp = filters.ipp ?? 25;
+        const page = filters.pagina ?? 1;
+        let total_registros = 0;
+        let retToken = filters.token_paginacao;
 
-        // Busca emails na fila que foram enviad os para parlamentares desta demanda
-        const emails = await this.prisma.$queryRaw<
-            Array<{
-                id: string;
-                to: string;
-                subject: string;
-                created_at: Date;
-                variables: any;
-            }>
-        >`
-            SELECT 
-                id,
-                "to",
-                subject,
-                created_at,
-                variables
-            FROM emaildb_queue
-            WHERE template = 'parlamentar-convite-emendas.html'
-              AND variables->>'_metadata' IS NOT NULL
-              AND (variables->'_metadata'->>'demanda_id')::int = ${demandaId}
-            ORDER BY created_at DESC
-        `;
-
-        // Busca dados dos parlamentares para enriquecer a resposta
-        const mandatoIds = emails.map((e) => e.variables?._metadata?.mandato_id).filter((id) => id !== undefined);
-
-        const parlamentaresMap = new Map();
-        if (mandatoIds.length > 0) {
-            const parlamentares = await this.prisma.parlamentarMandato.findMany({
-                where: {
-                    id: { in: mandatoIds },
-                },
-                select: {
-                    id: true,
-                    cargo: true,
-                    uf: true,
-                    parlamentar: {
-                        select: {
-                            id: true,
-                            nome: true,
-                            nome_popular: true,
-                        },
-                    },
-                    partido_atual: {
-                        select: {
-                            sigla: true,
-                        },
-                    },
-                },
-            });
-
-            parlamentares.forEach((p) => {
-                parlamentaresMap.set(p.id, p);
-            });
+        if (page > 1 && !filters.token_paginacao) {
+            throw new HttpException('Campo token_paginacao é obrigatório para paginação', 400);
         }
 
-        return {
-            linhas: emails.map((e) => {
-                const mandato = parlamentaresMap.get(e.variables?._metadata?.mandato_id);
+        const filterToken = filters.token_paginacao;
+        // Remove campos de paginação para calcular hash consistente
+        const filtersForHash = { ...filters };
+        delete filtersForHash.pagina;
+        delete filtersForHash.token_paginacao;
 
-                return {
-                    id: e.id,
-                    parlamentar: mandato
-                        ? {
-                              id: mandato.parlamentar.id,
-                              nome: mandato.parlamentar.nome,
-                              nome_popular: mandato.parlamentar.nome_popular,
-                              cargo: this.formatarCargoParlamentar(mandato.cargo),
-                              partido: mandato.partido_atual.sigla,
-                              uf: mandato.uf,
-                          }
-                        : null,
-                    email_enviado: e.to,
-                    assunto: e.subject,
-                    criado_em: Date2YMD.toString(e.created_at),
-                };
+        // Busca por palavras-chave via tsvector
+        const palavrasChave = await PrismaHelpers.buscaIdsPalavraChave(
+            this.prisma,
+            'demanda_email_parlamentar',
+            filters.palavra_chave
+        );
+
+        const where: Prisma.DemandaEmailParlamentarWhereInput = {};
+        if (palavrasChave !== undefined) {
+            where.id = { in: palavrasChave };
+        }
+
+        if (filterToken) {
+            const decoded = this.decodeNextPageToken(filterToken, filtersForHash);
+            total_registros = decoded.total_rows;
+        }
+
+        const offset = (page - 1) * ipp;
+
+        const [countResult, linhas] = await this.prisma.$transaction([
+            filterToken
+                ? this.prisma.demandaEmailParlamentar.count({ where: { id: -1 } }) // skip count when token exists
+                : this.prisma.demandaEmailParlamentar.count({ where }),
+            this.prisma.demandaEmailParlamentar.findMany({
+                where,
+                orderBy: { criado_em: 'desc' },
+                skip: offset,
+                take: ipp,
+                select: {
+                    id: true,
+                    assunto: true,
+                    nomes_parlamentares: true,
+                    criado_em: true,
+                    criador: {
+                        select: {
+                            id: true,
+                            nome_exibicao: true,
+                        },
+                    },
+                },
             }),
+        ]);
+
+        if (!filterToken) {
+            total_registros = countResult;
+            const body: AnyPageTokenJwtBody = {
+                search_hash: Object2Hash(filtersForHash),
+                ipp,
+                issued_at: Date.now(),
+                total_rows: total_registros,
+            };
+            retToken = this.jwtService.sign(body);
+        }
+
+        const tem_mais = offset + linhas.length < total_registros;
+        const paginas = Math.ceil(total_registros / ipp);
+
+        return {
+            linhas: linhas.map((l) => ({
+                id: l.id,
+                assunto: l.assunto,
+                nomes_parlamentares: l.nomes_parlamentares,
+                criado_por: {
+                    id: l.criador.id,
+                    nome_exibicao: l.criador.nome_exibicao,
+                },
+                criado_em: Date2YMD.toString(l.criado_em),
+            })),
+            tem_mais,
+            total_registros,
+            pagina_corrente: page,
+            paginas,
+            token_paginacao: retToken ?? null,
+            token_ttl: PAGINATION_TOKEN_TTL,
         };
+    }
+
+    private decodeNextPageToken(jwt: string | undefined, filters: Record<string, any>): AnyPageTokenJwtBody {
+        let tmp: AnyPageTokenJwtBody | null = null;
+
+        try {
+            if (jwt) tmp = this.jwtService.verify(jwt) as AnyPageTokenJwtBody;
+        } catch {
+            throw new HttpException('token_paginacao inválido', 400);
+        }
+        if (!tmp) throw new HttpException('token_paginacao inválido ou faltando', 400);
+
+        if (tmp.search_hash !== Object2Hash(filters)) {
+            throw new HttpException(
+                'Parâmetros da busca não podem ser diferente da busca inicial para avançar na paginação.',
+                400
+            );
+        }
+        return tmp;
     }
 
     private formatarCargoParlamentar(cargo: string): string {

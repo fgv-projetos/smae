@@ -6,6 +6,9 @@
     <mj-section background-color="#fff">
       <mj-column>
         <mj-text>
+          [% IF corpo %]
+          [% corpo %]
+          [% ELSE %]
           <p>À Sua Excelência,</p>
           
           <p>Senhor(a) [% cargo_parlamentar %]</p>
@@ -26,6 +29,7 @@
           
           <p>Atenciosamente,<br/>
           SERI – [% orgao_nome %]</p>
+          [% END %]
         </mj-text>
       </mj-column>
     </mj-section>

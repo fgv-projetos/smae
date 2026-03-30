@@ -1,29 +1,32 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { PaginatedWithPagesDto } from 'src/common/dto/paginated.dto';
+
+export class DemandaEmailParlamentarCriadorDto {
+    @ApiProperty()
+    id: number;
+
+    @ApiProperty()
+    nome_exibicao: string;
+}
 
 export class DemandaEmailParlamentarDto {
     @ApiProperty()
-    id: string; // UUID do email na fila
-
-    @ApiProperty()
-    parlamentar: {
-        id: number;
-        nome: string;
-        nome_popular: string;
-        cargo: string;
-        partido: string;
-        uf: string;
-    } | null;
-
-    @ApiProperty()
-    email_enviado: string;
+    id: number;
 
     @ApiProperty()
     assunto: string;
 
     @ApiProperty()
+    nomes_parlamentares: string;
+
+    @ApiProperty()
+    criado_por: DemandaEmailParlamentarCriadorDto;
+
+    @ApiProperty()
     criado_em: string;
 }
 
-export class ListDemandaEmailParlamentarDto {
+export class ListDemandaEmailParlamentarDto extends PaginatedWithPagesDto<DemandaEmailParlamentarDto> {
+    @ApiProperty({ type: [DemandaEmailParlamentarDto] })
     linhas: DemandaEmailParlamentarDto[];
 }

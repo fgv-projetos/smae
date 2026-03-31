@@ -1386,19 +1386,19 @@ export class DemandaService {
                 throw new HttpException('Já foi realizado um envio de e-mail para parlamentares hoje', 400);
             }
 
-            // Busca a eleição vigente
-            const eleicaoVigente = await prismaTxn.eleicao.findFirst({
+            // Busca todas as eleições vigentes
+            const eleicoesVigentes = await prismaTxn.eleicao.findMany({
                 where: { atual_para_mandatos: true },
             });
 
-            if (!eleicaoVigente) {
+            if (eleicoesVigentes.length === 0) {
                 throw new HttpException('Não há eleição vigente configurada', 400);
             }
 
-            // Busca parlamentares eleitos que não são suplentes
+            // Busca parlamentares eleitos que não são suplentes (de todas as eleições vigentes)
             const mandatos = await prismaTxn.parlamentarMandato.findMany({
                 where: {
-                    eleicao_id: eleicaoVigente.id,
+                    eleicao_id: { in: eleicoesVigentes.map((e) => e.id) },
                     eleito: true,
                     suplencia: null,
                     removido_em: null,

@@ -2760,7 +2760,7 @@ export const projeto = object()
           .required(),
       ),
     fonte_recursos: array()
-      .label('Fontes de recursos')
+      .label('Fontes de Recursos')
       .nullable()
       .of(
         object()

@@ -1439,7 +1439,7 @@ export class DemandaService {
             }
 
             const smaeUrl = await this.smaeConfigService.getBaseUrl('URL_LOGIN_SMAE');
-            const linkPortfolio = `${smaeUrl}/demandas-publicas`;
+            const linkPortfolio = `${smaeUrl}/publico/demandas`;
 
             // Monta nomes dos parlamentares separados por vírgula
             const nomesParlamentares = mandatos.map((m) => m.parlamentar.nome_popular || m.parlamentar.nome).join(', ');

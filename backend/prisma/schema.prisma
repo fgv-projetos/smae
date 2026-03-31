@@ -6337,6 +6337,8 @@ model Workflow {
     inicio  DateTime  @db.Date()
     termino DateTime? @db.Date()
 
+    vetores_busca Unsupported("tsvector")?
+
     criado_por     Int
     criado_em      DateTime  @default(now()) @db.Timestamptz(6)
     atualizado_por Int?

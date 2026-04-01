@@ -8588,10 +8588,10 @@ model DemandaSnapshot {
 }
 
 model DemandaEmailParlamentar {
-    id                  Int     @id @default(autoincrement())
-    assunto             String? @db.VarChar
-    corpo               String? @db.Text
-    nomes_parlamentares String  @db.Text
+    id                  Int    @id @default(autoincrement())
+    assunto             String @db.VarChar
+    corpo               String @db.Text
+    nomes_parlamentares String @db.Text
 
     vetores_busca Unsupported("tsvector")? @default(dbgenerated())
 

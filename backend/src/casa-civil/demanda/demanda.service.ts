@@ -1446,11 +1446,15 @@ export class DemandaService {
 
             const assuntoFinal = dto.assunto || 'Propostas de Demandas - Emendas Parlamentares';
 
+            const corpoFallback = `À Sua Excelência,\n\nReafirmo o interesse da Prefeitura de São Paulo em fortalecer a parceria entre V.Exa e o nosso município através da execução de Emendas Parlamentares.\n\nAproveito para encaminhar propostas de demandas do nosso município, que poderão ensejar a formulação de Emendas Parlamentares à LOA. As propostas de demandas estão disponíveis através do site ${linkPortfolio}\n\nRessalto a possibilidade da destinação de outras Emendas de acordo com o vosso trabalho no interesse do nosso município.\n\nDestaco também que o quanto antes for apresentado interesse em indicar emendas para o município de São Paulo, maior a exequibilidade das demandas.\n\nNosso apreço e gratidão pela atenção sempre dispensada a esta municipalidade.\n\nAtenciosamente,\nSERI – ${orgao.descricao}`;
+
+            const corpoFinal = dto.corpo || corpoFallback;
+
             // Cria registro do lote de envio
             const lote = await prismaTxn.demandaEmailParlamentar.create({
                 data: {
-                    assunto: dto.assunto || null,
-                    corpo: dto.corpo || null,
+                    assunto: assuntoFinal,
+                    corpo: corpoFinal,
                     nomes_parlamentares: nomesParlamentares,
                     criado_por: user.id,
                 },
@@ -1571,7 +1575,7 @@ export class DemandaService {
         return {
             linhas: linhas.map((l) => ({
                 id: l.id,
-                assunto: l.assunto!,
+                assunto: l.assunto,
                 nomes_parlamentares: l.nomes_parlamentares,
                 criado_por: {
                     id: l.criador.id,

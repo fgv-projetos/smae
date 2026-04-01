@@ -12,7 +12,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Date2YMD } from '../../../common/date2ymd';
 import { AnyPageTokenJwtBody, PAGINATION_TOKEN_TTL } from 'src/common/dto/paginated.dto';
 import { Object2Hash } from 'src/common/object2hash';
-import { PrismaHelpers } from 'src/common/PrismaHelpers';
 
 @Injectable()
 export class WorkflowService {
@@ -250,17 +249,11 @@ export class WorkflowService {
         delete filtersForHash.pagina;
         delete filtersForHash.token_paginacao;
 
-        const palavrasChaveIds = await PrismaHelpers.buscaIdsPalavraChave(
-            this.prisma,
-            'workflow',
-            filters.palavra_chave
-        );
-
         const where: Prisma.WorkflowWhereInput = {
             ativo: filters.ativo,
             transferencia_tipo_id: filters.transferencia_tipo_id,
             removido_em: null,
-            ...(palavrasChaveIds !== undefined ? { id: { in: palavrasChaveIds } } : {}),
+            ...(filters.esfera ? { transferencia_tipo: { esfera: filters.esfera } } : {}),
         };
 
         if (filterToken) {

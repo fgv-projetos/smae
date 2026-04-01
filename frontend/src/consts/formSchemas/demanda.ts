@@ -107,21 +107,21 @@ export const CadastroDemandaSchema = ({ valorMinimo = 0 }) => object()
     // Encaminhamento
     encaminhamento: mixed<DemandaAcao>()
       .label('Encaminhamento')
-      .oneOf(
-        [
-          'editar',
-          'enviar',
-          'validar',
-          'devolver',
-          'cancelar',
-        ],
-        'Selecione um encaminhamento válido',
+      .test(
+        'encaminhamento-required',
+        'Encaminhamento é obrigatório',
+        function encaminhamentoIsNotRequired(value) {
+          if (
+            !this.parent.id
+            || this.parent.status === 'Encerrado'
+          ) {
+            return true;
+          }
+
+          return ['editar', 'enviar', 'validar', 'devolver', 'cancelar'].includes(value);
+        },
       )
-      .when('id', {
-        is: (val: string) => !!val,
-        then: (s) => s.required(),
-        otherwise: (s) => s.nullable(),
-      }),
+      .nullable(),
     encaminhamento_justificativa: string()
       .label('Motivo')
       .max(2048)

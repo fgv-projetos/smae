@@ -111,9 +111,15 @@ export const CadastroDemandaSchema = ({ valorMinimo = 0 }) => object()
         'encaminhamento-required',
         'Encaminhamento é obrigatório',
         function encaminhamentoIsNotRequired(value) {
+          const { permissoes } = this.parent;
+
           if (
-            !this.parent.id
-            || this.parent.status === 'Encerrado'
+            permissoes
+            && !permissoes.pode_editar
+            && !permissoes.pode_devolver
+            && !permissoes.pode_enviar
+            && !permissoes.pode_validar
+            && !permissoes.pode_cancelar
           ) {
             return true;
           }

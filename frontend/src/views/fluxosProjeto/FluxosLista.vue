@@ -20,18 +20,12 @@ const fluxosProjetoStore = useFluxosProjetosStore();
 const {
   lista, chamadasPendentes, erro, paginacao,
 } = storeToRefs(fluxosProjetoStore);
-const { lista: tipoTransferenciaComoLista } = storeToRefs(tipoDeTransferenciaStore);
+const {
+  lista: tipoTransferenciaComoLista,
+  tiposDeTransferenciaPorId,
+} = storeToRefs(tipoDeTransferenciaStore);
 
 const alertStore = useAlertStore();
-
-const getTipoTransferencia = (tipoTransferenciaId) => (
-  tipoTransferenciaComoLista.value.find((t) => t.id === tipoTransferenciaId)
-);
-
-const getEsfera = (tipoTransferenciaId) => {
-  const tipoTransferencia = getTipoTransferencia(tipoTransferenciaId);
-  return tipoTransferencia ? tipoTransferencia.esfera : '-';
-};
 
 const camposDeFiltro = computed(() => [
   {
@@ -122,7 +116,7 @@ tipoDeTransferenciaStore.buscarTudo();
     @deletar="({ id }) => excluirFluxo(id)"
   >
     <template #celula:esfera="{ linha }">
-      {{ getEsfera(linha.transferencia_tipo.id) }}
+      {{ tiposDeTransferenciaPorId[linha.transferencia_tipo.id]?.esfera || '-' }}
     </template>
 
     <template #celula:termino="{ linha }">

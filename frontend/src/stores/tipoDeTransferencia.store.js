@@ -69,4 +69,10 @@ export const useTipoDeTransferenciaStore = defineStore('tipoDeTransferencia', {
       }
     },
   },
+  getters: {
+    tiposDeTransferenciaPorId: ({ lista }) => lista.reduce((acc, tipo) => {
+      acc[tipo.id] = tipo;
+      return acc;
+    }, {}),
+  },
 });

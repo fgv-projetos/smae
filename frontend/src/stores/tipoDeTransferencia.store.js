@@ -74,5 +74,13 @@ export const useTipoDeTransferenciaStore = defineStore('tipoDeTransferencia', {
       acc[tipo.id] = tipo;
       return acc;
     }, {}),
+
+    tiposDeTransferenciaPorEsfera: ({ lista }) => lista.reduce((acc, tipo) => {
+      if (!acc[tipo.esfera]) {
+        acc[tipo.esfera] = [];
+      }
+      acc[tipo.esfera].push(tipo);
+      return acc;
+    }, {}),
   },
 });

@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import FiltroParaPagina from '@/components/FiltroParaPagina.vue';
@@ -23,9 +23,12 @@ const {
 const {
   lista: tipoTransferenciaComoLista,
   tiposDeTransferenciaPorId,
+  tiposDeTransferenciaPorEsfera,
 } = storeToRefs(tipoDeTransferenciaStore);
 
 const alertStore = useAlertStore();
+
+const parametrosTemporariosDeBusca = ref({});
 
 const camposDeFiltro = computed(() => [
   {
@@ -36,7 +39,13 @@ const camposDeFiltro = computed(() => [
       },
       transferencia_tipo_id: {
         tipo: 'select',
-        opcoes: tipoTransferenciaComoLista.value.map((t) => ({ id: t.id, label: t.nome })),
+        opcoes: (parametrosTemporariosDeBusca.value.esfera
+          ? tiposDeTransferenciaPorEsfera
+            .value[
+              parametrosTemporariosDeBusca.value.esfera
+            ]?.map((t) => ({ id: t.id, label: t.nome }))
+          : tipoTransferenciaComoLista.value.map((t) => ({ id: t.id, label: t.nome }))) || []
+        ,
       },
       ativo: {
         tipo: 'select',
@@ -86,6 +95,7 @@ tipoDeTransferenciaStore.buscarTudo();
   </CabecalhoDePagina>
 
   <FiltroParaPagina
+    v-model="parametrosTemporariosDeBusca"
     class="mb2"
     :formulario="camposDeFiltro"
     :schema="filtroWorkflow"

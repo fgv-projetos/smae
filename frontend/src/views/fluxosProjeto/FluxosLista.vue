@@ -60,7 +60,7 @@ const parametrosDeBusca = computed(() => ({
   transferencia_tipo_id: route.query.transferencia_tipo_id || undefined,
   ativo: route.query.ativo || undefined,
   pagina: route.query.pagina || undefined,
-  ipp: route.query.ipp || undefined,
+  ipp: route.query.ipp || 15,
   token_paginacao: route.query.token_paginacao || undefined,
 }));
 

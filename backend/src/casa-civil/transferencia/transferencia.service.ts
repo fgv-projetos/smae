@@ -126,6 +126,7 @@ export class TransferenciaService {
                 const identificadorExiste = await prismaTxn.transferencia.count({
                     where: {
                         identificador: identificador,
+                        removido_em: null,
                     },
                 });
                 if (identificadorExiste)
@@ -446,6 +447,7 @@ export class TransferenciaService {
                     const identificadorExiste = await prismaTxn.transferencia.count({
                         where: {
                             identificador: identificador,
+                            removido_em: null,
                         },
                     });
                     if (identificadorExiste)

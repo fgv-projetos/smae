@@ -656,7 +656,7 @@ export class SeiIntegracaoService {
                                     distribuicaoRecurso.transferencia.id,
                                     'detalhes',
                                 ].join('/')
-                            ),
+                            ).toString(),
                         },
                     },
                 });

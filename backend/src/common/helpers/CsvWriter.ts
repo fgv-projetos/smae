@@ -147,31 +147,25 @@ function createCsvStream<T>(options: CsvWriterOptions<T>): Transform {
     });
 }
 
-/**
- * Escreve dados em um stream de saída.
- *
- * Internamente usa geração direta de XLSX para eliminar o problema do padrão
- * ="valor" aparecer como fórmula quando o arquivo é aberto no Excel.
- */
+// Helper function to write data to the CSV stream and handle completion
 export async function WriteCsvToFile<T>(
     data: T[],
     outputStream: NodeJS.WritableStream,
     options: CsvWriterOptions<T>
 ): Promise<void> {
-    return WriteXlsxToFile(data, outputStream, options);
+    return new Promise<void>((resolve, reject) => {
+        const readableStream = new Readable({ objectMode: true });
+
+        readableStream.pipe(createCsvStream(options)).pipe(outputStream).on('finish', resolve).on('error', reject);
+
+        for (const record of data) {
+            readableStream.push(record);
+        }
+        readableStream.push(null);
+    });
 }
 
-/**
- * Retorna um Buffer com os dados.
- *
- * Internamente usa geração direta de XLSX pelo mesmo motivo acima.
- */
 export function WriteCsvToBuffer<T>(data: T[], options: CsvWriterOptions<T>): Buffer {
-    return WriteXlsxToBuffer(data, options);
-}
-
-/** @deprecated Use WriteXlsxToBuffer ou WriteCsvToBuffer */
-export function _WriteCsvToBufferLegacy<T>(data: T[], options: CsvWriterOptions<T>): Buffer {
     const parser = new Parser({
         header: true,
         ...options.csvOptions,

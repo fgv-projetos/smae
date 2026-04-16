@@ -339,36 +339,26 @@ export class ReportsService {
                 let csvContent: string | undefined = undefined;
 
                 if (file.buffer) {
-                    // Arquivo gerado via escrita direta de XLSX: adiciona já no formato correto
-                    if (file.name.endsWith('.csv') && this.isXlsxBuffer(file.buffer)) {
-                        const xlsxName = file.name.replace('.csv', '.xlsx');
-                        zip.addFile(xlsxName, file.buffer);
-                    } else {
-                        zip.addFile(file.name, file.buffer);
-                        if (file.name.endsWith('.csv')) {
-                            csvContent = file.buffer.toString('utf-8');
-                        }
+                    zip.addFile(file.name, file.buffer);
+
+                    if (file.name.endsWith('.csv')) {
+                        csvContent = file.buffer.toString('utf-8');
                     }
                 } else if (file.localFile) {
-                    // Arquivo gerado via escrita direta de XLSX: lê e adiciona no formato correto
-                    if (file.name.endsWith('.csv') && this.isXlsxLocalFile(file.localFile)) {
-                        const xlsxName = file.name.replace('.csv', '.xlsx');
-                        zip.addFile(xlsxName, fs.readFileSync(file.localFile));
-                    } else {
-                        // Fluxo original para arquivos CSV legítimos (ex: CsvFileHandler)
-                        const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'my-tmp-'));
-                        const fileName = path.basename(file.name);
-                        const tmpFilePath = path.join(tmpDir, fileName);
+                    // move o arquivo para a pasta temporária, renomeia para file.name e adiciona ao zip
+                    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'my-tmp-'));
+                    const fileName = path.basename(file.name);
+                    const tmpFilePath = path.join(tmpDir, fileName);
 
-                        fs.renameSync(file.localFile, tmpFilePath);
-                        zip.addLocalFile(tmpFilePath);
+                    fs.renameSync(file.localFile, tmpFilePath);
+                    zip.addLocalFile(tmpFilePath);
 
-                        if (file.name.endsWith('.csv')) {
-                            csvContent = fs.readFileSync(tmpFilePath, 'utf-8');
-                        }
-
-                        fs.rmSync(tmpDir, { recursive: true, force: true });
+                    if (file.name.endsWith('.csv')) {
+                        csvContent = fs.readFileSync(tmpFilePath, 'utf-8');
                     }
+
+                    // Cleanup temp dir
+                    fs.rmSync(tmpDir, { recursive: true, force: true });
                 } else {
                     throw new HttpException(`Falta buffer ou localFile no arquivo ${file.name}`, 500);
                 }

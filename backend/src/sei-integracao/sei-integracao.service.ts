@@ -654,7 +654,7 @@ export class SeiIntegracaoService {
                                     baseUrl,
                                     'transferencias-voluntarias',
                                     distribuicaoRecurso.transferencia.id,
-                                    'detalhes',
+                                    'resumo',
                                 ].join('/')
                             ).toString(),
                         },

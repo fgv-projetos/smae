@@ -111,14 +111,18 @@ export class TransferenciaService {
                     throw new HttpException('Esfera da transferência e esfera do tipo devem ser iguais', 400);
 
                 // Criando identificador
-                // Identificador segue a seguinte regra: count(1) + 1 de transf / ano
-                // O count é relativo ao ano.
-                const idParaAno: number =
-                    (await prismaTxn.transferencia.count({
-                        where: {
-                            ano: dto.ano,
-                        },
-                    })) + 1;
+                // Identificador segue a seguinte regra: max(identificador_nro) + 1 de transf / ano
+                // Usa max + 1 (e não count + 1) para evitar colisão quando há gaps,
+                // por exemplo quando uma transferência do ano X tem seu ano editado para Y.
+                const maxIdParaAno = await prismaTxn.transferencia.aggregate({
+                    where: {
+                        ano: dto.ano,
+                    },
+                    _max: {
+                        identificador_nro: true,
+                    },
+                });
+                const idParaAno: number = (maxIdParaAno._max.identificador_nro ?? 0) + 1;
 
                 const identificador: string = `${idParaAno}/${dto.ano}`;
 
@@ -433,13 +437,16 @@ export class TransferenciaService {
                             400
                         );
 
-                    // Gerando novo identificador
-                    const idParaAno: number =
-                        (await prismaTxn.transferencia.count({
-                            where: {
-                                ano: dto.ano,
-                            },
-                        })) + 1;
+                    // Gerando novo identificador (max + 1 para evitar colisão com gaps)
+                    const maxIdParaAno = await prismaTxn.transferencia.aggregate({
+                        where: {
+                            ano: dto.ano,
+                        },
+                        _max: {
+                            identificador_nro: true,
+                        },
+                    });
+                    const idParaAno: number = (maxIdParaAno._max.identificador_nro ?? 0) + 1;
 
                     identificador = `${idParaAno}/${dto.ano}`;
 

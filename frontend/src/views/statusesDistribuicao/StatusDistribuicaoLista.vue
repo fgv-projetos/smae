@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 
+import tiposStatusDistribuicao from '@/consts/tiposStatusDistribuicao';
 import { useAlertStore } from '@/stores/alert.store';
 import { useStatusDistribuicaoWorflowStore } from '@/stores/statusDistribuicaoWorkflow.store';
 
@@ -68,7 +69,7 @@ statusDistribuicaoWorflowStore.buscarTudo({});
         :key="item.id"
       >
         <td>{{ item.nome }}</td>
-        <td>{{ item.tipo }}</td>
+        <td>{{ tiposStatusDistribuicao[item.tipo]?.nome ?? item.tipo ?? '-' }}</td>
         <td>
           <router-link
             v-if="item.pode_editar"

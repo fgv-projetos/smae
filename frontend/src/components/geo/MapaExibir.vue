@@ -348,11 +348,19 @@ function criarGeoJson(dados) {
       iconSize: [48, 48],
     });
 
+    let marcadorDoPonto;
     geoJson = L.geoJSON(dados, {
-      pointToLayer: (_geoJsonPoint, latlng) => L.marker(latlng, { icon: ícone }),
+      pointToLayer: (_geoJsonPoint, latlng) => {
+        marcadorDoPonto = L.marker(latlng, { icon: ícone });
+        return marcadorDoPonto;
+      },
     });
 
-    atribuirPainelFlutuante(geoJson, dados?.properties);
+    // o painel flutuante precisa ser vinculado ao marcador em si, e não ao
+    // `geoJson` que o envolve: ao entrar num `grupoDeMarcadores`, o plug-in
+    // `leaflet.markercluster` descarta o wrapper e usa só o marcador interno,
+    // então um tooltip preso ao wrapper nunca mais é exibido
+    atribuirPainelFlutuante(marcadorDoPonto, dados?.properties);
 
     const chave = dados.geometry.coordinates?.join(',');
     const deveAgrupar = props.agruparMarcadores === true

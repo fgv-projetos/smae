@@ -571,6 +571,10 @@ useResizeObserver(elementoMapa, debounce(async (entries) => {
 
   alturaCorrente.value = `${height}px`;
 
+  if (mapa) {
+    mapa.invalidateSize();
+  }
+
   enquadrarElementosNoMapa();
 }, 400));
 

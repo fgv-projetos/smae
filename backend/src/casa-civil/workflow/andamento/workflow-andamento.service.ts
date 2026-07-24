@@ -27,6 +27,7 @@ export class WorkflowAndamentoService {
             },
             select: {
                 id: true,
+                tipo_id: true,
                 workflow_id: true,
                 workflow_finalizado: true,
                 andamentoWorkflow: {
@@ -125,6 +126,21 @@ export class WorkflowAndamentoService {
         const pode_passar_para_proxima_etapa: boolean = fasesNaoConcluidas == 0 && possui_proxima_etapa ? true : false;
         const pode_reabrir_fase: boolean = fasesConcluidas ? true : false;
 
+        // O reinício só é possível se houver workflow ativo para o tipo da transferência,
+        // pois é ele que será associado à transferência.
+        const workflowAtivoDoTipo = await this.prisma.workflow.findFirst({
+            where: {
+                transferencia_tipo_id: transferencia.tipo_id,
+                removido_em: null,
+                ativo: true,
+            },
+            select: { id: true },
+        });
+        const pode_reiniciar_workflow: boolean = workflowAtivoDoTipo != null;
+        // Indica que o fluxo ativo do tipo mudou (ex.: decreto alterou o fluxo retroativamente).
+        const workflow_desatualizado: boolean =
+            workflowAtivoDoTipo != null && workflowAtivoDoTipo.id != transferencia.workflow_id;
+
         // Buscando tarefas que são do cronograma.
         const tarefasCronograma = await this.prisma.tarefa.findMany({
             where: {
@@ -163,6 +179,8 @@ export class WorkflowAndamentoService {
             possui_proxima_etapa: possui_proxima_etapa,
             pode_passar_para_proxima_etapa: pode_passar_para_proxima_etapa,
             pode_reabrir_fase: pode_reabrir_fase,
+            pode_reiniciar_workflow: pode_reiniciar_workflow,
+            workflow_desatualizado: workflow_desatualizado,
             fluxo: await Promise.all(
                 workflow.fluxo.map(async (fluxo) => {
                     const ehEtapaAtual = fluxo.workflow_etapa_de!.id == faseAtualAndamento!.workflow_etapa_id;

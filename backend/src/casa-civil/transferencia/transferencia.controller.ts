@@ -1,5 +1,5 @@
 import { Controller, Post, Body, Patch, Param, Get, Delete, HttpCode, HttpStatus, Query } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiNoContentResponse, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiNoContentResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { PessoaFromJwt } from 'src/auth/models/PessoaFromJwt';
 import { RecordWithId } from 'src/common/dto/record-with-id.dto';
@@ -79,6 +79,19 @@ export class TransferenciaController {
     @Roles(['CadastroTransferencia.editar'])
     async limparWorkflow(@Param() params: FindOneParams, @CurrentUser() user: PessoaFromJwt) {
         return await this.transferenciaService.limparWorkflowCronograma(+params.id, user, undefined);
+    }
+
+    @Post(':id/reiniciar-workflow')
+    @ApiBearerAuth('access-token')
+    @Roles(['CadastroTransferencia.editar'])
+    @ApiOperation({
+        summary: 'Reinicia o workflow da transferência',
+        description:
+            'Associa a transferência ao workflow ATIVO do seu tipo, removendo o andamento e o cronograma atuais e ' +
+            'reinstanciando-os a partir do fluxo ativo. AÇÃO IRREVERSÍVEL — o front-end deve alertar o usuário antes de chamar.',
+    })
+    async reiniciarWorkflow(@Param() params: FindOneParams, @CurrentUser() user: PessoaFromJwt): Promise<RecordWithId> {
+        return await this.transferenciaService.reiniciarWorkflow(+params.id, user);
     }
 
     @Get(':id/historico')

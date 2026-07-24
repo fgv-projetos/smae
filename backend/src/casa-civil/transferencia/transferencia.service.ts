@@ -193,156 +193,7 @@ export class TransferenciaService {
         );
 
         // Disparando update para validar topologia.
-        if (workflowCriado) {
-            await this.prisma.$transaction(async (prismaTxn: Prisma.TransactionClient) => {
-                // Caso a transferência possua distribuição(es).
-                // Criamos as tarefas que não são responsabilidade própria.
-                const distribuicoes = await prismaTxn.distribuicaoRecurso.findMany({
-                    where: {
-                        transferencia_id: created.id,
-                        removido_em: null,
-                    },
-                    select: {
-                        id: true,
-                    },
-                });
-
-                for (const distribuicao of distribuicoes) {
-                    const distribuicaoId = distribuicao.id;
-
-                    await this.distribuicaoService._createTarefasOutroOrgao(prismaTxn, distribuicaoId, user);
-                }
-
-                const tarefas = await prismaTxn.tarefa.findMany({
-                    where: {
-                        tarefa_cronograma: {
-                            transferencia_id: created.id,
-                        },
-                    },
-                    select: {
-                        id: true,
-                        dependencias: {
-                            select: {
-                                id: true,
-                                tarefa_id: true,
-                                dependencia_tarefa_id: true,
-                                tipo: true,
-                                latencia: true,
-                            },
-                        },
-                    },
-                });
-
-                for (const tarefa of tarefas) {
-                    let dto: UpdateTarefaDto = {};
-
-                    if (tarefa.dependencias.length) {
-                        dto = {
-                            dependencias: tarefa.dependencias.map((e) => {
-                                return {
-                                    dependencia_tarefa_id: e.dependencia_tarefa_id,
-                                    tipo: e.tipo,
-                                    latencia: e.latencia,
-                                };
-                            }),
-                        };
-
-                        await this.tarefaService.update(
-                            { transferencia_id: created.id },
-                            tarefa.id,
-                            dto,
-                            user,
-                            prismaTxn
-                        );
-                    }
-                }
-
-                // Atualizando previsão de término para tarefas de fase de etapa e tarefas de acompanhamento da etapa.
-                const tarefaEtapasAcompanhamentos = await prismaTxn.tarefa.findMany({
-                    where: {
-                        tarefa_cronograma: {
-                            transferencia_id: created.id,
-                        },
-                        termino_planejado: null,
-                        db_projecao_termino: null,
-                    },
-                    select: {
-                        id: true,
-                        tarefa_pai_id: true,
-                        nivel: true,
-                        numero: true,
-                        tarefa: true,
-                    },
-                });
-
-                const updates = [];
-                for (const row of tarefaEtapasAcompanhamentos) {
-                    if (row.nivel == 1 && row.tarefa_pai_id == null) {
-                        // Tarefa referente à própia etapa.
-
-                        // Buscando tarefa filha de maior número.
-                        const tarefaFilha = await prismaTxn.tarefa.findFirst({
-                            where: {
-                                tarefa_pai_id: row.id,
-                                removido_em: null,
-                            },
-                            orderBy: { numero: 'desc' },
-                            select: {
-                                termino_planejado: true,
-                                db_projecao_termino: true,
-                            },
-                        });
-
-                        if (!tarefaFilha)
-                            throw new InternalServerErrorException(
-                                'Erro ao encontrar tarefa filha para base de projeção.'
-                            );
-
-                        updates.push(
-                            prismaTxn.tarefa.update({
-                                where: { id: row.id },
-                                data: {
-                                    termino_planejado: tarefaFilha.termino_planejado,
-                                    db_projecao_termino: tarefaFilha.db_projecao_termino,
-                                },
-                            })
-                        );
-                    } else if (row.nivel == 2 && row.tarefa_pai_id != null) {
-                        // Buscando tarefa irmã de maior número.
-
-                        const tarefaIrma = await prismaTxn.tarefa.findFirst({
-                            where: {
-                                tarefa_pai_id: row.tarefa_pai_id,
-
-                                removido_em: null,
-                            },
-                            orderBy: { numero: 'desc' },
-                            select: {
-                                termino_planejado: true,
-                                db_projecao_termino: true,
-                            },
-                        });
-                        if (!tarefaIrma)
-                            throw new InternalServerErrorException(
-                                'Erro ao encontrar tarefa filha para base de projeção.'
-                            );
-
-                        updates.push(
-                            prismaTxn.tarefa.update({
-                                where: { id: row.id },
-                                data: {
-                                    termino_planejado: tarefaIrma.termino_planejado,
-                                    db_projecao_termino: tarefaIrma.db_projecao_termino,
-                                },
-                            })
-                        );
-                    } else {
-                        // Nada, pois não deveria cair aqui se tudo ocorreu ok.
-                    }
-                }
-                await Promise.all(updates);
-            });
-        }
+        if (workflowCriado) await this.posStartWorkflow(created.id, user);
 
         // Atualizando vetores da transferência.
         this.updateVetoresBusca(created.id).catch((err) => {
@@ -1933,6 +1784,238 @@ export class TransferenciaService {
         };
     }
 
+    /**
+     * Reinicia o workflow da transferência, associando-a ao workflow **ativo** do seu tipo.
+     *
+     * Necessário pois decretos podem alterar o fluxo retroativamente: hoje a troca de workflow
+     * só acontece quando o tipo da transferência é alterado.
+     *
+     * ATENÇÃO: ação destrutiva e irreversível — todo o andamento (fases/tarefas) e o cronograma
+     * atuais são removidos (soft-delete) e reinstanciados a partir do workflow ativo.
+     */
+    async reiniciarWorkflow(transferencia_id: number, user: PessoaFromJwt): Promise<RecordWithId> {
+        const agora = new Date(Date.now());
+
+        const self = await this.prisma.transferencia.findFirst({
+            where: { id: transferencia_id, removido_em: null, AND: this.permissionSet(user) },
+            select: { id: true, tipo_id: true, workflow_id: true },
+        });
+        if (!self) throw new HttpException('Transferência não encontrada', 404);
+
+        // O novo fluxo associado à transferência deve ser o ativo para o tipo dela.
+        const workflowAtivo = await this.prisma.workflow.findFirst({
+            where: {
+                transferencia_tipo_id: self.tipo_id,
+                removido_em: null,
+                ativo: true,
+            },
+            select: { id: true },
+        });
+        if (!workflowAtivo) throw new HttpException('Não há workflow ativo para o tipo desta transferência.', 400);
+
+        await this.prisma.$transaction(
+            async (prismaTxn: Prisma.TransactionClient) => {
+                // Limpa andamento + cronograma atuais. O histórico é gravado abaixo como ReinicioWorkflow,
+                // por isso não gravamos também o DelecaoWorkflow.
+                await this.limparWorkflowCronograma(transferencia_id, user, prismaTxn, {
+                    registrarHistorico: false,
+                });
+
+                await prismaTxn.transferencia.update({
+                    where: { id: transferencia_id },
+                    data: {
+                        workflow_id: workflowAtivo.id,
+                        workflow_etapa_atual_id: null,
+                        workflow_fase_atual_id: null,
+                        workflow_finalizado: false,
+                        atualizado_por: user.id,
+                        atualizado_em: agora,
+                    },
+                });
+
+                await this.startWorkflow(transferencia_id, workflowAtivo.id, prismaTxn, user);
+
+                await prismaTxn.transferenciaHistorico.create({
+                    data: {
+                        transferencia_id: transferencia_id,
+                        acao: TransferenciaHistoricoAcao.ReinicioWorkflow,
+                        dados_extra: {
+                            workflow_antigo_id: self.workflow_id,
+                            workflow_novo_id: workflowAtivo.id,
+                        },
+                        criado_por: user.id,
+                        criado_em: agora,
+                    },
+                });
+            },
+            {
+                isolationLevel: 'Serializable',
+                maxWait: 20000,
+                timeout: 50000,
+            }
+        );
+
+        await this.posStartWorkflow(transferencia_id, user);
+
+        this.updateVetoresBusca(transferencia_id).catch((err) => {
+            console.error(`Background task updateVetoresBusca failed for transferencia ${transferencia_id}`, err);
+        });
+
+        return { id: transferencia_id };
+    }
+
+    /**
+     * Executado após o `startWorkflow` (fora da transação que o criou): recria as tarefas de
+     * responsabilidade de outro órgão das distribuições e revalida a topologia do cronograma,
+     * propagando as projeções para as tarefas de etapa e de acompanhamento de etapa.
+     */
+    private async posStartWorkflow(transferencia_id: number, user: PessoaFromJwt) {
+        await this.prisma.$transaction(async (prismaTxn: Prisma.TransactionClient) => {
+            // Caso a transferência possua distribuição(es).
+            // Criamos as tarefas que não são responsabilidade própria.
+            const distribuicoes = await prismaTxn.distribuicaoRecurso.findMany({
+                where: {
+                    transferencia_id: transferencia_id,
+                    removido_em: null,
+                },
+                select: {
+                    id: true,
+                },
+            });
+
+            for (const distribuicao of distribuicoes) {
+                const distribuicaoId = distribuicao.id;
+
+                await this.distribuicaoService._createTarefasOutroOrgao(prismaTxn, distribuicaoId, user);
+            }
+
+            const tarefas = await prismaTxn.tarefa.findMany({
+                where: {
+                    tarefa_cronograma: {
+                        transferencia_id: transferencia_id,
+                    },
+                },
+                select: {
+                    id: true,
+                    dependencias: {
+                        select: {
+                            id: true,
+                            tarefa_id: true,
+                            dependencia_tarefa_id: true,
+                            tipo: true,
+                            latencia: true,
+                        },
+                    },
+                },
+            });
+
+            for (const tarefa of tarefas) {
+                let dto: UpdateTarefaDto = {};
+
+                if (tarefa.dependencias.length) {
+                    dto = {
+                        dependencias: tarefa.dependencias.map((e) => {
+                            return {
+                                dependencia_tarefa_id: e.dependencia_tarefa_id,
+                                tipo: e.tipo,
+                                latencia: e.latencia,
+                            };
+                        }),
+                    };
+
+                    await this.tarefaService.update(
+                        { transferencia_id: transferencia_id },
+                        tarefa.id,
+                        dto,
+                        user,
+                        prismaTxn
+                    );
+                }
+            }
+
+            // Atualizando previsão de término para tarefas de fase de etapa e tarefas de acompanhamento da etapa.
+            const tarefaEtapasAcompanhamentos = await prismaTxn.tarefa.findMany({
+                where: {
+                    tarefa_cronograma: {
+                        transferencia_id: transferencia_id,
+                    },
+                    termino_planejado: null,
+                    db_projecao_termino: null,
+                },
+                select: {
+                    id: true,
+                    tarefa_pai_id: true,
+                    nivel: true,
+                    numero: true,
+                    tarefa: true,
+                },
+            });
+
+            const updates = [];
+            for (const row of tarefaEtapasAcompanhamentos) {
+                if (row.nivel == 1 && row.tarefa_pai_id == null) {
+                    // Tarefa referente à própia etapa.
+
+                    // Buscando tarefa filha de maior número.
+                    const tarefaFilha = await prismaTxn.tarefa.findFirst({
+                        where: {
+                            tarefa_pai_id: row.id,
+                            removido_em: null,
+                        },
+                        orderBy: { numero: 'desc' },
+                        select: {
+                            termino_planejado: true,
+                            db_projecao_termino: true,
+                        },
+                    });
+
+                    if (!tarefaFilha)
+                        throw new InternalServerErrorException('Erro ao encontrar tarefa filha para base de projeção.');
+
+                    updates.push(
+                        prismaTxn.tarefa.update({
+                            where: { id: row.id },
+                            data: {
+                                termino_planejado: tarefaFilha.termino_planejado,
+                                db_projecao_termino: tarefaFilha.db_projecao_termino,
+                            },
+                        })
+                    );
+                } else if (row.nivel == 2 && row.tarefa_pai_id != null) {
+                    // Buscando tarefa irmã de maior número.
+
+                    const tarefaIrma = await prismaTxn.tarefa.findFirst({
+                        where: {
+                            tarefa_pai_id: row.tarefa_pai_id,
+
+                            removido_em: null,
+                        },
+                        orderBy: { numero: 'desc' },
+                        select: {
+                            termino_planejado: true,
+                            db_projecao_termino: true,
+                        },
+                    });
+                    if (!tarefaIrma)
+                        throw new InternalServerErrorException('Erro ao encontrar tarefa filha para base de projeção.');
+
+                    updates.push(
+                        prismaTxn.tarefa.update({
+                            where: { id: row.id },
+                            data: {
+                                termino_planejado: tarefaIrma.termino_planejado,
+                                db_projecao_termino: tarefaIrma.db_projecao_termino,
+                            },
+                        })
+                    );
+                } else {
+                    // Nada, pois não deveria cair aqui se tudo ocorreu ok.
+                }
+            }
+            await Promise.all(updates);
+        });
+    }
+
     private async startWorkflow(
         transferencia_id: number,
         workflow_id: number,
@@ -2089,9 +2172,14 @@ export class TransferenciaService {
     async limparWorkflowCronograma(
         transferencia_id: number,
         user: PessoaFromJwt,
-        prismaTx: Prisma.TransactionClient | undefined
+        prismaTx: Prisma.TransactionClient | undefined,
+        opts?: { registrarHistorico?: boolean }
     ) {
         const agora = new Date(Date.now());
+
+        // Quem chama pode gravar sua própria ação no histórico (ex.: ReinicioWorkflow),
+        // evitando duas linhas para a mesma operação.
+        const registrarHistorico = opts?.registrarHistorico ?? true;
 
         // TODO: tornar compatível com troca de tipo.
         // Para essa func ser chamada no update.
@@ -2140,14 +2228,16 @@ export class TransferenciaService {
             });
 
             // Inserindo row no histórico de alterações.
-            await prismaTxn.transferenciaHistorico.create({
-                data: {
-                    transferencia_id: transferencia_id,
-                    acao: TransferenciaHistoricoAcao.DelecaoWorkflow,
-                    criado_por: user.id,
-                    criado_em: agora,
-                },
-            });
+            if (registrarHistorico) {
+                await prismaTxn.transferenciaHistorico.create({
+                    data: {
+                        transferencia_id: transferencia_id,
+                        acao: TransferenciaHistoricoAcao.DelecaoWorkflow,
+                        criado_por: user.id,
+                        criado_em: agora,
+                    },
+                });
+            }
         };
 
         if (prismaTx) {

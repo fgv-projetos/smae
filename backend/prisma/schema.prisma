@@ -6177,6 +6177,7 @@ enum TransferenciaHistoricoAcao {
     TrocaTipo
     DelecaoWorkflow
     ReaberturaFaseWorkflow
+    ReinicioWorkflow
 }
 
 model TransferenciaHistorico {

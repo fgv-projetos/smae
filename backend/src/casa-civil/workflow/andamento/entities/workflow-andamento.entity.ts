@@ -16,6 +16,17 @@ export class WorkflowAndamentoDto extends PartialType(OmitType(WorkflowDetailDto
     possui_proxima_etapa: boolean;
     pode_passar_para_proxima_etapa: boolean;
     pode_reabrir_fase: boolean;
+    /**
+     * Existe workflow ativo para o tipo da transferência, portanto a opção "Reiniciar Workflow"
+     * pode ser oferecida. ATENÇÃO: o reinício é irreversível — alerte o usuário antes de chamar
+     * `POST /transferencia/:id/reiniciar-workflow`.
+     */
+    pode_reiniciar_workflow: boolean;
+    /**
+     * O workflow ativo do tipo é diferente do associado à transferência (ex.: decreto alterou o
+     * fluxo retroativamente). Útil para destacar a opção de reinício.
+     */
+    workflow_desatualizado: boolean;
 }
 
 export class WorkflowAndamentoFluxoDto extends DetailWorkflowFluxoDto {

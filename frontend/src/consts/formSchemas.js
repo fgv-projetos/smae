@@ -2297,7 +2297,7 @@ export const transferenciaDistribuicaoDeRecursos = object({
     .nullable()
     .transform((v) => (!v ? null : v)),
   contrato: string()
-    .label('Número do contrato')
+    .label('Número do instrumento')
     .nullable(),
   convenio: string()
     .label('Número convênio/pré-convênio')

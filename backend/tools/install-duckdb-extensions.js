@@ -5,9 +5,7 @@
 // layer de extensões não invalidar a cada mudança de código), então não existe `dist/` para
 // rodar, e um .ts exigiria ts-node + tsconfig na imagem. Este arquivo é a ÚNICA fonte da
 // lista — o `npm run duckdb:extensions` roda exatamente ele, para que o que o dev executa e
-// o que a imagem executa não possam divergir. Já divergiram: a cópia anterior era um build
-// defasado que instalava só um dos dois bindings.
-const { Database } = require('duckdb-async');
+// o que a imagem executa não possam divergir.
 const { DuckDBInstance } = require('@duckdb/node-api');
 const { exit } = require('process');
 
@@ -20,40 +18,23 @@ const EXTENSIONS = ['https', 'postgres', 'sqlite', 'spatial', 'excel'];
  * O DuckDB guarda extensões por versão E por usuário:
  * `$HOME/.duckdb/extensions/v<versão do DuckDB>/<plataforma>/`.
  *
- * Daí as duas exigências que este script tem que satisfazer, e que já foram quebradas:
- *   1. rodar pelos DOIS bindings — `duckdb-async` e `@duckdb/node-api` estão em versões
- *      diferentes de DuckDB, então instalar por um só deixa o runtime do outro sem extensão;
- *   2. rodar como o MESMO usuário que executa a API (`node` na imagem, não root), senão o
- *      cache cai em /root/.duckdb e a aplicação não o encontra.
+ * Daí a exigência que este script tem que satisfazer, e que já foi quebrada: rodar como o
+ * MESMO usuário que executa a API (`node` na imagem, não root), senão o cache cai em
+ * /root/.duckdb e a aplicação não o encontra.
+ *
+ * Só existe um binding no projeto (`@duckdb/node-api`); quando havia dois em versões
+ * diferentes de DuckDB, era preciso instalar por ambos.
  */
-async function instalarViaDuckdbAsync() {
-    const db = await Database.create(':memory:');
-
-    const [{ version }] = await db.all('SELECT version() AS version');
-    console.log(`[duckdb-async] DuckDB ${version} (HOME=${process.env.HOME})`);
-
-    for (const extension of EXTENSIONS) {
-        console.log(`[duckdb-async] Installing ${extension} extension`);
-        const feedback = await db.all(`INSTALL ${extension}`);
-        if (feedback.length > 0) {
-            console.error(feedback);
-            exit(1);
-        }
-    }
-
-    await db.close();
-}
-
-async function instalarViaNodeApi() {
+async function bootstrap() {
     const instance = await DuckDBInstance.create(':memory:');
     const con = await instance.connect();
 
     try {
         const versionResult = await con.runAndReadAll('SELECT version() AS version');
-        console.log(`[node-api] DuckDB ${versionResult.getRowObjects()[0]?.version} (HOME=${process.env.HOME})`);
+        console.log(`DuckDB ${versionResult.getRowObjects()[0]?.version} (HOME=${process.env.HOME})`);
 
         for (const extension of EXTENSIONS) {
-            console.log(`[node-api] Installing ${extension} extension`);
+            console.log(`Installing ${extension} extension`);
             try {
                 await con.run(`INSTALL ${extension}`);
             } catch (error) {
@@ -64,10 +45,5 @@ async function instalarViaNodeApi() {
     } finally {
         con.disconnectSync();
     }
-}
-
-async function bootstrap() {
-    await instalarViaDuckdbAsync();
-    await instalarViaNodeApi();
 }
 bootstrap();

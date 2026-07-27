@@ -106,3 +106,14 @@ export class ListRelatorioColunasDto {
     @ApiProperty({ type: RelatorioArquivoColunasDto, isArray: true })
     arquivos: RelatorioArquivoColunasDto[];
 }
+
+/**
+ * Fontes que aceitam modelo no sistema da requisição, já com as colunas de cada uma — resolve o
+ * ovo-e-galinha do `GET /colunas`, que exige `fonte` mas não tinha de onde a tela tirar a lista de
+ * fontes. Mesmo formato de item do `/colunas`, então a tela pode indexar por `fonte` e não precisa
+ * de uma segunda chamada por fonte escolhida.
+ */
+export class ListRelatorioFontesDto {
+    @ApiProperty({ type: ListRelatorioColunasDto, isArray: true })
+    linhas: ListRelatorioColunasDto[];
+}

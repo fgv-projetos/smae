@@ -32,6 +32,23 @@ export class FilterRelatorioModeloDto {
     visibilidade_tipo?: VisibilidadeTipo[];
 }
 
+export class FilterFontesRelatorioDto {
+    /**
+     * Restringe o resultado a algumas fontes (`?fonte=Obras&fonte=ObraStatus`) — útil para a tela
+     * baixar as colunas só do que o usuário abriu, em vez do sistema inteiro. Sem o filtro, vêm
+     * todas as fontes do sistema da requisição que o usuário pode executar.
+     */
+    @IsOptional()
+    @Transform(StringArrayTransform)
+    @IsArray()
+    @ApiPropertyOptional({ enum: FonteRelatorio, enumName: 'FonteRelatorio', isArray: true })
+    @IsEnum(FonteRelatorio, {
+        each: true,
+        message: 'fonte precisa ser um dos seguintes valores: ' + Object.values(FonteRelatorio).join(', '),
+    })
+    fonte?: FonteRelatorio[];
+}
+
 export class FilterColunasRelatorioDto {
     /** Fonte cujas colunas declaradas serão listadas. */
     @ApiProperty({ enum: FonteRelatorio, enumName: 'FonteRelatorio' })

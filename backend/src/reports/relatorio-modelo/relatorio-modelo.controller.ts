@@ -7,10 +7,15 @@ import { ListaDePrivilegios } from '../../common/ListaDePrivilegios';
 import { FindOneParams } from '../../common/decorators/find-params';
 import { RecordWithId } from '../../common/dto/record-with-id.dto';
 import { CreateRelatorioModeloDto } from './dto/create-relatorio-modelo.dto';
-import { FilterColunasRelatorioDto, FilterRelatorioModeloDto } from './dto/filter-relatorio-modelo.dto';
+import {
+    FilterColunasRelatorioDto,
+    FilterFontesRelatorioDto,
+    FilterRelatorioModeloDto,
+} from './dto/filter-relatorio-modelo.dto';
 import { UpdateRelatorioModeloDto } from './dto/update-relatorio-modelo.dto';
 import {
     ListRelatorioColunasDto,
+    ListRelatorioFontesDto,
     ListRelatorioModeloDto,
     RelatorioModeloDetailDto,
 } from './entities/relatorio-modelo.entity';
@@ -55,6 +60,22 @@ export class RelatorioModeloController {
     @Roles(PRIV_EXECUTAR, 'Criar modelo de relatório')
     async create(@Body() dto: CreateRelatorioModeloDto, @CurrentUser() user: PessoaFromJwt): Promise<RecordWithId> {
         return await this.relatorioModeloService.create(dto, user);
+    }
+
+    /**
+     * Fontes que aceitam modelo no sistema da requisição, com as colunas de cada uma — é a primeira
+     * chamada da tela de modelos, já que `GET colunas` exige `fonte`.
+     * Rota declarada antes de `:id` para não ser capturada por ela.
+     */
+    @Get('fontes')
+    @ApiBearerAuth('access-token')
+    @Roles(PRIV_EXECUTAR, 'Listar fontes disponíveis para modelos')
+    @ApiOkResponse({ type: ListRelatorioFontesDto })
+    async fontes(
+        @Query() filters: FilterFontesRelatorioDto,
+        @CurrentUser() user: PessoaFromJwt
+    ): Promise<ListRelatorioFontesDto> {
+        return this.relatorioModeloService.listFontes(filters, user);
     }
 
     /**

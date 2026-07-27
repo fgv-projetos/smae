@@ -13,10 +13,11 @@ import {
 import { ReportColumnDef } from '../post-process/report-schema';
 import { getVisibilidadeLabel, VisibilidadeTipo } from '../relatorios/helpers/visibilidade-templates';
 import { CreateRelatorioModeloDto } from './dto/create-relatorio-modelo.dto';
-import { FilterRelatorioModeloDto } from './dto/filter-relatorio-modelo.dto';
+import { FilterFontesRelatorioDto, FilterRelatorioModeloDto } from './dto/filter-relatorio-modelo.dto';
 import { UpdateRelatorioModeloDto } from './dto/update-relatorio-modelo.dto';
 import {
     ListRelatorioColunasDto,
+    ListRelatorioFontesDto,
     RelatorioArquivoColunasDto,
     RelatorioModeloDetailDto,
     RelatorioModeloItemDto,
@@ -234,7 +235,34 @@ export class RelatorioModeloService {
         const sistema = user.assertOneModuloSistema('buscar', 'Modelos de relatório');
         this.assertPodeEscrever(fonte, sistema, user);
 
-        const arquivos: RelatorioArquivoColunasDto[] = this.arquivosDaFonte(fonte).map((a) => ({
+        return { fonte, arquivos: this.colunasDaFonte(fonte) };
+    }
+
+    /**
+     * Fontes que aceitam modelo no sistema da requisição, já com as colunas de cada uma.
+     *
+     * Existe porque `listColunas` exige `fonte` e a tela de modelos não tinha de onde tirar essa
+     * lista — sem isto o frontend precisaria hardcodar o mapa fonte↔sistema, que é justamente o que
+     * `FONTES_POR_SISTEMA` centraliza no servidor. O sistema não é parâmetro: vem do
+     * `assertOneModuloSistema`, igual ao resto do módulo.
+     *
+     * Fonte sem schema declarado fica de fora em vez de vir vazia: `validaConfig` recusa modelo para
+     * ela, então oferecê-la na tela só levaria o usuário a um 400 depois de montar tudo.
+     */
+    listFontes(filters: FilterFontesRelatorioDto, user: PessoaFromJwt): ListRelatorioFontesDto {
+        const sistema = user.assertOneModuloSistema('buscar', 'Modelos de relatório');
+        const pedidas = filters.fonte?.length ? new Set(filters.fonte) : null;
+
+        const linhas = fontesPermitidas(user, sistema)
+            .filter((fonte) => !pedidas || pedidas.has(fonte))
+            .map((fonte) => ({ fonte, arquivos: this.colunasDaFonte(fonte) }))
+            .filter((linha) => linha.arquivos.length > 0);
+
+        return { linhas };
+    }
+
+    private colunasDaFonte(fonte: FonteRelatorio): RelatorioArquivoColunasDto[] {
+        return this.arquivosDaFonte(fonte).map((a) => ({
             arquivo: a.arquivo,
             descricao: a.descricao,
             colunas: a.colunas.map((c) => ({
@@ -246,8 +274,6 @@ export class RelatorioModeloService {
                 format: c.format ?? null,
             })),
         }));
-
-        return { fonte, arquivos };
     }
 
     // ---------------------------------------------------------------------------------------

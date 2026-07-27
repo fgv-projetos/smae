@@ -3,6 +3,7 @@ import { TransferenciaHistoricoAcao, TransferenciaTipoEsfera } from '@prisma/cli
 import { Transform, TransformFnParams, Type } from 'class-transformer';
 import { IsOptional, IsString, MaxLength, IsInt, Max, Min, IsEnum, IsBoolean } from 'class-validator';
 import { MAX_LENGTH_DEFAULT } from 'src/common/consts';
+import { OptionalBooleanTransform } from 'src/auth/transforms/boolean.transform';
 
 export class FilterTransferenciaDto {
     @IsOptional()
@@ -32,8 +33,7 @@ export class FilterTransferenciaDto {
     @IsOptional()
     @ApiProperty({ enum: TransferenciaTipoEsfera, enumName: 'TransferenciaTipoEsfera' })
     @IsEnum(TransferenciaTipoEsfera, {
-        message:
-            'Precisa ser um dos seguintes valores: ' + Object.values(TransferenciaTipoEsfera).join(', '),
+        message: 'Precisa ser um dos seguintes valores: ' + Object.values(TransferenciaTipoEsfera).join(', '),
     })
     esfera?: TransferenciaTipoEsfera;
 
@@ -48,6 +48,15 @@ export class FilterTransferenciaDto {
         message: `O campo 'Palavra-Chave' deve ter no máximo ${MAX_LENGTH_DEFAULT} caracteres`,
     })
     palavra_chave?: string;
+
+    /**
+     * Quando `true`, inclui também as transferências canceladas. Padrão (`false`/ausente):
+     * não apresenta transferências canceladas.
+     */
+    @IsOptional()
+    @IsBoolean()
+    @Transform(OptionalBooleanTransform)
+    cancelada?: boolean;
 }
 
 export class FilterTransferenciaHistoricoDto {
@@ -55,8 +64,7 @@ export class FilterTransferenciaHistoricoDto {
     @ApiProperty({ enum: TransferenciaHistoricoAcao, enumName: 'TransferenciaHistoricoAcao', isArray: true })
     @IsEnum(TransferenciaHistoricoAcao, {
         each: true,
-        message:
-            'Precisa ser um dos seguintes valores: ' + Object.values(TransferenciaHistoricoAcao).join(', '),
+        message: 'Precisa ser um dos seguintes valores: ' + Object.values(TransferenciaHistoricoAcao).join(', '),
     })
     acao?: TransferenciaHistoricoAcao[];
 }

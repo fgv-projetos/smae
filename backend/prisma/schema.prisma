@@ -339,6 +339,7 @@ model Pessoa {
     transferenciasQueCriei     Transferencia[] @relation("Criador")
     transferenciasQueAtualizei Transferencia[] @relation("Atualizador")
     transferenciasQueRemovi    Transferencia[] @relation("Removedor")
+    transferenciasQueCancelei  Transferencia[] @relation("Cancelador")
 
     transferenciaAnexoQueCriei     TransferenciaAnexo[] @relation("Criador")
     transferenciaAnexoQueAtualizei TransferenciaAnexo[] @relation("Atualizador")
@@ -6197,6 +6198,12 @@ model Transferencia {
 
     prejudicada Boolean @default(false)
 
+    // Cancelamento da transferência como um todo (terminal). Uma transferência cancelada
+    // não permite movimentação do workflow e some, por padrão, de relatórios/panorama.
+    cancelada     Boolean   @default(false)
+    cancelada_em  DateTime? @db.Timestamptz(6)
+    cancelada_por Int?
+
     criado_por       Int
     criado_em        DateTime  @default(now()) @db.Timestamptz(6)
     atualizado_por   Int?
@@ -6208,6 +6215,7 @@ model Transferencia {
     criador                        Pessoa                           @relation("Criador", fields: [criado_por], references: [id])
     atualizador                    Pessoa?                          @relation("Atualizador", fields: [atualizado_por], references: [id])
     removedor                      Pessoa?                          @relation("Removedor", fields: [removido_por], references: [id])
+    canceladora                    Pessoa?                          @relation("Cancelador", fields: [cancelada_por], references: [id])
     anexos                         TransferenciaAnexo[]
     diretorios                     Diretorio[]
     TarefaCronograma               TarefaCronograma[]
@@ -6229,6 +6237,7 @@ enum TransferenciaHistoricoAcao {
     DelecaoWorkflow
     ReaberturaFaseWorkflow
     ReinicioWorkflow
+    Cancelamento
 }
 
 model TransferenciaHistorico {

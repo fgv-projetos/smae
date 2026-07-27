@@ -223,6 +223,7 @@ export class TransferenciaService {
                         workflow_id: true,
                         ano: true,
                         clausula_suspensiva: true,
+                        cancelada: true,
                     },
                 });
                 if (!self) throw new HttpException('Transferência não encontrada', 404);
@@ -311,6 +312,10 @@ export class TransferenciaService {
                 // Caso o tipo da transferência seja modificado.
                 // O workflow e seu cronograma devem ser removidos.
                 if (self.tipo_id != dto.tipo_id) {
+                    // Transferência cancelada não permite reconstruir o workflow (troca de tipo).
+                    if (self.cancelada)
+                        throw new HttpException('Transferência cancelada não permite movimentação do workflow.', 400);
+
                     await prismaTxn.transferenciaAndamento.updateMany({
                         where: { transferencia_id: id, removido_em: null },
                         data: {
@@ -469,6 +474,10 @@ export class TransferenciaService {
                 }
 
                 if (workflow_id) {
+                    // Transferência cancelada não permite iniciar/instanciar o workflow.
+                    if (self.cancelada)
+                        throw new HttpException('Transferência cancelada não permite movimentação do workflow.', 400);
+
                     await this.startWorkflow(id, workflow_id, prismaTxn, user);
                     workflowCriado = true;
                 }
@@ -589,6 +598,13 @@ export class TransferenciaService {
                 if (operations.length) await Promise.all(operations);
 
                 return transferencia;
+            },
+            {
+                // Serializable para impedir que um cancelamento concorrente (que também roda em
+                // transação) escape da checagem de `self.cancelada` feita no início desta transação.
+                isolationLevel: 'Serializable',
+                maxWait: 20000,
+                timeout: 50000,
             }
         );
 
@@ -1057,6 +1073,8 @@ export class TransferenciaService {
             where: {
                 removido_em: null,
                 AND: this.permissionSet(user),
+                // Por padrão não apresenta canceladas; o filtro "cancelada" as inclui.
+                cancelada: filters.cancelada ? undefined : false,
                 esfera: filters.esfera,
                 pendente_preenchimento_valores:
                     filters.preenchimento_completo != undefined ? !filters.preenchimento_completo : undefined,
@@ -1352,6 +1370,15 @@ export class TransferenciaService {
                 esfera: true,
                 secretaria_concedente_str: true,
                 workflow_id: true,
+                cancelada: true,
+                cancelada_em: true,
+                cancelada_por: true,
+                canceladora: {
+                    select: {
+                        id: true,
+                        nome_exibicao: true,
+                    },
+                },
                 parlamentar: {
                     where: { removido_em: null },
                     select: {
@@ -1603,6 +1630,11 @@ export class TransferenciaService {
                     [] as (ModuloSistema | string)[]
                 ),
             pode_editar: pode_editar,
+            cancelada: row.cancelada,
+            cancelada_em: row.cancelada_em,
+            cancelada_por: row.canceladora
+                ? { id: row.canceladora.id, nome_exibicao: row.canceladora.nome_exibicao }
+                : null,
         } satisfies TransferenciaDetailDto;
     }
 
@@ -1802,9 +1834,11 @@ export class TransferenciaService {
 
         const self = await this.prisma.transferencia.findFirst({
             where: { id: transferencia_id, removido_em: null, AND: this.permissionSet(user) },
-            select: { id: true, tipo_id: true, workflow_id: true },
+            select: { id: true, tipo_id: true, workflow_id: true, cancelada: true },
         });
         if (!self) throw new HttpException('Transferência não encontrada', 404);
+        if (self.cancelada)
+            throw new HttpException('Transferência cancelada não permite movimentação do workflow.', 400);
 
         // O novo fluxo associado à transferência deve ser o ativo para o tipo dela.
         const workflowAtivo = await this.prisma.workflow.findFirst({
@@ -1819,6 +1853,10 @@ export class TransferenciaService {
 
         await this.prisma.$transaction(
             async (prismaTxn: Prisma.TransactionClient) => {
+                // Reverifica dentro da transação (Serializable) para impedir corrida com um
+                // cancelamento simultâneo entre a checagem acima e o reinício.
+                await this.assertTransferenciaNaoCancelada(transferencia_id, prismaTxn);
+
                 // Limpa andamento + cronograma atuais. O histórico é gravado abaixo como ReinicioWorkflow,
                 // por isso não gravamos também o DelecaoWorkflow.
                 await this.limparWorkflowCronograma(transferencia_id, user, prismaTxn, {
@@ -1863,6 +1901,61 @@ export class TransferenciaService {
 
         this.updateVetoresBusca(transferencia_id).catch((err) => {
             console.error(`Background task updateVetoresBusca failed for transferencia ${transferencia_id}`, err);
+        });
+
+        return { id: transferencia_id };
+    }
+
+    /**
+     * Garante que a transferência não está cancelada antes de qualquer mutação de workflow.
+     * Uma transferência cancelada é terminal e não permite iniciar, reiniciar ou limpar o workflow.
+     */
+    private async assertTransferenciaNaoCancelada(
+        transferencia_id: number,
+        prismaTx?: Prisma.TransactionClient
+    ): Promise<void> {
+        const prisma = prismaTx ?? this.prisma;
+        const t = await prisma.transferencia.findFirst({
+            where: { id: transferencia_id, removido_em: null },
+            select: { cancelada: true },
+        });
+        if (t?.cancelada) throw new HttpException('Transferência cancelada não permite movimentação do workflow.', 400);
+    }
+
+    async cancelarTransferencia(transferencia_id: number, user: PessoaFromJwt): Promise<RecordWithId> {
+        // O acesso a este endpoint já é controlado pelo @Roles(['CadastroTransferencia.editar']) no controller.
+        const agora = new Date(Date.now());
+
+        const self = await this.prisma.transferencia.findFirst({
+            where: { id: transferencia_id, removido_em: null, AND: this.permissionSet(user) },
+            select: { id: true, cancelada: true },
+        });
+        if (!self) throw new HttpException('Transferência não encontrada', 404);
+        if (self.cancelada) throw new HttpException('Transferência já está cancelada.', 400);
+
+        await this.prisma.$transaction(async (prismaTxn: Prisma.TransactionClient) => {
+            // Update condicional atômico: só cancela se ainda não estiver cancelada. Evita histórico
+            // duplicado e corridas com um cancelamento/reinício simultâneo.
+            const res = await prismaTxn.transferencia.updateMany({
+                where: { id: transferencia_id, cancelada: false },
+                data: {
+                    cancelada: true,
+                    cancelada_em: agora,
+                    cancelada_por: user.id,
+                    atualizado_por: user.id,
+                    atualizado_em: agora,
+                },
+            });
+            if (res.count === 0) throw new HttpException('Transferência já está cancelada.', 400);
+
+            await prismaTxn.transferenciaHistorico.create({
+                data: {
+                    transferencia_id: transferencia_id,
+                    acao: TransferenciaHistoricoAcao.Cancelamento,
+                    criado_por: user.id,
+                    criado_em: agora,
+                },
+            });
         });
 
         return { id: transferencia_id };
@@ -2189,6 +2282,10 @@ export class TransferenciaService {
         // Para essa func ser chamada no update.
 
         const update = async (prismaTxn: Prisma.TransactionClient) => {
+            // Checagem dentro da transação (Serializable, quando standalone) para impedir corrida
+            // com um cancelamento concorrente entre a checagem e a limpeza do workflow.
+            await this.assertTransferenciaNaoCancelada(transferencia_id, prismaTxn);
+
             await prismaTxn.transferenciaAndamento.updateMany({
                 where: { transferencia_id: transferencia_id },
                 data: {

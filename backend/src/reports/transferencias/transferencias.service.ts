@@ -288,6 +288,8 @@ export class TransferenciasService implements ReportableService, SchemaAwareRepo
                 NOT: [{ transferencia_id: null }],
                 removido_em: null,
                 transferencia: {
+                    // Mesmo default do relatório: não apresenta canceladas salvo se dto.cancelada.
+                    cancelada: dto.cancelada ? undefined : false,
                     esfera: dto.esfera ?? undefined,
                     interface: dto.interface ?? undefined,
                     ano: dto.ano ?? undefined,
@@ -420,6 +422,17 @@ export class TransferenciasService implements ReportableService, SchemaAwareRepo
         }
 
         whereConditions.push(`t.removido_em IS NULL`);
+
+        // Por padrão, não apresenta transferências canceladas nem distribuições
+        // canceladas/declinadas/impedidas tecnicamente/redirecionadas. O filtro "cancelada" inclui-as.
+        if (!filters.cancelada) {
+            whereConditions.push(
+                `t.cancelada = false`,
+                `(dr.id IS NULL
+                  OR COALESCE(dsb.tipo::text, ds.tipo::text) IS NULL
+                  OR COALESCE(dsb.tipo::text, ds.tipo::text) NOT IN ('Cancelada', 'Declinada', 'ImpedidaTecnicamente', 'Redirecionada'))`
+            );
+        }
 
         const whereString = whereConditions.length > 0 ? 'WHERE ' + whereConditions.join(' AND ') : '';
 

@@ -1,7 +1,7 @@
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import { TransferenciaTipoEsfera } from '@prisma/client';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
-import { IsArray, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
 import { NumberArrayTransformOrUndef } from '../../../auth/transforms/number-array.transform';
 import { BadRequestException } from '@nestjs/common';
 import { StringArrayTransform } from '../../../auth/transforms/string-array.transform';
@@ -11,6 +11,7 @@ import { IdNomeDto } from 'src/common/dto/IdNome.dto';
 import { PartidoDto } from 'src/partido/entities/partido.entity';
 import { ParlamnetarIdNomes } from 'src/parlamentar/entities/parlamentar.entity';
 import { NumberTransform } from 'src/auth/transforms/number.transform';
+import { OptionalBooleanTransform } from 'src/auth/transforms/boolean.transform';
 
 export class MfDashTransferenciasDto {
     @ApiProperty({ description: 'ID da transferência' })
@@ -85,6 +86,16 @@ export class FilterDashTransferenciasDto {
     @IsNumber()
     @Type(() => Number)
     prazo?: number;
+
+    /**
+     * Quando `true`, inclui também as transferências canceladas. Padrão (`false`/ausente):
+     * não apresenta transferências canceladas.
+     */
+    @IsOptional()
+    @IsBoolean()
+    @ApiProperty({ description: 'Inclui transferências canceladas', required: false })
+    @Transform(OptionalBooleanTransform)
+    cancelada?: boolean;
 }
 
 function ValidateTransferenciaTipoEsfera(item: any) {

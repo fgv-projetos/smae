@@ -180,7 +180,7 @@ export class RelTransferenciasCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'N° Proposta', format: { excelTextGuard: true } })
     distribuicao_recurso__proposta: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Nº do Contrato', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Número do Instrumento', format: { excelTextGuard: true } })
     distribuicao_recurso__contrato: string | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Nº do Convênio/Pré Convênio', format: { excelTextGuard: true } })

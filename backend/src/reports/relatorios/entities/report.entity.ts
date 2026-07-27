@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { RelatorioVisibilidade } from '@prisma/client';
+import { FonteRelatorio, ModuloSistema, RelatorioVisibilidade } from '@prisma/client';
 import { IsEnum } from 'class-validator';
 import { VisibilidadeTipo } from '../helpers/visibilidade-templates';
 
@@ -8,11 +8,31 @@ export class RelatorioParamDto {
     valor: string | string[];
 }
 
+/**
+ * Modelo usado na execução, embutido na listagem para o frontend não precisar de um
+ * `GET /relatorio-modelo/:id` por linha — inclusive enquanto o relatório processa, quando
+ * `resumo_saida` ainda está vazio e o modelo é a única pista do que vai sair.
+ */
+export class RelatorioModeloResumoDto {
+    id: number;
+    nome: string;
+    @ApiProperty({ enum: FonteRelatorio, enumName: 'FonteRelatorio' })
+    fonte: FonteRelatorio;
+    /** `true` quando o modelo foi removido depois desta execução (o relatório continua válido). */
+    removido: boolean;
+}
+
 export class RelatorioDto {
     id: number;
     criado_em: Date;
     criador: { nome_exibicao: string };
     fonte: string;
+    /** Módulo do sistema a que o relatório pertence (`SMAE` = gerado pelo sistema). */
+    @ApiProperty({ enum: ModuloSistema, enumName: 'ModuloSistema' })
+    sistema: ModuloSistema;
+    /** Modelo aplicado nesta execução; `null` = saída padrão do relatório. */
+    @ApiProperty({ type: RelatorioModeloResumoDto, nullable: true })
+    modelo: RelatorioModeloResumoDto | null;
     arquivo: string | null;
     parametros: any;
     progresso: number | null;

@@ -880,6 +880,11 @@ export class ReportsService {
                 iniciado_em: true,
                 processado_em: true,
                 resumo_saida: true,
+                // Modelo embutido: o frontend mostra "gerado com o modelo X" (e o que a saída deve
+                // ter) sem um GET por linha. Sem filtro de `removido_em`/visibilidade de propósito —
+                // é registro histórico da execução, e as colunas resultantes já estão no arquivo que
+                // quem lista este relatório pode baixar.
+                modelo: { select: { id: true, nome: true, fonte: true, removido_em: true } },
             },
             orderBy: {
                 criado_em: 'desc',
@@ -900,11 +905,19 @@ export class ReportsService {
 
                 const eh_publico: boolean = r.visibilidade === RelatorioVisibilidade.Publico ? true : false;
                 const pode_remover = hasReportPriv(user, 'remover', r.sistema, r.fonte);
-                const { sistema: _sistema, visibilidade_tipo, ...rest } = r;
+                const { visibilidade_tipo, modelo, ...rest } = r;
                 const visTipo = (visibilidade_tipo as VisibilidadeTipo | null) ?? null;
 
                 return {
                     ...rest,
+                    modelo: modelo
+                        ? {
+                              id: modelo.id,
+                              nome: modelo.nome,
+                              fonte: modelo.fonte,
+                              removido: modelo.removido_em !== null,
+                          }
+                        : null,
                     visibilidade_tipo: visTipo,
                     visibilidade_tipo_label: getVisibilidadeLabel(visTipo),
                     progresso: progresso,

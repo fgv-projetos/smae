@@ -169,6 +169,7 @@ export class RelatorioModeloService {
             where: {
                 removido_em: null,
                 fonte: this.filtroDeFonte(filters.fonte, user, sistema),
+                visibilidade_tipo: filters.visibilidade_tipo?.length ? { in: filters.visibilidade_tipo } : undefined,
                 OR: modeloVisibilidadeWhere(user),
             },
             select: SELECT_MODELO,
@@ -275,15 +276,21 @@ export class RelatorioModeloService {
         return criadoPor === user.id || hasReportPriv(user, 'remover', sistema, fonte);
     }
 
-    /** Restringe a listagem às fontes do sistema que o usuário pode executar. */
+    /**
+     * Restringe a listagem às fontes do sistema que o usuário pode executar, e então aplica o filtro
+     * pedido por interseção — nunca por união, para que `fonte` só consiga estreitar o conjunto
+     * permitido (pedir uma fonte de outro sistema devolve lista vazia, não erro).
+     */
     private filtroDeFonte(
-        fonte: FonteRelatorio | undefined,
+        fontes: FonteRelatorio[] | undefined,
         user: PessoaFromJwt,
         sistema: ModuloSistema
     ): Prisma.RelatorioModeloWhereInput['fonte'] {
         const permitidas = fontesPermitidas(user, sistema);
-        if (fonte) return permitidas.includes(fonte) ? fonte : { in: [] };
-        return { in: permitidas };
+        if (!fontes?.length) return { in: permitidas };
+
+        const pedidas = new Set(fontes);
+        return { in: permitidas.filter((f) => pedidas.has(f)) };
     }
 
     private renderItem(row: RowModelo, sistema: ModuloSistema, user: PessoaFromJwt): RelatorioModeloItemDto {

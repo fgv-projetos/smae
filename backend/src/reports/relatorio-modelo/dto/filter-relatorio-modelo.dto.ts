@@ -1,15 +1,35 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { FonteRelatorio } from '@prisma/client';
-import { IsEnum, IsOptional } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsArray, IsEnum, IsIn, IsOptional } from 'class-validator';
+import { StringArrayTransform } from '../../../auth/transforms/string-array.transform';
+import { VISIBILIDADE_TIPOS, VisibilidadeTipo } from '../../relatorios/helpers/visibilidade-templates';
 
 export class FilterRelatorioModeloDto {
-    /** Filtra os modelos de uma fonte específica. */
+    /**
+     * Filtra os modelos de uma ou mais fontes (`?fonte=Projetos&fonte=ProjetoStatus`). Sem o filtro,
+     * a listagem já vem restrita às fontes do sistema da requisição que o usuário pode executar.
+     */
     @IsOptional()
-    @ApiPropertyOptional({ enum: FonteRelatorio, enumName: 'FonteRelatorio' })
+    @Transform(StringArrayTransform)
+    @IsArray()
+    @ApiPropertyOptional({ enum: FonteRelatorio, enumName: 'FonteRelatorio', isArray: true })
     @IsEnum(FonteRelatorio, {
+        each: true,
         message: 'fonte precisa ser um dos seguintes valores: ' + Object.values(FonteRelatorio).join(', '),
     })
-    fonte?: FonteRelatorio;
+    fonte?: FonteRelatorio[];
+
+    /** Filtra por escopo de visibilidade (`?visibilidade_tipo=publico&visibilidade_tipo=meu_orgao`). */
+    @IsOptional()
+    @Transform(StringArrayTransform)
+    @IsArray()
+    @ApiPropertyOptional({ enum: VISIBILIDADE_TIPOS, enumName: 'VisibilidadeTipo', isArray: true })
+    @IsIn(VISIBILIDADE_TIPOS, {
+        each: true,
+        message: 'visibilidade_tipo precisa ser um dos seguintes valores: ' + VISIBILIDADE_TIPOS.join(', '),
+    })
+    visibilidade_tipo?: VisibilidadeTipo[];
 }
 
 export class FilterColunasRelatorioDto {

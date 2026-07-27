@@ -153,9 +153,7 @@ export class WorkflowService {
                     (dto.inicio != undefined &&
                         DateTime.fromJSDate(dto.inicio).startOf('day').toMillis() !=
                             DateTime.fromJSDate(self.inicio).startOf('day').toMillis()) ||
-                    (dto.transferencia_tipo_id != undefined &&
-                        self.transferencia_tipo_id != dto.transferencia_tipo_id) ||
-                    (dto.nome != undefined && self.nome != dto.nome)
+                    (dto.transferencia_tipo_id != undefined && self.transferencia_tipo_id != dto.transferencia_tipo_id)
                 ) {
                     await this.verificaEdicao(id, prismaTxn);
                 }

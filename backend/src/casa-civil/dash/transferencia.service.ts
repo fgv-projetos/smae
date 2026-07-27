@@ -67,6 +67,7 @@ export class DashTransferenciaService {
                     // Por padrão não apresenta canceladas; o filtro "cancelada" as inclui.
                     cancelada: filter.cancelada ? undefined : false,
                     esfera: filter.esfera ? { in: filter.esfera } : undefined,
+                    tipo_id: filter.tipo_ids ? { in: filter.tipo_ids } : undefined,
                     // Busca combinada por identificador e palavras-chave
                     ...(searchConditions ? { OR: searchConditions } : {}),
                     parlamentar: filter.partido_ids
@@ -154,6 +155,7 @@ export class DashTransferenciaService {
                     // Notas de transferências canceladas não devem aparecer no Quadro de Atividades.
                     cancelada: false,
                     esfera: filters.esfera ? { in: filters.esfera } : undefined,
+                    tipo_id: filters.tipo_ids ? { in: filters.tipo_ids } : undefined,
                     // Busca combinada por identificador e palavras-chave
                     ...(searchConditions ? { OR: searchConditions } : {}),
 
@@ -216,8 +218,12 @@ export class DashTransferenciaService {
                 ano: filter.anos ? { in: filter.anos } : undefined,
                 partido_id: filter.partido_ids ? { hasSome: filter.partido_ids } : undefined,
                 workflow_etapa_atual_id: filter.etapa_ids ? { in: filter.etapa_ids } : undefined,
-                // Por padrão não apresenta canceladas; o filtro "cancelada" as inclui.
-                transferencia: filter.cancelada ? undefined : { cancelada: false },
+                esfera: filter.esfera ? { in: filter.esfera } : undefined,
+                transferencia: {
+                    // Por padrão não apresenta canceladas; o filtro "cancelada" as inclui.
+                    cancelada: filter.cancelada ? undefined : false,
+                    tipo_id: filter.tipo_ids ? { in: filter.tipo_ids } : undefined,
+                },
             },
             include: {
                 transferencia: {
@@ -861,8 +867,12 @@ export class DashTransferenciaService {
                 ano: filter.anos ? { in: filter.anos } : undefined,
                 partido_id: filter.partido_ids ? { hasSome: filter.partido_ids } : undefined,
                 workflow_etapa_atual_id: filter.etapa_ids ? { in: filter.etapa_ids } : undefined,
-                // Por padrão não apresenta canceladas; o filtro "cancelada" as inclui.
-                transferencia: filter.cancelada ? undefined : { cancelada: false },
+                esfera: filter.esfera ? { in: filter.esfera } : undefined,
+                transferencia: {
+                    // Por padrão não apresenta canceladas; o filtro "cancelada" as inclui.
+                    cancelada: filter.cancelada ? undefined : false,
+                    tipo_id: filter.tipo_ids ? { in: filter.tipo_ids } : undefined,
+                },
             },
             distinct: ['transferencia_id'],
             select: {
@@ -1024,8 +1034,12 @@ export class DashTransferenciaService {
                 ano: filter.anos ? { in: filter.anos } : undefined,
                 partido_id: filter.partido_ids ? { hasSome: filter.partido_ids } : undefined,
                 workflow_etapa_atual_id: filter.etapa_ids ? { in: filter.etapa_ids } : undefined,
-                // Por padrão não apresenta canceladas; o filtro "cancelada" as inclui.
-                transferencia: filter.cancelada ? undefined : { cancelada: false },
+                esfera: filter.esfera ? { in: filter.esfera } : undefined,
+                transferencia: {
+                    // Por padrão não apresenta canceladas; o filtro "cancelada" as inclui.
+                    cancelada: filter.cancelada ? undefined : false,
+                    tipo_id: filter.tipo_ids ? { in: filter.tipo_ids } : undefined,
+                },
             },
         });
         const nroRows = rows.length;

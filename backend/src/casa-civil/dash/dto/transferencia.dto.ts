@@ -78,6 +78,13 @@ export class FilterDashTransferenciasDto {
     @Transform(NumberArrayTransformOrUndef)
     orgaos_ids?: number[];
 
+    @ApiProperty({ description: 'Contém qualquer um dos tipos de transferência', example: '[]' })
+    @IsOptional()
+    @IsArray()
+    @IsInt({ each: true, message: 'Cada item precisa ser um número inteiro' })
+    @Transform(NumberArrayTransformOrUndef)
+    tipo_ids?: number[];
+
     @IsOptional()
     @IsString()
     palavra_chave?: string;
@@ -107,7 +114,7 @@ function ValidateTransferenciaTipoEsfera(item: any) {
 }
 
 export class FilterDashTransferenciasAnaliseDto extends PartialType(
-    OmitType(FilterDashTransferenciasDto, ['esfera', 'atividade', 'palavra_chave'])
+    OmitType(FilterDashTransferenciasDto, ['atividade', 'palavra_chave'])
 ) {
     @ApiProperty({ description: 'Contém qualquer um dos parlamentares', example: '[]' })
     @IsOptional()

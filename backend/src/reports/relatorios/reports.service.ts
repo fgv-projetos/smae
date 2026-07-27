@@ -258,7 +258,7 @@ export class ReportsService {
             const salvo = modeloId && customizavel ? await this.carregarModeloConfig(modeloId, dto.fonte) : null;
             const config = salvo ?? modeloPadraoDeSchemas(schemas);
 
-            const { arquivos, ignoradas } = await this.postProcess.aplicarModelo(files, schemas, config);
+            const { arquivos, ignoradas, descartados } = await this.postProcess.aplicarModelo(files, schemas, config);
             await ctx.resumoSaida('pos_processamento', {
                 aplicado: true,
                 modelo: salvo ? 'salvo' : 'padrao',
@@ -266,6 +266,9 @@ export class ReportsService {
                 ...(modeloId && !customizavel ? { motivo_padrao: 'REPORT_POST_PROCESS desligada' } : {}),
                 ...(modeloId && customizavel && !salvo ? { motivo_padrao: 'modelo não encontrado' } : {}),
                 arquivos: arquivos.map((f) => f.name),
+                // Arquivos que o modelo pediu para não entregar: sem isto, um zip com menos
+                // planilhas do que a fonte produz pareceria falha de extração.
+                ...(descartados.length ? { arquivos_descartados: descartados } : {}),
                 // Colunas/filtros do modelo que o schema atual não tem mais. O relatório sai
                 // (coluna ausente vira NULL), mas fica registrado para quem for investigar
                 // "por que essa coluna está vazia?" não precisar adivinhar.

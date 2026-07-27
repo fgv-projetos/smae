@@ -226,6 +226,65 @@ describe('ReportPostProcessService', () => {
         expect(out).toEqual([{ name: 'outro.csv', localFile: bruto }]);
     });
 
+    /**
+     * Modelo parcial não pode fazer as outras planilhas regredirem: antes, arquivo sem entrada no
+     * modelo caía no mesmo branch de "sem schema" e saía CSV cru, com cabeçalho técnico e sem XLSX
+     * — exatamente a degradação que o modelo padrão existe para evitar.
+     */
+    it('aplica o padrão do schema no arquivo que o modelo não menciona', async () => {
+        const brutoA = escreverCsvBruto();
+        const brutoB = escreverCsvBruto();
+
+        const { arquivos: out, descartados } = await service.aplicarModelo(
+            [
+                { name: 'exemplo.csv', localFile: brutoA },
+                { name: 'outro.csv', localFile: brutoB },
+            ],
+            [SCHEMA, { ...SCHEMA, arquivo: 'outro.csv' }],
+            { arquivos: [{ arquivo: 'exemplo.csv', colunas: [{ coluna: 'id' }] }] }
+        );
+        for (const f of out) if (f.localFile) criados.push(f.localFile);
+
+        expect(out.map((f) => f.name)).toEqual(['exemplo.csv', 'exemplo.xlsx', 'outro.csv', 'outro.xlsx']);
+        expect(descartados).toEqual([]);
+
+        // O arquivo citado usa a seleção do modelo...
+        const csvA = fs.readFileSync(out.find((f) => f.name === 'exemplo.csv')!.localFile!, 'utf-8');
+        expect(csvA.trim().split('\n')[0]).toBe('ID');
+
+        // ...e o não citado sai como o modelo padrão: todas as colunas, labels e pt-BR.
+        const csvB = fs.readFileSync(out.find((f) => f.name === 'outro.csv')!.localFile!, 'utf-8');
+        expect(csvB.trim().split('\n')[0]).toBe('ID;Valor;Vigência;Dotação;Órgão');
+        expect(csvB).toContain('1.234,56');
+        expect(csvB).toContain('15/10/2024');
+    });
+
+    it('não entrega o arquivo marcado com incluir: false', async () => {
+        const brutoA = escreverCsvBruto();
+        const brutoB = escreverCsvBruto();
+
+        const { arquivos: out, descartados } = await service.aplicarModelo(
+            [
+                { name: 'exemplo.csv', localFile: brutoA },
+                { name: 'outro.csv', localFile: brutoB },
+            ],
+            [SCHEMA, { ...SCHEMA, arquivo: 'outro.csv' }],
+            {
+                arquivos: [
+                    { arquivo: 'exemplo.csv' },
+                    // Colunas junto de `incluir: false` são aceitas e simplesmente não rodam.
+                    { arquivo: 'outro.csv', incluir: false, colunas: [{ coluna: 'id' }] },
+                ],
+            }
+        );
+        for (const f of out) if (f.localFile) criados.push(f.localFile);
+
+        expect(out.map((f) => f.name)).toEqual(['exemplo.csv', 'exemplo.xlsx']);
+        expect(descartados).toEqual(['outro.csv']);
+        // O CSV bruto descartado não fica para trás no disco.
+        expect(fs.existsSync(brutoB)).toBe(false);
+    });
+
     it('respeita xlsx_tipado: false espelhando a apresentação do CSV', async () => {
         const { xlsxPath } = await aplicar({ arquivos: [{ arquivo: 'exemplo.csv' }], xlsx_tipado: false });
         const linhas = await lerXlsx(xlsxPath);

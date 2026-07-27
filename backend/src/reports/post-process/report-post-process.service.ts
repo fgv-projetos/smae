@@ -77,6 +77,8 @@ export type AplicarModeloResultado = {
      * relatório: o modelo não falha, mas a perda não pode ser silenciosa.
      */
     ignoradas: ModeloReferenciaIgnorada[];
+    /** Arquivos que o modelo pediu para não entregar (`incluir: false`). */
+    descartados: string[];
 };
 
 @Injectable()
@@ -95,8 +97,12 @@ export class ReportPostProcessService {
      *     Excel, escritas direto pelo sink `xlsx` da lib. Nunca recebe o guard `="..."`,
      *     então `fixFormulaStringsInXlsx` deixa de ser necessário neste caminho.
      *
-     * Arquivos sem schema (ou sem entrada no modelo) são devolvidos intactos, para o
-     * caminho legado de `zipFiles`.
+     * Arquivos sem schema declarado são devolvidos intactos, para o caminho legado de `zipFiles`.
+     *
+     * Arquivo com schema que o modelo **não menciona** roda com o padrão daquele arquivo (todas as
+     * colunas, labels e formatação do schema): um modelo que customiza uma planilha não deveria
+     * fazer as outras regredirem para CSV cru de cabeçalho técnico. Para de fato não entregar um
+     * arquivo existe a flag explícita `incluir: false`.
      */
     async aplicarModelo(
         files: FileOutput[],
@@ -105,15 +111,26 @@ export class ReportPostProcessService {
     ): Promise<AplicarModeloResultado> {
         const out: FileOutput[] = [];
         const ignoradas: ModeloReferenciaIgnorada[] = [];
+        const descartados: string[] = [];
 
         for (const file of files) {
             const schema = findFileSchema(schemas, file.name);
-            const cfg = modelo.arquivos.find((a) => a.arquivo === file.name);
+            const doModelo = modelo.arquivos.find((a) => a.arquivo === file.name);
 
-            if (!schema || !cfg || !file.localFile) {
+            // Antes do teste de schema: "não quero este arquivo" vale mesmo para arquivo que o
+            // pós-processamento não saberia formatar.
+            if (doModelo?.incluir === false) {
+                descartados.push(file.name);
+                this.removerTemporario(file.localFile);
+                continue;
+            }
+
+            if (!schema || !file.localFile) {
                 out.push(file);
                 continue;
             }
+
+            const cfg: RelatorioModeloArquivoDto = doModelo ?? { arquivo: file.name };
 
             const registrar = (onde: ModeloReferenciaIgnorada['onde'], coluna: string) => {
                 ignoradas.push({ arquivo: file.name, onde, coluna });
@@ -145,14 +162,20 @@ export class ReportPostProcessService {
             }
             out.push({ name: file.name.replace(/\.csv$/, '.xlsx'), localFile: xlsxOut });
 
-            try {
-                fs.unlinkSync(file.localFile);
-            } catch (e) {
-                this.logger.warn(`Falha ao remover CSV bruto ${file.localFile}: ${e}`);
-            }
+            this.removerTemporario(file.localFile);
         }
 
-        return { arquivos: out, ignoradas };
+        return { arquivos: out, ignoradas, descartados };
+    }
+
+    /** Remove o CSV bruto já consumido (ou descartado): ele não entra no zip e ninguém mais o lê. */
+    private removerTemporario(localFile: string | undefined): void {
+        if (!localFile) return;
+        try {
+            fs.unlinkSync(localFile);
+        } catch (e) {
+            this.logger.warn(`Falha ao remover CSV bruto ${localFile}: ${e}`);
+        }
     }
 
     /**

@@ -133,6 +133,20 @@ export class RelatorioModeloArquivoDto {
     arquivo: string;
 
     /**
+     * `false` remove o arquivo do pacote do relatório — nem formatado nem bruto, ele simplesmente
+     * não é entregue. Default `true`.
+     *
+     * É uma flag explícita, e não "colunas vazias", porque `colunas: []` já significa "todas as
+     * colunas do schema" e é fácil de um formulário emitir sem querer — não dá para distinguir
+     * "não escolhi colunas" de "não quero este arquivo". Configuração de colunas/filtros continua
+     * aceita junto de `incluir: false`, para o frontend poder desmarcar o arquivo sem perder o que
+     * o usuário já tinha montado.
+     */
+    @IsOptional()
+    @IsBoolean()
+    incluir?: boolean;
+
+    /**
      * Colunas a exportar, na ordem desejada. Ausente/vazio = todas as colunas do
      * schema, na ordem declarada.
      */

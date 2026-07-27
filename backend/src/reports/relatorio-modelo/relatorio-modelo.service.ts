@@ -412,6 +412,13 @@ export class RelatorioModeloService {
 
             this.validaArquivo(cfg, schema);
         }
+
+        // Arquivo não citado no modelo é entregue com o padrão do schema, então "todos excluídos"
+        // só acontece quando o modelo lista a fonte inteira com `incluir: false` — e aí o relatório
+        // sairia com zero planilhas, o que é erro de configuração, não um resultado útil.
+        const excluidos = config.arquivos.filter((a) => a.incluir === false).length;
+        if (excluidos === disponiveis.length)
+            throw new HttpException('O modelo precisa entregar ao menos um arquivo.', 400);
     }
 
     private validaArquivo(cfg: RelatorioModeloArquivoDto, schema: ArquivoDaFonte): void {

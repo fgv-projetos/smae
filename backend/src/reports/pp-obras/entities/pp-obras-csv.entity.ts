@@ -36,14 +36,14 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
     descricao: 'Uma linha por combinação de obra × fonte de recurso × órgão participante (efeito dos LEFT JOINs 1:N).',
 })
 export class RelObrasCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true } })
     obra_id: number;
 
     /** Código do tipo `2024.0001`: sem o guard o Excel o converteria em número. */
     @ReportColumn({ type: 'VARCHAR', label: 'Código', format: { excelTextGuard: true } })
     codigo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Portfólio', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Portfólio', format: { raw: true } })
     portfolio_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Nome' })
@@ -299,13 +299,13 @@ export class RelObrasCsvRow {
     descricao: 'Uma linha por tarefa do cronograma das obras filtradas.',
 })
 export class RelObrasCronogramaCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true } })
     obra_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código da Obra', format: { excelTextGuard: true } })
     obra_codigo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Tarefa', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Tarefa', format: { raw: true } })
     tarefa_id: number;
 
     /**
@@ -390,7 +390,7 @@ export class RelObrasCronogramaCsvRow {
     descricao: 'Uma linha por item de acompanhamento das obras (acompanhamento × item, via LEFT JOIN 1:N).',
 })
 export class RelObrasAcompanhamentosCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true } })
     obra_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código da Obra', format: { excelTextGuard: true } })
@@ -469,7 +469,7 @@ export class RelObrasAcompanhamentosCsvRow {
     descricao: 'Uma linha por fonte de recurso vinculada à obra.',
 })
 export class RelObrasFontesRecursoCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true } })
     obra_id: number;
 
     /** Sem `unit: '%'` — veja a nota em `RelObrasCsvRow.fonte_recurso_valor_pct`. */
@@ -498,10 +498,10 @@ export class RelObrasFontesRecursoCsvRow {
     descricao: 'Uma linha por contrato vinculado à obra.',
 })
 export class RelObrasContratosCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Contrato', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Contrato', format: { raw: true } })
     contrato_id: number;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true } })
     obra_id: number;
 
     /** Número do tipo `001/2024`: guard obrigatório, o Excel o leria como data. */
@@ -612,10 +612,10 @@ export class RelObrasContratosCsvRow {
     descricao: 'Uma linha por aditivo dos contratos vinculados às obras.',
 })
 export class RelObrasAditivosCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Aditivo', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Aditivo', format: { raw: true } })
     aditivo_id: number;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Contrato', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Contrato', format: { raw: true } })
     contrato_id: number;
 
     /** `contrato_aditivo.numero` é texto no banco; guard pelo mesmo motivo do contrato. */
@@ -657,7 +657,7 @@ export class RelObrasAditivosCsvRow {
     descricao: 'Uma linha por origem (meta / iniciativa / atividade do PdM) vinculada à obra.',
 })
 export class RelObrasOrigensCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true } })
     obra_id: number;
 
     @ReportColumn({ type: 'BIGINT', label: 'ID do Programa de Metas', format: { raw: true } })
@@ -696,7 +696,7 @@ export class RelObrasOrigensCsvRow {
     descricao: 'Uma linha por processo SEI registrado na obra.',
 })
 export class RelObrasProcessosSeiCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true } })
     obra_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Categoria' })
@@ -740,7 +740,7 @@ export class RelObrasProcessosSeiCsvRow {
     descricao: 'Uma linha por localização geográfica (ou região) vinculada à obra.',
 })
 export class RelObrasEnderecosCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'obra_id', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'obra_id', format: { raw: true } })
     obra_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'endereco' })
@@ -815,7 +815,7 @@ export class RelObrasEnderecosCsvRow {
     descricao: 'Uma linha por documento anexado à obra.',
 })
 export class RelObrasArquivosCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true } })
     obra_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código da Obra', format: { excelTextGuard: true } })
@@ -841,6 +841,6 @@ export class RelObrasArquivosCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Descrição' })
     descricao: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Arquivo', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Arquivo', format: { raw: true } })
     arquivo_id: number;
 }

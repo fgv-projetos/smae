@@ -10,13 +10,13 @@ Classe de linha: `RelProjetoEncaminhamentoCsvRow`
 
 Colunas do CSV bruto de `encaminhamentos.csv` (uma linha por encaminhamento).
 
-| Coluna | Tipo | Rótulo | Customizável | Formatação | Descrição |
-| --- | --- | --- | --- | --- | --- |
-| `acompanhamento_id` | `BIGINT` | ID do Acompanhamento | não | sem formatação | — |
-| `numero_encaminhamento` | `VARCHAR` | Número do Encaminhamento | sim | guard Excel | — |
-| `encaminhamento` | `VARCHAR` | Encaminhamento | sim | — | — |
-| `responsavel` | `VARCHAR` | Responsável | sim | — | — |
-| `prazo_encaminhamento` | `DATE` | Prazo do Encaminhamento | sim | — | — |
-| `prazo_realizado` | `DATE` | Prazo Realizado | sim | — | — |
+| Coluna | Tipo | Rótulo | Formatação | Descrição |
+| --- | --- | --- | --- | --- |
+| `acompanhamento_id` | `BIGINT` | ID do Acompanhamento | sem formatação | — |
+| `numero_encaminhamento` | `VARCHAR` | Número do Encaminhamento | guard Excel | — |
+| `encaminhamento` | `VARCHAR` | Encaminhamento | — | — |
+| `responsavel` | `VARCHAR` | Responsável | — | — |
+| `prazo_encaminhamento` | `DATE` | Prazo do Encaminhamento | — | — |
+| `prazo_realizado` | `DATE` | Prazo Realizado | — | — |
 
 [← todos os arquivos](../report-columns.md)

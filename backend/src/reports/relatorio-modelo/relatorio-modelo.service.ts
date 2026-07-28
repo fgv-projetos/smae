@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { forwardRef, HttpException, Inject, Injectable } from '@nestjs/common';
 import { FonteRelatorio, ModuloSistema, Prisma } from '@prisma/client';
 import { PessoaFromJwt } from '../../auth/models/PessoaFromJwt';
 import { RecordWithId } from '../../common/dto/record-with-id.dto';
@@ -12,6 +12,7 @@ import {
 } from '../post-process/report-column.decorator';
 import { ReportColumnDef } from '../post-process/report-schema';
 import { getVisibilidadeLabel, VisibilidadeTipo } from '../relatorios/helpers/visibilidade-templates';
+import { ReportsService } from '../relatorios/reports.service';
 import { CreateRelatorioModeloDto } from './dto/create-relatorio-modelo.dto';
 import { FilterFontesRelatorioDto, FilterRelatorioModeloDto } from './dto/filter-relatorio-modelo.dto';
 import { UpdateRelatorioModeloDto } from './dto/update-relatorio-modelo.dto';
@@ -34,8 +35,6 @@ type ArquivoDaFonte = {
     arquivo: string;
     descricao: string | null;
     colunas: ReportColumnDef[];
-    /** Colunas que não podem ser removidas nem renomeadas (`customizavel: false`). */
-    travadas: Set<string>;
     /** Nota explicativa de cada coluna, quando declarada. */
     descricoes: Map<string, string | null>;
 };
@@ -70,7 +69,11 @@ function amostraDeNomes(nomes: string[], limite = 15): string {
 
 @Injectable()
 export class RelatorioModeloService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(
+        private readonly prisma: PrismaService,
+        @Inject(forwardRef(() => ReportsService))
+        private readonly reportsService: ReportsService
+    ) {}
 
     async create(dto: CreateRelatorioModeloDto, user: PessoaFromJwt): Promise<RecordWithId> {
         const sistema = user.assertOneModuloSistema('criar', 'Modelos de relatório');
@@ -227,15 +230,55 @@ export class RelatorioModeloService {
     }
 
     /**
-     * Colunas disponíveis para montar um modelo — a origem é apenas o registro de decoradores
-     * (`@ReportRows`/`@ReportColumn`), nunca o banco. É o endpoint que o frontend usa para
-     * construir o seletor de colunas.
+     * Colunas disponíveis para montar um modelo — é o que o frontend usa no seletor de colunas.
+     *
+     * Com `parametros`, devolve o schema **daquela execução**: mesmas colunas e mesmos rótulos
+     * que o relatório rodado com esses parâmetros vai produzir (ver
+     * `ReportsService.describeSchemaDaFonte`). É o modo correto para montar um modelo, porque
+     * várias fontes mudam de colunas conforme o parâmetro — `Orcamento` traz meta/iniciativa/
+     * atividade só com `pdm_id` e projeto só sem ele, `mes`/`ano` só no `Analitico` — e os
+     * rótulos de iniciativa/atividade vêm do PDM ("Ação estratégica", "Ação programada").
+     *
+     * Sem `parametros`, cai no registro de decoradores, que devolve a **união** das variantes
+     * com os rótulos padrão. Serve para uma visão geral da fonte, não para montar modelo:
+     * a união oferece coluna que a execução não terá.
      */
-    listColunas(fonte: FonteRelatorio, user: PessoaFromJwt): ListRelatorioColunasDto {
+    async listColunas(
+        fonte: FonteRelatorio,
+        parametros: unknown | undefined,
+        user: PessoaFromJwt
+    ): Promise<ListRelatorioColunasDto> {
         const sistema = user.assertOneModuloSistema('buscar', 'Modelos de relatório');
         this.assertPodeEscrever(fonte, sistema, user);
 
-        return { fonte, arquivos: this.colunasDaFonte(fonte) };
+        if (parametros === undefined)
+            return { fonte, parametrizado: false, arquivos: this.colunasDaFonte(fonte) };
+
+        const schemas = await this.reportsService.describeSchemaDaFonte(fonte, parametros, sistema);
+        if (!schemas?.length) return { fonte, parametrizado: false, arquivos: this.colunasDaFonte(fonte) };
+
+        // `ReportFileSchema` carrega só arquivo + colunas; as descrições (do arquivo e de cada
+        // coluna) ficam no decorador. Vêm do registro, casadas por nome — que é estável entre
+        // as variantes, ao contrário do rótulo.
+        const doRegistro = this.arquivosDaFonte(fonte);
+        const descricoes = new Map(doRegistro.flatMap((a) => [...a.descricoes.entries()]));
+        const descricaoDoArquivo = new Map(doRegistro.map((a) => [a.arquivo, a.descricao]));
+
+        return {
+            fonte,
+            parametrizado: true,
+            arquivos: schemas.map((s) => ({
+                arquivo: s.arquivo,
+                descricao: descricaoDoArquivo.get(s.arquivo) ?? null,
+                colunas: s.colunas.map((c) => ({
+                    name: c.name,
+                    label: c.label,
+                    type: c.type,
+                    descricao: descricoes.get(c.name) ?? null,
+                    format: c.format ?? null,
+                })),
+            })),
+        };
     }
 
     /**
@@ -255,7 +298,10 @@ export class RelatorioModeloService {
 
         const linhas = fontesPermitidas(user, sistema)
             .filter((fonte) => !pedidas || pedidas.has(fonte))
-            .map((fonte) => ({ fonte, arquivos: this.colunasDaFonte(fonte) }))
+            // Sempre a união: esta rota lista TODAS as fontes de uma vez, e não há um conjunto
+            // de parâmetros por fonte para recortar. Serve para a tela saber quais fontes
+            // existem; o seletor de colunas de uma fonte deve usar `POST /colunas`.
+            .map((fonte) => ({ fonte, parametrizado: false, arquivos: this.colunasDaFonte(fonte) }))
             .filter((linha) => linha.arquivos.length > 0);
 
         return { linhas };
@@ -269,7 +315,6 @@ export class RelatorioModeloService {
                 name: c.name,
                 label: c.label,
                 type: c.type,
-                customizavel: !a.travadas.has(c.name),
                 descricao: a.descricoes.get(c.name) ?? null,
                 format: c.format ?? null,
             })),
@@ -395,9 +440,6 @@ export class RelatorioModeloService {
                     label: options.label,
                     format: options.format,
                 })),
-                travadas: new Set(
-                    colunas.filter(({ options }) => options.customizavel === false).map((c) => c.propriedade)
-                ),
                 descricoes: new Map(
                     colunas.map(({ propriedade, options }) => [propriedade, options.descricao ?? null])
                 ),
@@ -408,9 +450,13 @@ export class RelatorioModeloService {
     }
 
     /**
-     * Valida a config contra o schema declarado da fonte. Toda coluna referenciada (seleção,
-     * filtro ou ordenação) precisa existir no arquivo correspondente, e as colunas marcadas
-     * `customizavel: false` não podem ser renomeadas nem ficar fora da seleção.
+     * Valida a config contra o schema declarado da fonte: toda coluna referenciada (seleção,
+     * filtro ou ordenação) precisa existir no arquivo correspondente.
+     *
+     * **Toda** coluna é customizável — inclusive os IDs. Existiu aqui um conceito de coluna
+     * "travada" (`customizavel: false`), que obrigava a manter IDs na seleção e proibia
+     * renomeá-los; foi removido porque quem monta o modelo é quem sabe do que precisa, e a
+     * trava só rendia 400 em pedidos legítimos ("não quero a coluna de id nesta planilha").
      */
     private validaConfig(fonte: FonteRelatorio, config: RelatorioModeloConfigDto): void {
         const disponiveis = this.arquivosDaFonte(fonte);
@@ -465,7 +511,7 @@ export class RelatorioModeloService {
             const selecionadas = new Set<string>();
 
             for (const sel of cfg.colunas) {
-                const def = exigeColuna(sel.coluna, 'colunas');
+                exigeColuna(sel.coluna, 'colunas');
 
                 if (selecionadas.has(sel.coluna))
                     throw new HttpException(
@@ -473,22 +519,6 @@ export class RelatorioModeloService {
                         400
                     );
                 selecionadas.add(sel.coluna);
-
-                if (schema.travadas.has(sel.coluna) && sel.label !== undefined && sel.label !== def.label)
-                    throw new HttpException(
-                        `A coluna "${sel.coluna}" do arquivo "${schema.arquivo}" não pode ser renomeada.`,
-                        400
-                    );
-            }
-
-            // Seleção explícita = as ausentes serão removidas da saída; as travadas precisam ficar.
-            for (const travada of schema.travadas) {
-                if (!selecionadas.has(travada))
-                    throw new HttpException(
-                        `A coluna "${travada}" do arquivo "${schema.arquivo}" é obrigatória e não pode ser ` +
-                            `removida do modelo.`,
-                        400
-                    );
             }
         }
 

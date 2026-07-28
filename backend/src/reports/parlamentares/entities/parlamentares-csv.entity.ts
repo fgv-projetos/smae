@@ -23,7 +23,7 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
     descricao: 'Uma linha por parlamentar, com o mandato e o partido atual (view_parlamentares_mandatos_part_atual).',
 })
 export class RelParlamentaresCsvRow {
-    @ReportColumn({ type: 'INTEGER', label: 'ID do Parlamentar', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID do Parlamentar', format: { raw: true } })
     id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Nome Civil' })

@@ -59,7 +59,7 @@ export class RelPrevisaoCustoPdmCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Título da Meta' })
     meta__titulo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Meta', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Meta', format: { raw: true } })
     meta__id: number | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código da Iniciativa' })
@@ -68,7 +68,7 @@ export class RelPrevisaoCustoPdmCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Título da Iniciativa' })
     iniciativa__titulo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Iniciativa', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Iniciativa', format: { raw: true } })
     iniciativa__id: number | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código da Atividade' })
@@ -77,12 +77,12 @@ export class RelPrevisaoCustoPdmCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Título da Atividade' })
     atividade__titulo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Atividade', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Atividade', format: { raw: true } })
     atividade__id: number | null;
 
     // --- colunas comuns às duas variantes (ver nota no topo do arquivo) ---
 
-    @ReportColumn({ type: 'BIGINT', label: 'id', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'id', format: { raw: true } })
     id: number;
 
     /**
@@ -102,7 +102,6 @@ export class RelPrevisaoCustoPdmCsvRow {
         type: 'BIGINT',
         label: 'id_versao_anterior',
         format: { raw: true },
-        customizavel: false,
         descricao: 'ID da revisão anterior deste orçamento previsto (vazio na primeira versão).',
     })
     versao_anterior_id: number | null;
@@ -158,12 +157,12 @@ export class RelPrevisaoCustoProjetoCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Nome do Projeto' })
     projeto__nome: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true } })
     projeto__id: number | null;
 
     // --- colunas comuns às duas variantes (ver nota no topo do arquivo) ---
 
-    @ReportColumn({ type: 'BIGINT', label: 'id', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'id', format: { raw: true } })
     id: number;
 
     /** Ver `RelPrevisaoCustoPdmCsvRow.versao_anterior_id`: rótulo/posição antigos, valor agora preenchido. */
@@ -171,7 +170,6 @@ export class RelPrevisaoCustoProjetoCsvRow {
         type: 'BIGINT',
         label: 'id_versao_anterior',
         format: { raw: true },
-        customizavel: false,
         descricao: 'ID da revisão anterior deste orçamento previsto (vazio na primeira versão).',
     })
     versao_anterior_id: number | null;

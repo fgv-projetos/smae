@@ -11,18 +11,18 @@ Classe de linha: `RelPsMonitoramentoMensalRiscoCsvRow`
 `analises-de-risco-ps.csv` — uma linha por análise de risco de meta do ciclo
 (só as metas que têm risco entram).
 
-| Coluna | Tipo | Rótulo | Customizável | Formatação | Descrição |
-| --- | --- | --- | --- | --- | --- |
-| `id` | `BIGINT` | ID | não | sem formatação | — |
-| `criador_nome_exibicao` | `VARCHAR` | Criador | sim | — | — |
-| `criado_em` | `TIMESTAMP` | Criado Em | sim | — | — |
-| `detalhamento` | `VARCHAR` | Detalhamento | sim | — | — |
-| `detalhamento_texto` | `VARCHAR` | Detalhamento (Texto) | sim | — | — |
-| `ponto_de_atencao` | `VARCHAR` | Ponto de Atenção | sim | — | — |
-| `ponto_de_atencao_texto` | `VARCHAR` | Ponto de Atenção (Texto) | sim | — | — |
-| `referencia_data` | `DATE` | Data de Referência | sim | — | — |
-| `meta_id` | `BIGINT` | ID da Meta | não | sem formatação | — |
-| `meta_titulo` | `VARCHAR` | Título da Meta | sim | — | — |
-| `meta_codigo` | `VARCHAR` | Código da Meta | sim | — | — |
+| Coluna | Tipo | Rótulo | Formatação | Descrição |
+| --- | --- | --- | --- | --- |
+| `id` | `BIGINT` | ID | sem formatação | — |
+| `criador_nome_exibicao` | `VARCHAR` | Criador | — | — |
+| `criado_em` | `TIMESTAMP` | Criado Em | — | — |
+| `detalhamento` | `VARCHAR` | Detalhamento | — | — |
+| `detalhamento_texto` | `VARCHAR` | Detalhamento (Texto) | — | — |
+| `ponto_de_atencao` | `VARCHAR` | Ponto de Atenção | — | — |
+| `ponto_de_atencao_texto` | `VARCHAR` | Ponto de Atenção (Texto) | — | — |
+| `referencia_data` | `DATE` | Data de Referência | — | — |
+| `meta_id` | `BIGINT` | ID da Meta | sem formatação | — |
+| `meta_titulo` | `VARCHAR` | Título da Meta | — | — |
+| `meta_codigo` | `VARCHAR` | Código da Meta | — | — |
 
 [← todos os arquivos](../report-columns.md)

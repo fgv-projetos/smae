@@ -26,25 +26,25 @@ Todas as colunas de texto levam `excelTextGuard` porque a extração antiga envo
 **todo** campo string em `="..."` (`formatExcelString`); o guard no schema é o que
 reproduz esse comportamento agora que a extração emite o valor cru.
 
-| Coluna | Tipo | Rótulo | Customizável | Formatação | Descrição |
-| --- | --- | --- | --- | --- | --- |
-| `id` | `BIGINT` | ID | não | sem formatação | — |
-| `status` | `VARCHAR` | Status | sim | — | — |
-| `data_registro` | `DATE` | Data de Registro | sim | — | — |
-| `data_publicado` | `DATE` | Data de Publicação | sim | — | — |
-| `orgao_gestor` | `VARCHAR` | Gestor Municipal | sim | guard Excel | — |
-| `unidade_responsavel` | `VARCHAR` | Unidade Responsável | sim | guard Excel | — |
-| `nome_responsavel` | `VARCHAR` | Nome do Responsável | sim | guard Excel | — |
-| `cargo_responsavel` | `VARCHAR` | Cargo do Responsável | sim | guard Excel | — |
-| `email_responsavel` | `VARCHAR` | E-mail do Responsável | sim | guard Excel | — |
-| `telefone_responsavel` | `VARCHAR` | Telefone do Responsável | sim | guard Excel | — |
-| `nome_projeto` | `VARCHAR` | Nome do Projeto | sim | guard Excel | — |
-| `descricao` | `VARCHAR` | Descrição | sim | guard Excel | — |
-| `justificativa` | `VARCHAR` | Justificativa | sim | guard Excel | — |
-| `valor` | `DECIMAL(18,2)` | Valor | sim | R$, 2 casas | — |
-| `finalidade` | `VARCHAR` | Finalidade | sim | — | — |
-| `observacao` | `VARCHAR` | Observação | sim | guard Excel | — |
-| `area_tematica` | `VARCHAR` | Área Temática | sim | guard Excel | — |
-| `acoes` | `VARCHAR` | Ação | sim | guard Excel | — |
+| Coluna | Tipo | Rótulo | Formatação | Descrição |
+| --- | --- | --- | --- | --- |
+| `id` | `BIGINT` | ID | sem formatação | — |
+| `status` | `VARCHAR` | Status | — | — |
+| `data_registro` | `DATE` | Data de Registro | — | — |
+| `data_publicado` | `DATE` | Data de Publicação | — | — |
+| `orgao_gestor` | `VARCHAR` | Gestor Municipal | guard Excel | — |
+| `unidade_responsavel` | `VARCHAR` | Unidade Responsável | guard Excel | — |
+| `nome_responsavel` | `VARCHAR` | Nome do Responsável | guard Excel | — |
+| `cargo_responsavel` | `VARCHAR` | Cargo do Responsável | guard Excel | — |
+| `email_responsavel` | `VARCHAR` | E-mail do Responsável | guard Excel | — |
+| `telefone_responsavel` | `VARCHAR` | Telefone do Responsável | guard Excel | — |
+| `nome_projeto` | `VARCHAR` | Nome do Projeto | guard Excel | — |
+| `descricao` | `VARCHAR` | Descrição | guard Excel | — |
+| `justificativa` | `VARCHAR` | Justificativa | guard Excel | — |
+| `valor` | `DECIMAL(18,2)` | Valor | R$, 2 casas | — |
+| `finalidade` | `VARCHAR` | Finalidade | — | — |
+| `observacao` | `VARCHAR` | Observação | guard Excel | — |
+| `area_tematica` | `VARCHAR` | Área Temática | guard Excel | — |
+| `acoes` | `VARCHAR` | Ação | guard Excel | — |
 
 [← todos os arquivos](../report-columns.md)

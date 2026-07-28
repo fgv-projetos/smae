@@ -11,43 +11,43 @@ Fontes que produzem este arquivo: `Projeto`, `Projetos`
 
 Colunas do CSV bruto de `riscos.csv` (uma linha por risco do projeto).
 
-| Coluna | Tipo | Rótulo | Customizável | Formatação | Descrição |
-| --- | --- | --- | --- | --- | --- |
-| `risco_id` | `BIGINT` | ID do Risco | não | sem formatação | — |
-| `codigo` | `INTEGER` | Código | sim | sem formatação | — |
-| `titulo` | `VARCHAR` | Título | sim | — | — |
-| `descricao` | `VARCHAR` | Descrição | sim | — | — |
-| `probabilidade` | `INTEGER` | Probabilidade | sim | sem formatação | — |
-| `probabilidade_descricao` | `VARCHAR` | Descrição da Probabilidade | sim | — | — |
-| `impacto` | `INTEGER` | Impacto | sim | sem formatação | — |
-| `impacto_descricao` | `VARCHAR` | Descrição do Impacto | sim | — | — |
-| `grau` | `INTEGER` | Grau | sim | sem formatação | — |
-| `grau_descricao` | `VARCHAR` | Descrição do Grau | sim | — | — |
-| `status` | `VARCHAR` | Status | sim | — | — |
+| Coluna | Tipo | Rótulo | Formatação | Descrição |
+| --- | --- | --- | --- | --- |
+| `risco_id` | `BIGINT` | ID do Risco | sem formatação | — |
+| `codigo` | `INTEGER` | Código | sem formatação | — |
+| `titulo` | `VARCHAR` | Título | — | — |
+| `descricao` | `VARCHAR` | Descrição | — | — |
+| `probabilidade` | `INTEGER` | Probabilidade | sem formatação | — |
+| `probabilidade_descricao` | `VARCHAR` | Descrição da Probabilidade | — | — |
+| `impacto` | `INTEGER` | Impacto | sem formatação | — |
+| `impacto_descricao` | `VARCHAR` | Descrição do Impacto | — | — |
+| `grau` | `INTEGER` | Grau | sem formatação | — |
+| `grau_descricao` | `VARCHAR` | Descrição do Grau | — | — |
+| `status` | `VARCHAR` | Status | — | — |
 
 ## `RelProjetosRiscosCsvRow`
 
 `hierarquia sigla latência` por dependência, concatenadas com `/`.
 
-| Coluna | Tipo | Rótulo | Customizável | Formatação | Descrição |
-| --- | --- | --- | --- | --- | --- |
-| `projeto_id` | `INTEGER` | ID Projeto | não | sem formatação | — |
-| `projeto_codigo` | `VARCHAR` | Código do Projeto | sim | — | — |
-| `codigo` | `INTEGER` | Código | não | sem formatação | — |
-| `titulo` | `VARCHAR` | Título | sim | — | — |
-| `data_registro` | `DATE` | Data de Registro | sim | — | — |
-| `status_risco` | `VARCHAR` | Status do Risco | sim | — | — |
-| `descricao` | `VARCHAR` | Descrição | sim | — | — |
-| `causa` | `VARCHAR` | Causa | sim | — | — |
-| `consequencia` | `VARCHAR` | Consequência | sim | — | — |
-| `probabilidade` | `INTEGER` | Probabilidade | sim | sem formatação | — |
-| `probabilidade_descricao` | `VARCHAR` | Descrição da Probabilidade | sim | — | — |
-| `impacto` | `INTEGER` | Impacto | sim | sem formatação | — |
-| `impacto_descricao` | `VARCHAR` | Descrição do Impacto | sim | — | — |
-| `nivel` | `INTEGER` | Nível | sim | sem formatação | — |
-| `grau` | `INTEGER` | Grau | sim | sem formatação | — |
-| `grau_descricao` | `VARCHAR` | Descrição do Grau | sim | — | — |
-| `resposta` | `VARCHAR` | Resposta | sim | — | — |
-| `tarefas_afetadas` | `VARCHAR` | Tarefas Afetadas | sim | — | — |
+| Coluna | Tipo | Rótulo | Formatação | Descrição |
+| --- | --- | --- | --- | --- |
+| `projeto_id` | `INTEGER` | ID Projeto | sem formatação | — |
+| `projeto_codigo` | `VARCHAR` | Código do Projeto | — | — |
+| `codigo` | `INTEGER` | Código | sem formatação | — |
+| `titulo` | `VARCHAR` | Título | — | — |
+| `data_registro` | `DATE` | Data de Registro | — | — |
+| `status_risco` | `VARCHAR` | Status do Risco | — | — |
+| `descricao` | `VARCHAR` | Descrição | — | — |
+| `causa` | `VARCHAR` | Causa | — | — |
+| `consequencia` | `VARCHAR` | Consequência | — | — |
+| `probabilidade` | `INTEGER` | Probabilidade | sem formatação | — |
+| `probabilidade_descricao` | `VARCHAR` | Descrição da Probabilidade | — | — |
+| `impacto` | `INTEGER` | Impacto | sem formatação | — |
+| `impacto_descricao` | `VARCHAR` | Descrição do Impacto | — | — |
+| `nivel` | `INTEGER` | Nível | sem formatação | — |
+| `grau` | `INTEGER` | Grau | sem formatação | — |
+| `grau_descricao` | `VARCHAR` | Descrição do Grau | — | — |
+| `resposta` | `VARCHAR` | Resposta | — | — |
+| `tarefas_afetadas` | `VARCHAR` | Tarefas Afetadas | — | — |
 
 [← todos os arquivos](../report-columns.md)

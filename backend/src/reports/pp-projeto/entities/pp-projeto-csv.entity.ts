@@ -39,14 +39,14 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
     descricao: 'Linha única com o cabeçalho/detalhes do projeto.',
 })
 export class RelProjetoDetalheCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true } })
     projeto_id: number;
 
     /** Guard: códigos como `2024.03` seriam reinterpretados como número/data pelo Excel. */
     @ReportColumn({ type: 'VARCHAR', label: 'Código', format: { excelTextGuard: true } })
     codigo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Portfólio', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Portfólio', format: { raw: true } })
     portfolio_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Nome' })
@@ -260,10 +260,10 @@ export class RelProjetoDetalheCsvRow {
     descricao: 'Linhas do cronograma (tarefas) do projeto.',
 })
 export class RelProjetoCronogramaCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true } })
     projeto_id: number;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Tarefa', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Tarefa', format: { raw: true } })
     tarefa_id: number;
 
     /** Guard: `1.2.3` seria reinterpretado como número/data pelo Excel. */
@@ -315,10 +315,10 @@ export class RelProjetoCronogramaCsvRow {
     descricao: 'Acompanhamentos registrados no projeto.',
 })
 export class RelProjetoAcompanhamentoCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Acompanhamento', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Acompanhamento', format: { raw: true } })
     acompanhamento_id: number;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true } })
     projeto_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Tipo de Acompanhamento' })
@@ -375,7 +375,7 @@ export class RelProjetoAcompanhamentoCsvRow {
     descricao: 'Encaminhamentos dos acompanhamentos do projeto.',
 })
 export class RelProjetoEncaminhamentoCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Acompanhamento', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Acompanhamento', format: { raw: true } })
     acompanhamento_id: number;
 
     /** Guard: identificadores como `1.2` viram número/data no Excel. */
@@ -402,7 +402,7 @@ export class RelProjetoEncaminhamentoCsvRow {
     descricao: 'Planos de ação dos riscos do projeto.',
 })
 export class RelProjetoPlanoAcaoCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Risco', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Risco', format: { raw: true } })
     risco_id: number;
 
     @ReportColumn({ type: 'INTEGER', label: 'Código do Risco', format: { raw: true } })
@@ -436,7 +436,7 @@ export class RelProjetoPlanoAcaoCsvRow {
     descricao: 'Riscos registrados no projeto.',
 })
 export class RelProjetoRiscoCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Risco', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Risco', format: { raw: true } })
     risco_id: number;
 
     @ReportColumn({ type: 'INTEGER', label: 'Código', format: { raw: true } })
@@ -490,7 +490,7 @@ export class RelProjetoArquivoCsvRow {
     @ReportColumn({ type: 'TIMESTAMP', label: 'Criado em' })
     criado_em: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'Criador (ID)', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'Criador (ID)', format: { raw: true } })
     criador__id: number | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Criador (Nome de Exibição)' })
@@ -502,7 +502,7 @@ export class RelProjetoArquivoCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'descricao do Documento' })
     descricao: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do arquivo', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do arquivo', format: { raw: true } })
     arquivo__id: number | null;
 }
 
@@ -513,10 +513,10 @@ export class RelProjetoArquivoCsvRow {
     descricao: 'Contratos vinculados ao projeto.',
 })
 export class RelProjetoContratoCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Contrato', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Contrato', format: { raw: true } })
     contrato_id: number;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true } })
     projeto_id: number;
 
     /** Guard: número de contrato é código, não valor numérico. */
@@ -622,10 +622,10 @@ export class RelProjetoContratoCsvRow {
     descricao: 'Aditivos e reajustes dos contratos vinculados ao projeto.',
 })
 export class RelProjetoAditivoCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Aditivo', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Aditivo', format: { raw: true } })
     aditivo_id: number;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Contrato', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Contrato', format: { raw: true } })
     contrato_id: number;
 
     /** `Aditivo` ou `Reajuste`. */
@@ -659,7 +659,7 @@ export class RelProjetoAditivoCsvRow {
     descricao: 'Origens (meta/iniciativa/atividade do PdM) vinculadas ao projeto.',
 })
 export class RelProjetoOrigemCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true } })
     projeto_id: number;
 
     @ReportColumn({ type: 'BIGINT', label: 'ID do PdM', format: { raw: true } })
@@ -694,7 +694,7 @@ export class RelProjetoOrigemCsvRow {
     descricao: 'Última versão do termo de encerramento do projeto.',
 })
 export class RelProjetoTermoEncerramentoCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true } })
     projeto_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código do Projeto', format: { excelTextGuard: true } })
@@ -768,7 +768,7 @@ export class RelProjetoTermoEncerramentoCsvRow {
     descricao: 'Endereços (geolocalização) vinculados ao projeto.',
 })
 export class RelProjetoEnderecoCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'projeto_id', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'projeto_id', format: { raw: true } })
     projeto_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'endereco' })

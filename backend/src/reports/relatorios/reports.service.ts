@@ -137,7 +137,7 @@ export class ReportsService {
 
     private async runReport(dto: CreateReportDto, user: PessoaFromJwt | null, ctx: ReportContext): Promise<void> {
         // TODO agora que existem vários sistemas, conferir se o privilégio faz sentido com o serviço
-        const service: ReportableService | null = this.servicoDaFonte(dto);
+        const service: ReportableService | null = this.servicoDaFonte(dto.fonte);
 
         const now = new Date();
         const unparsedParams = structuredClone(dto.parametros);
@@ -672,9 +672,9 @@ export class ReportsService {
         });
     }
 
-    private servicoDaFonte(dto: CreateReportDto) {
+    private servicoDaFonte(fonte: FonteRelatorio) {
         let service: ReportableService | null = null;
-        switch (dto.fonte) {
+        switch (fonte) {
             case 'Orcamento':
             case 'ProjetoOrcamento':
             case 'ObrasOrcamento':
@@ -726,10 +726,51 @@ export class ReportsService {
                 service = this.demandasService;
                 break;
             default:
-                dto.fonte satisfies never;
+                fonte satisfies never;
         }
-        if (service === null) throw new HttpException(`Fonte ${dto.fonte} ainda não foi implementada`, 500);
+        if (service === null) throw new HttpException(`Fonte ${fonte} ainda não foi implementada`, 500);
         return service;
+    }
+
+    /**
+     * Schema de saída de uma fonte **para uma combinação de parâmetros** — exatamente o que a
+     * execução com esses mesmos parâmetros vai produzir.
+     *
+     * Existe porque o conjunto de colunas de várias fontes não é fixo, e também não é dinâmico:
+     * é **determinado pelos parâmetros**. Em `Orcamento`, por exemplo, as colunas de
+     * meta/iniciativa/atividade entram quando há `pdm_id` e as de projeto quando não há, e
+     * `mes`/`ano`/`mes_corrente` só existem no `Analitico`; os rótulos de iniciativa/atividade
+     * vêm de `pdm.rotulo_*`. Quem sabe disso é o `describeSchema` de cada service — o registro
+     * de decoradores sozinho só consegue devolver a UNIÃO das variantes, com os rótulos padrão.
+     *
+     * Listar a união num seletor de colunas produz dois defeitos: oferece coluna que aquela
+     * execução não terá (e que sairia vazia, com o nome de máquina no cabeçalho) e mostra
+     * "Iniciativa" onde a saída trará "Ação estratégica".
+     *
+     * `null` quando a fonte não declara schema.
+     */
+    async describeSchemaDaFonte(
+        fonte: FonteRelatorio,
+        parametrosBrutos: unknown,
+        sistema: ModuloSistema
+    ): Promise<ReportFileSchema[] | null> {
+        const service = this.servicoDaFonte(fonte);
+        if (!isSchemaAware(service)) return null;
+
+        const parametros = ParseParametrosDaFonte(fonte, parametrosBrutos ?? {});
+
+        // Mesmos discriminadores que `runReport` força antes de chamar o service: sem eles a
+        // fonte não sabe qual variante produzir, e o seletor divergiria da execução.
+        if (FONTES_TIPO_PROJETO[fonte]) {
+            parametros.tipo_projeto = FONTES_TIPO_PROJETO[fonte];
+        } else if (FONTES_TIPO_PDM_FIXO[fonte]) {
+            parametros.tipo_pdm = FONTES_TIPO_PDM_FIXO[fonte];
+        } else if (FONTES_TIPO_PDM_CALC.includes(fonte)) {
+            // Equivalente ao `calcTipoPdm`, sem o ReportContext (que só existe durante a execução).
+            parametros.tipo_pdm = sistema === 'ProgramaDeMetas' ? 'PDM' : 'PS';
+        }
+
+        return await service.describeSchema(parametros);
     }
 
     listVisibilidadeTipos(user: PessoaFromJwt): ListVisibilidadeTipoDto {

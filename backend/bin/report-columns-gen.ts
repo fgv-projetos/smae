@@ -6,8 +6,8 @@
  *
  *   - docs/report-columns.md               — índice: um arquivo de relatório por linha
  *   - docs/report-columns/<arquivo>.md     — uma página por arquivo, com a tabela
- *                                            `Coluna | Tipo | Rótulo | Customizável |
- *                                             Formatação | Descrição`
+ *                                            `Coluna | Tipo | Rótulo | Formatação |
+ *                                             Descrição`
  *
  * O registro só é preenchido como **efeito colateral do import** das classes de
  * linha. Em vez de manter uma lista de imports explícita (que envelhece calada e
@@ -203,14 +203,13 @@ function tabelaColunas(cls: ReportRowClass): string[] {
     if (!colunas.length) return ['_Nenhuma coluna declarada._'];
 
     return [
-        '| Coluna | Tipo | Rótulo | Customizável | Formatação | Descrição |',
-        '| --- | --- | --- | --- | --- | --- |',
+        '| Coluna | Tipo | Rótulo | Formatação | Descrição |',
+        '| --- | --- | --- | --- | --- |',
         ...colunas.map(({ propriedade, options }) => {
             const cols = [
                 `\`${propriedade}\``,
                 `\`${options.type}\``,
                 celula(options.label ?? ''),
-                options.customizavel === false ? 'não' : 'sim',
                 formatoCompacto(options.format),
                 celula(options.descricao ?? '') || '—',
             ];

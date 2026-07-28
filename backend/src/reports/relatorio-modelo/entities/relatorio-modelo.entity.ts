@@ -66,17 +66,13 @@ export class RelatorioColunaDisponivelDto {
     @ApiProperty()
     name: string;
 
-    /** Cabeçalho padrão. Pode ser sobrescrito pelo modelo (quando `customizavel`). */
+    /** Cabeçalho padrão. Pode ser sobrescrito pelo modelo. */
     @ApiProperty()
     label: string;
 
     /** Tipo DuckDB da coluna (VARCHAR, DATE, DECIMAL(18,2), ...). */
     @ApiProperty()
     type: ReportColumnType;
-
-    /** Quando `false`, a coluna não pode ser removida nem renomeada por um modelo. */
-    @ApiProperty()
-    customizavel: boolean;
 
     @ApiProperty({ nullable: true, type: String })
     descricao: string | null;
@@ -101,6 +97,18 @@ export class RelatorioArquivoColunasDto {
 export class ListRelatorioColunasDto {
     @ApiProperty({ enum: FonteRelatorio, enumName: 'FonteRelatorio' })
     fonte: FonteRelatorio;
+
+    /**
+     * `true` quando as colunas vieram do schema **daquela combinação de parâmetros** — mesmas
+     * colunas e mesmos rótulos que a execução vai produzir.
+     *
+     * `false` quando são a união das variantes da fonte, com os rótulos padrão (nenhum
+     * `parametros` informado, ou fonte sem schema declarado). Nesse modo a lista pode conter
+     * coluna que a execução não terá e rótulo que ela vai substituir — não monte um seletor de
+     * modelo em cima dele.
+     */
+    @ApiProperty()
+    parametrizado: boolean;
 
     /** Arquivos que a fonte produz, na ordem de registro, com as colunas de cada um. */
     @ApiProperty({ type: RelatorioArquivoColunasDto, isArray: true })

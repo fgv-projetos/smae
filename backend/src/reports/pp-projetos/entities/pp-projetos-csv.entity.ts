@@ -52,14 +52,14 @@ import { CsvTransforms } from '../../shared/csv-file-handler';
 })
 export class RelProjetosCsvRow {
     /** Chave de conciliação do projeto: não pode ser removida por um modelo. */
-    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true } })
     id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código' })
     codigo: string | null;
 
     /** Chave de conciliação com o portfólio informado nos parâmetros do relatório. */
-    @ReportColumn({ type: 'INTEGER', label: 'ID Portfólio', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID Portfólio', format: { raw: true } })
     portfolio_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Nome do Projeto' })
@@ -229,13 +229,13 @@ export class RelProjetosCsvRow {
     descricao: 'Uma linha por tarefa do cronograma dos projetos filtrados.',
 })
 export class RelProjetosCronogramaCsvRow {
-    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true } })
     projeto_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código do Projeto' })
     projeto_codigo: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'ID da Tarefa', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID da Tarefa', format: { raw: true } })
     tarefa_id: number;
 
     /** Numeração hierárquica montada por `tarefasHierarquia` (ex.: `1.2.3`). */
@@ -305,14 +305,14 @@ export class RelProjetosCronogramaCsvRow {
     descricao: 'Uma linha por risco registrado nos projetos filtrados.',
 })
 export class RelProjetosRiscosCsvRow {
-    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true } })
     projeto_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código do Projeto' })
     projeto_codigo: string | null;
 
     /** `projeto_risco.codigo` é `Int` no banco — sequencial do risco dentro do projeto. */
-    @ReportColumn({ type: 'INTEGER', label: 'Código', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'Código', format: { raw: true } })
     codigo: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Título' })
@@ -371,17 +371,17 @@ export class RelProjetosRiscosCsvRow {
     descricao: 'Uma linha por plano de ação (contramedida) dos riscos dos projetos filtrados.',
 })
 export class RelProjetosPlanoAcaoCsvRow {
-    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true } })
     projeto_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código do Projeto' })
     projeto_codigo: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'ID do Plano de Ação', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID do Plano de Ação', format: { raw: true } })
     plano_acao_id: number;
 
     /** `projeto_risco.codigo` (`Int`), para conciliar com `riscos.csv`. */
-    @ReportColumn({ type: 'INTEGER', label: 'Código do Risco', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'Código do Risco', format: { raw: true } })
     risco_codigo: number;
 
     /** HTML como veio do banco. A versão em texto puro está em `contramedida_texto`. */
@@ -420,7 +420,7 @@ export class RelProjetosPlanoAcaoCsvRow {
     descricao: 'Uma linha por aferição de monitoramento dos planos de ação.',
 })
 export class RelProjetosPlanoAcaoMonitoramentoCsvRow {
-    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true } })
     projeto_id: number;
 
     // Rótulo sem o "do" — é o que o relatório entrega hoje neste arquivo (em `planos_de_acao.csv`
@@ -428,10 +428,10 @@ export class RelProjetosPlanoAcaoMonitoramentoCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Código Projeto' })
     projeto_codigo: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Código Risco', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'Código Risco', format: { raw: true } })
     risco_codigo: number;
 
-    @ReportColumn({ type: 'INTEGER', label: 'ID Plano de Ação', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID Plano de Ação', format: { raw: true } })
     plano_acao_id: number;
 
     @ReportColumn({ type: 'DATE', label: 'Data de aferição' })
@@ -447,7 +447,7 @@ export class RelProjetosPlanoAcaoMonitoramentoCsvRow {
     descricao: 'Uma linha por lição aprendida registrada nos projetos filtrados.',
 })
 export class RelProjetosLicoesAprendidasCsvRow {
-    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true } })
     projeto_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código do Projeto' })
@@ -482,7 +482,7 @@ export class RelProjetosLicoesAprendidasCsvRow {
         'Uma linha por item de acompanhamento (o acompanhamento se repete quando tem mais de um encaminhamento).',
 })
 export class RelProjetosAcompanhamentosCsvRow {
-    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true } })
     projeto_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código do Projeto' })
@@ -549,10 +549,10 @@ export class RelProjetosAcompanhamentosCsvRow {
 export class RelProjetosContratosCsvRow {
     // O rótulo é literalmente `contrato_id` — é o único cabeçalho técnico do relatório hoje.
     // Corrigir rótulo entregue ao usuário é decisão de negócio, então fica como está.
-    @ReportColumn({ type: 'INTEGER', label: 'contrato_id', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'contrato_id', format: { raw: true } })
     contrato_id: number;
 
-    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true } })
     projeto_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Número' })
@@ -655,11 +655,11 @@ export class RelProjetosContratosCsvRow {
     descricao: 'Uma linha por aditivo/reajuste dos contratos dos projetos filtrados.',
 })
 export class RelProjetosAditivosCsvRow {
-    @ReportColumn({ type: 'INTEGER', label: 'ID Aditivo', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID Aditivo', format: { raw: true } })
     aditivo_id: number;
 
     /** Chave de conciliação com `contratos.csv`. */
-    @ReportColumn({ type: 'INTEGER', label: 'ID Contrato', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID Contrato', format: { raw: true } })
     contrato_id: number;
 
     /** `Aditivo` ou `Reajuste`. */
@@ -689,7 +689,7 @@ export class RelProjetosAditivosCsvRow {
     descricao: 'Uma linha por origem (meta/iniciativa/atividade de PDM) vinculada ao projeto.',
 })
 export class RelProjetosOrigensCsvRow {
-    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true } })
     projeto_id: number;
 
     @ReportColumn({ type: 'INTEGER', label: 'ID PDM', format: { raw: true } })
@@ -723,7 +723,7 @@ export class RelProjetosOrigensCsvRow {
     descricao: 'Uma linha por documento anexado aos projetos filtrados.',
 })
 export class RelProjetosArquivosCsvRow {
-    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true } })
     projeto_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código do Projeto' })
@@ -751,7 +751,7 @@ export class RelProjetosArquivosCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Descrição do Documento' })
     descricao: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'ID do Arquivo', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID do Arquivo', format: { raw: true } })
     arquivo_id: number;
 }
 
@@ -766,7 +766,7 @@ export class RelProjetosArquivosCsvRow {
     descricao: 'Uma linha por endereço/geolocalização vinculada aos projetos filtrados.',
 })
 export class RelProjetosGeolocCsvRow {
-    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true } })
     projeto_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Endereço' })
@@ -835,7 +835,7 @@ export class RelProjetosGeolocCsvRow {
     descricao: 'Uma linha por termo de encerramento (última versão) dos projetos filtrados.',
 })
 export class RelProjetosTermoEncerramentoCsvRow {
-    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID Projeto', format: { raw: true } })
     projeto_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código do Projeto' })

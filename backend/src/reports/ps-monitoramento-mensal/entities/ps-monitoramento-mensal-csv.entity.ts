@@ -38,7 +38,7 @@ export class RelPsMonitoramentoMensalVariaveisCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Título do Indicador' })
     titulo_indicador: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Indicador', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Indicador', format: { raw: true } })
     indicador_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código da Variável' })
@@ -47,7 +47,7 @@ export class RelPsMonitoramentoMensalVariaveisCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Título da Variável' })
     titulo_variavel: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Variável', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Variável', format: { raw: true } })
     variavel_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Município' })
@@ -164,7 +164,7 @@ export class RelPsMonitoramentoMensalVariaveisCsvRow {
     descricao: 'Uma linha por meta do ciclo mensal, com análise qualitativa, risco e fechamento em texto puro.',
 })
 export class RelPsMonitoramentoMensalMetasCicloCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Meta', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Meta', format: { raw: true } })
     meta_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código da Meta' })
@@ -201,7 +201,7 @@ export class RelPsMonitoramentoMensalMetasCicloCsvRow {
     descricao: 'Uma linha por análise qualitativa de meta no ciclo mensal, com o texto em HTML e em texto puro.',
 })
 export class RelPsMonitoramentoMensalAnaliseQualitativaCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID', format: { raw: true } })
     id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Criador' })
@@ -221,7 +221,7 @@ export class RelPsMonitoramentoMensalAnaliseQualitativaCsvRow {
     @ReportColumn({ type: 'DATE', label: 'Data de Referência' })
     referencia_data: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Meta', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Meta', format: { raw: true } })
     meta_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Título da Meta' })
@@ -241,7 +241,7 @@ export class RelPsMonitoramentoMensalAnaliseQualitativaCsvRow {
     descricao: 'Uma linha por análise de risco de meta no ciclo mensal, com os textos em HTML e em texto puro.',
 })
 export class RelPsMonitoramentoMensalRiscoCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID', format: { raw: true } })
     id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Criador' })
@@ -268,7 +268,7 @@ export class RelPsMonitoramentoMensalRiscoCsvRow {
     @ReportColumn({ type: 'DATE', label: 'Data de Referência' })
     referencia_data: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Meta', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Meta', format: { raw: true } })
     meta_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Título da Meta' })
@@ -288,7 +288,7 @@ export class RelPsMonitoramentoMensalRiscoCsvRow {
     descricao: 'Uma linha por fechamento de meta no ciclo mensal.',
 })
 export class RelPsMonitoramentoMensalFechamentoCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID', format: { raw: true } })
     id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Criador' })
@@ -304,7 +304,7 @@ export class RelPsMonitoramentoMensalFechamentoCsvRow {
     @ReportColumn({ type: 'DATE', label: 'Data de Referência' })
     referencia_data: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Meta', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Meta', format: { raw: true } })
     meta_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Título da Meta' })

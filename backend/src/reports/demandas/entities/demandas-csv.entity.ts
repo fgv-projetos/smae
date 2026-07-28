@@ -25,7 +25,7 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
     descricao: 'Uma linha por demanda, com os dados de responsável, projeto, valor e área temática.',
 })
 export class RelDemandasCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID', format: { raw: true } })
     id: number;
 
     /** Valor cru do enum `DemandaStatus` (ex.: `Registrado`), como já era emitido. */
@@ -106,7 +106,7 @@ export class RelDemandasCsvRow {
 })
 export class RelDemandasEnderecosCsvRow {
     /** Chave de conciliação com `demandas.csv`. */
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Demanda', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Demanda', format: { raw: true } })
     demanda_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Nome do Projeto', format: { excelTextGuard: true } })

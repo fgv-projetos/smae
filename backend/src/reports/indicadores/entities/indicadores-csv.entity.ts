@@ -57,7 +57,7 @@ abstract class RelIndicadoresBaseCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Título da Meta' })
     meta__titulo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Meta', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Meta', format: { raw: true } })
     meta__id: number | null;
 
     /** Descrições das tags da meta, concatenadas com `;` na extração (regra de domínio). */
@@ -78,7 +78,7 @@ abstract class RelIndicadoresBaseCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Título da Iniciativa' })
     iniciativa__titulo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Iniciativa', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Iniciativa', format: { raw: true } })
     iniciativa__id: number | null;
 
     /** Rótulo sobrescrito com `pdm.rotulo_atividade` — ver `rotulosPdmIndicadores()`. */
@@ -88,7 +88,7 @@ abstract class RelIndicadoresBaseCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Título da Atividade' })
     atividade__titulo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Atividade', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Atividade', format: { raw: true } })
     atividade__id: number | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código do Indicador' })
@@ -108,7 +108,7 @@ abstract class RelIndicadoresBaseCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Complementação' })
     indicador__complemento: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Indicador', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Indicador', format: { raw: true } })
     indicador__id: number | null;
 }
 
@@ -185,7 +185,7 @@ export class RelIndicadoresCsvRow extends RelIndicadoresBaseCsvRow {
         'Uma linha por variável regionalizada do indicador, série e período, com a hierarquia de regiões resolvida.',
 })
 export class RelIndicadoresRegioesCsvRow extends RelIndicadoresBaseCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do órgão', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do órgão', format: { raw: true } })
     variavel__orgao__id: number | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Sigla do órgão' })
@@ -197,7 +197,7 @@ export class RelIndicadoresRegioesCsvRow extends RelIndicadoresBaseCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Título da Variável' })
     variavel__titulo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Variável', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Variável', format: { raw: true } })
     variavel__id: number | null;
 
     /**
@@ -215,11 +215,10 @@ export class RelIndicadoresRegioesCsvRow extends RelIndicadoresBaseCsvRow {
         type: 'BIGINT',
         label: 'ID da Região da Variável',
         format: { raw: true },
-        customizavel: false,
     })
     regiao_id: number | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Distrito', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Distrito', format: { raw: true } })
     regiao_nivel_4__id: number | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código do Distrito' })
@@ -232,7 +231,7 @@ export class RelIndicadoresRegioesCsvRow extends RelIndicadoresBaseCsvRow {
      * Rótulo mantido como está ("ID do Subprefeitura", com a concordância errada): é o
      * cabeçalho que o relatório já entrega hoje, e corrigi-lo é decisão de negócio.
      */
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Subprefeitura', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID do Subprefeitura', format: { raw: true } })
     regiao_nivel_3__id: number | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código da Subprefeitura' })
@@ -241,7 +240,7 @@ export class RelIndicadoresRegioesCsvRow extends RelIndicadoresBaseCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Descrição da Subprefeitura' })
     regiao_nivel_3__descricao: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Região', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Região', format: { raw: true } })
     regiao_nivel_2__id: number | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código da Região' })

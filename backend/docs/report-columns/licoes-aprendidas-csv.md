@@ -10,16 +10,16 @@ Classe de linha: `RelProjetosLicoesAprendidasCsvRow`
 
 Custo em relação ao projeto todo. O rótulo já traz o `%`, então não há `unit`.
 
-| Coluna | Tipo | Rótulo | Customizável | Formatação | Descrição |
-| --- | --- | --- | --- | --- | --- |
-| `projeto_id` | `INTEGER` | ID Projeto | não | sem formatação | — |
-| `projeto_codigo` | `VARCHAR` | Código do Projeto | sim | — | — |
-| `sequencial` | `INTEGER` | Sequencial | sim | sem formatação | — |
-| `data_registro` | `DATE` | Data de Registro | sim | — | — |
-| `responsavel` | `VARCHAR` | Responsável | sim | — | — |
-| `descricao` | `VARCHAR` | Descrição | sim | — | — |
-| `observacao` | `VARCHAR` | Observação | sim | — | — |
-| `contexto` | `VARCHAR` | Contexto | sim | — | — |
-| `resultado` | `VARCHAR` | Resultado | sim | — | — |
+| Coluna | Tipo | Rótulo | Formatação | Descrição |
+| --- | --- | --- | --- | --- |
+| `projeto_id` | `INTEGER` | ID Projeto | sem formatação | — |
+| `projeto_codigo` | `VARCHAR` | Código do Projeto | — | — |
+| `sequencial` | `INTEGER` | Sequencial | sem formatação | — |
+| `data_registro` | `DATE` | Data de Registro | — | — |
+| `responsavel` | `VARCHAR` | Responsável | — | — |
+| `descricao` | `VARCHAR` | Descrição | — | — |
+| `observacao` | `VARCHAR` | Observação | — | — |
+| `contexto` | `VARCHAR` | Contexto | — | — |
+| `resultado` | `VARCHAR` | Resultado | — | — |
 
 [← todos os arquivos](../report-columns.md)

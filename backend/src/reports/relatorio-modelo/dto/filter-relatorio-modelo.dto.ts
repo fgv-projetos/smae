@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { FonteRelatorio } from '@prisma/client';
 import { Transform } from 'class-transformer';
-import { IsArray, IsEnum, IsIn, IsOptional } from 'class-validator';
+import { IsArray, IsEnum, IsIn, IsObject, IsOptional } from 'class-validator';
 import { StringArrayTransform } from '../../../auth/transforms/string-array.transform';
 import { VISIBILIDADE_TIPOS, VisibilidadeTipo } from '../../relatorios/helpers/visibilidade-templates';
 
@@ -56,4 +56,26 @@ export class FilterColunasRelatorioDto {
         message: 'fonte precisa ser um dos seguintes valores: ' + Object.values(FonteRelatorio).join(', '),
     })
     fonte: FonteRelatorio;
+}
+
+/**
+ * Corpo de `POST /relatorio-modelo/colunas`: a fonte e os parâmetros com que o relatório será
+ * executado. `parametros` é validado pelo `describeSchema` da própria fonte, então segue o
+ * mesmo formato de `POST /relatorios`.
+ */
+export class ColunasParametrizadasDto {
+    @ApiProperty({ enum: FonteRelatorio, enumName: 'FonteRelatorio' })
+    @IsEnum(FonteRelatorio, {
+        message: 'fonte precisa ser um dos seguintes valores: ' + Object.values(FonteRelatorio).join(', '),
+    })
+    fonte: FonteRelatorio;
+
+    /**
+     * Os mesmos parâmetros que irão para `POST /relatorios`. Omitido equivale a `{}` — o que,
+     * para as fontes cujo schema depende de `pdm_id`/`tipo`, devolve a variante default e não
+     * a que você vai rodar.
+     */
+    @IsOptional()
+    @IsObject({ message: 'parametros precisa ser um objeto' })
+    parametros?: Record<string, unknown>;
 }

@@ -150,7 +150,7 @@ export class RelOrcamentoExecutadoCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Título da Meta' })
     meta__titulo: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'ID da Meta', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID da Meta', format: { raw: true } })
     meta__id: number | null;
 
     /** Rótulo real vem de `pdm.rotulo_iniciativa` — sobrescrito por `recortarSchema`. */
@@ -164,7 +164,6 @@ export class RelOrcamentoExecutadoCsvRow {
         type: 'INTEGER',
         label: 'ID da ' + ROTULO_INICIATIVA_PADRAO,
         format: { raw: true },
-        customizavel: false,
     })
     iniciativa__id: number | null;
 
@@ -179,7 +178,6 @@ export class RelOrcamentoExecutadoCsvRow {
         type: 'INTEGER',
         label: 'ID da ' + ROTULO_ATIVIDADE_PADRAO,
         format: { raw: true },
-        customizavel: false,
     })
     atividade__id: number | null;
 
@@ -190,7 +188,7 @@ export class RelOrcamentoExecutadoCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Nome do Projeto' })
     projeto__nome: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'ID do Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID do Projeto', format: { raw: true } })
     projeto__id: number | null;
 
     /**
@@ -376,7 +374,7 @@ export class RelOrcamentoPlanejadoCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Título da Meta' })
     meta__titulo: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'ID da Meta', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID da Meta', format: { raw: true } })
     meta__id: number | null;
 
     /** Rótulo real vem de `pdm.rotulo_iniciativa` — sobrescrito por `recortarSchema`. */
@@ -390,7 +388,6 @@ export class RelOrcamentoPlanejadoCsvRow {
         type: 'INTEGER',
         label: 'ID da ' + ROTULO_INICIATIVA_PADRAO,
         format: { raw: true },
-        customizavel: false,
     })
     iniciativa__id: number | null;
 
@@ -405,7 +402,6 @@ export class RelOrcamentoPlanejadoCsvRow {
         type: 'INTEGER',
         label: 'ID da ' + ROTULO_ATIVIDADE_PADRAO,
         format: { raw: true },
-        customizavel: false,
     })
     atividade__id: number | null;
 
@@ -415,7 +411,7 @@ export class RelOrcamentoPlanejadoCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Nome do Projeto' })
     projeto__nome: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'ID do Projeto', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID do Projeto', format: { raw: true } })
     projeto__id: number | null;
 
     /** Sem complemento aqui (o planejado não tem `dotacao_complemento`) e sem guard, como hoje. */

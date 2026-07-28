@@ -18,12 +18,6 @@ export class ReportColumnOptions {
     label: string;
     /** Regras de apresentação padrão. */
     format?: ReportColumnFormat;
-    /**
-     * Se `false`, a coluna não pode ser removida nem renomeada por um modelo.
-     * Use para chaves que o consumidor do relatório depende (ex.: IDs de conciliação).
-     * Default: `true`.
-     */
-    customizavel?: boolean;
     /** Nota explicativa — aparece na documentação gerada e na listagem da API. */
     descricao?: string;
 }
@@ -84,7 +78,7 @@ export function getReportRowSchema(cls: ReportRowClass): ReportFileSchema {
     })) };
 }
 
-/** Metadados completos (inclui `customizavel`/`descricao`), para docgen e API. */
+/** Metadados completos (inclui `descricao`), para docgen e API. */
 export function getReportRowColumns(cls: ReportRowClass): { propriedade: string; options: ReportColumnOptions }[] {
     return coletarColunas(cls);
 }

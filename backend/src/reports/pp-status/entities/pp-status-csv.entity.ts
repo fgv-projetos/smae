@@ -25,11 +25,11 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
  */
 export abstract class RelPPStatusCsvRowBase {
     /** Id do projeto/obra. Chave de conciliação: não pode ser removida por um modelo. */
-    @ReportColumn({ type: 'INTEGER', label: 'ID', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID', format: { raw: true } })
     id: number;
 
     /** Chave de conciliação com o portfólio informado nos parâmetros do relatório. */
-    @ReportColumn({ type: 'INTEGER', label: 'ID do Portfólio', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'INTEGER', label: 'ID do Portfólio', format: { raw: true } })
     portfolio_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Código' })

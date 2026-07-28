@@ -27,7 +27,7 @@ export class RelCasaCivilAtividadesPendentesCsvRow {
      * para conciliar a atividade com a transferência, por isso não pode ser removida nem
      * renomeada por um modelo.
      */
-    @ReportColumn({ type: 'VARCHAR', label: 'Identificador', customizavel: false })
+    @ReportColumn({ type: 'VARCHAR', label: 'Identificador' })
     identificador: string;
 
     /** Nomes dos parlamentares vinculados à transferência, separados por `, `. */

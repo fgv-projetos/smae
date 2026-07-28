@@ -16,43 +16,43 @@ Os rótulos de iniciativa e atividade são configuráveis por PDM (`rotulo_inici
 `describeSchema()` do serviço sobrescreve com os rótulos do PDM da execução, reproduzindo
 o `'Código da ' + pdm.rotulo_iniciativa` que a extração montava antes.
 
-| Coluna | Tipo | Rótulo | Customizável | Formatação | Descrição |
-| --- | --- | --- | --- | --- | --- |
-| `meta__codigo` | `VARCHAR` | Código da Meta | sim | — | — |
-| `meta__titulo` | `VARCHAR` | Título da Meta | sim | — | — |
-| `meta__id` | `BIGINT` | ID da Meta | não | sem formatação | — |
-| `iniciativa__codigo` | `VARCHAR` | Código da Iniciativa | sim | — | — |
-| `iniciativa__titulo` | `VARCHAR` | Título da Iniciativa | sim | — | — |
-| `iniciativa__id` | `BIGINT` | ID da Iniciativa | não | sem formatação | — |
-| `atividade__codigo` | `VARCHAR` | Código da Atividade | sim | — | — |
-| `atividade__titulo` | `VARCHAR` | Título da Atividade | sim | — | — |
-| `atividade__id` | `BIGINT` | ID da Atividade | não | sem formatação | — |
-| `id` | `BIGINT` | id | não | sem formatação | — |
-| `versao_anterior_id` | `BIGINT` | id_versao_anterior | não | sem formatação | ID da revisão anterior deste orçamento previsto (vazio na primeira versão). |
-| `projeto_atividade` | `VARCHAR` | projeto_atividade | sim | — | — |
-| `criado_em` | `TIMESTAMP` | criado_em | sim | — | — |
-| `ano_referencia` | `INTEGER` | ano_referencia | sim | sem formatação | — |
-| `custo_previsto` | `DECIMAL(18,2)` | custo_previsto | sim | 2 casas | — |
-| `parte_dotacao` | `VARCHAR` | parte_dotacao | sim | — | — |
-| `atualizado_em` | `TIMESTAMP` | atualizado_em | sim | — | — |
+| Coluna | Tipo | Rótulo | Formatação | Descrição |
+| --- | --- | --- | --- | --- |
+| `meta__codigo` | `VARCHAR` | Código da Meta | — | — |
+| `meta__titulo` | `VARCHAR` | Título da Meta | — | — |
+| `meta__id` | `BIGINT` | ID da Meta | sem formatação | — |
+| `iniciativa__codigo` | `VARCHAR` | Código da Iniciativa | — | — |
+| `iniciativa__titulo` | `VARCHAR` | Título da Iniciativa | — | — |
+| `iniciativa__id` | `BIGINT` | ID da Iniciativa | sem formatação | — |
+| `atividade__codigo` | `VARCHAR` | Código da Atividade | — | — |
+| `atividade__titulo` | `VARCHAR` | Título da Atividade | — | — |
+| `atividade__id` | `BIGINT` | ID da Atividade | sem formatação | — |
+| `id` | `BIGINT` | id | sem formatação | — |
+| `versao_anterior_id` | `BIGINT` | id_versao_anterior | sem formatação | ID da revisão anterior deste orçamento previsto (vazio na primeira versão). |
+| `projeto_atividade` | `VARCHAR` | projeto_atividade | — | — |
+| `criado_em` | `TIMESTAMP` | criado_em | — | — |
+| `ano_referencia` | `INTEGER` | ano_referencia | sem formatação | — |
+| `custo_previsto` | `DECIMAL(18,2)` | custo_previsto | 2 casas | — |
+| `parte_dotacao` | `VARCHAR` | parte_dotacao | — | — |
+| `atualizado_em` | `TIMESTAMP` | atualizado_em | — | — |
 
 ## `RelPrevisaoCustoProjetoCsvRow`
 
 Variante sem PDM (Portfólio de Projetos / Obras): as três primeiras colunas descrevem o
 Projeto. As demais são idênticas às da variante de PDM.
 
-| Coluna | Tipo | Rótulo | Customizável | Formatação | Descrição |
-| --- | --- | --- | --- | --- | --- |
-| `projeto__codigo` | `VARCHAR` | Código Projeto | sim | — | — |
-| `projeto__nome` | `VARCHAR` | Nome do Projeto | sim | — | — |
-| `projeto__id` | `BIGINT` | ID do Projeto | não | sem formatação | — |
-| `id` | `BIGINT` | id | não | sem formatação | — |
-| `versao_anterior_id` | `BIGINT` | id_versao_anterior | não | sem formatação | ID da revisão anterior deste orçamento previsto (vazio na primeira versão). |
-| `projeto_atividade` | `VARCHAR` | projeto_atividade | sim | — | — |
-| `criado_em` | `TIMESTAMP` | criado_em | sim | — | — |
-| `ano_referencia` | `INTEGER` | ano_referencia | sim | sem formatação | — |
-| `custo_previsto` | `DECIMAL(18,2)` | custo_previsto | sim | 2 casas | — |
-| `parte_dotacao` | `VARCHAR` | parte_dotacao | sim | — | — |
-| `atualizado_em` | `TIMESTAMP` | atualizado_em | sim | — | — |
+| Coluna | Tipo | Rótulo | Formatação | Descrição |
+| --- | --- | --- | --- | --- |
+| `projeto__codigo` | `VARCHAR` | Código Projeto | — | — |
+| `projeto__nome` | `VARCHAR` | Nome do Projeto | — | — |
+| `projeto__id` | `BIGINT` | ID do Projeto | sem formatação | — |
+| `id` | `BIGINT` | id | sem formatação | — |
+| `versao_anterior_id` | `BIGINT` | id_versao_anterior | sem formatação | ID da revisão anterior deste orçamento previsto (vazio na primeira versão). |
+| `projeto_atividade` | `VARCHAR` | projeto_atividade | — | — |
+| `criado_em` | `TIMESTAMP` | criado_em | — | — |
+| `ano_referencia` | `INTEGER` | ano_referencia | sem formatação | — |
+| `custo_previsto` | `DECIMAL(18,2)` | custo_previsto | 2 casas | — |
+| `parte_dotacao` | `VARCHAR` | parte_dotacao | — | — |
+| `atualizado_em` | `TIMESTAMP` | atualizado_em | — | — |
 
 [← todos os arquivos](../report-columns.md)

@@ -22,7 +22,7 @@ import { TipoRelatorioTransferencia } from '../dto/create-transferencias.dto';
     descricao: 'Uma linha por distribuição de recurso da transferência (ou por transferência, sem distribuição).',
 })
 export class RelTransferenciasCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID', format: { raw: true } })
     id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Identificador' })
@@ -131,7 +131,7 @@ export class RelTransferenciasCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Orgão Concedente' })
     orgao_concedente__descricao: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID Distribuição de Recurso', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID Distribuição de Recurso', format: { raw: true } })
     distribuicao_recurso__id: number | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Gestor Municipal (servidor)', format: { excelTextGuard: true } })
@@ -275,7 +275,7 @@ export class RelTransferenciasCsvRow {
     descricao: 'Linhas do cronograma (tarefas) das transferências filtradas.',
 })
 export class RelTransferenciaCronogramaCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Transferência', format: { raw: true }, customizavel: false })
+    @ReportColumn({ type: 'BIGINT', label: 'ID da Transferência', format: { raw: true } })
     transferencia_id: number;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Hierarquia', format: { excelTextGuard: true } })

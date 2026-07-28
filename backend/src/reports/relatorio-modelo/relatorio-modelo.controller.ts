@@ -8,6 +8,7 @@ import { FindOneParams } from '../../common/decorators/find-params';
 import { RecordWithId } from '../../common/dto/record-with-id.dto';
 import { CreateRelatorioModeloDto } from './dto/create-relatorio-modelo.dto';
 import {
+    ColunasParametrizadasDto,
     FilterColunasRelatorioDto,
     FilterFontesRelatorioDto,
     FilterRelatorioModeloDto,
@@ -79,7 +80,13 @@ export class RelatorioModeloController {
     }
 
     /**
-     * Colunas declaradas de uma fonte, para o frontend montar o seletor de colunas do modelo.
+     * União das colunas declaradas de uma fonte, com os rótulos padrão.
+     *
+     * Visão geral da fonte — **não** é a lista certa para montar um modelo: várias fontes mudam
+     * de colunas conforme os parâmetros, e aqui vem a união das variantes. Para o seletor use
+     * `POST /relatorio-modelo/colunas`, que devolve exatamente o que aquela execução produz.
+     * A resposta traz `parametrizado: false` para deixar o modo explícito.
+     *
      * Rota declarada antes de `:id` para não ser capturada por ela.
      */
     @Get('colunas')
@@ -90,7 +97,31 @@ export class RelatorioModeloController {
         @Query() filters: FilterColunasRelatorioDto,
         @CurrentUser() user: PessoaFromJwt
     ): Promise<ListRelatorioColunasDto> {
-        return this.relatorioModeloService.listColunas(filters.fonte, user);
+        return await this.relatorioModeloService.listColunas(filters.fonte, undefined, user);
+    }
+
+    /**
+     * Colunas de uma fonte **para uma combinação de parâmetros** — é o que o frontend deve usar
+     * para montar o seletor de colunas do modelo.
+     *
+     * Recebe os mesmos `parametros` que serão enviados em `POST /relatorios` e devolve o schema
+     * que aquela execução vai produzir: sem as colunas de variantes que não se aplicam (as de
+     * meta/iniciativa/atividade num orçamento de projeto, por exemplo) e já com os rótulos
+     * configurados no PDM ("Ação estratégica" no lugar de "Iniciativa").
+     *
+     * É `POST` por causa do corpo: `parametros` é um objeto aninhado, que não cabe bem numa
+     * query string. Não escreve nada.
+     */
+    @Post('colunas')
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth('access-token')
+    @Roles(PRIV_EXECUTAR, 'Listar colunas de uma fonte para os parâmetros informados')
+    @ApiOkResponse({ type: ListRelatorioColunasDto })
+    async colunasParametrizadas(
+        @Body() dto: ColunasParametrizadasDto,
+        @CurrentUser() user: PessoaFromJwt
+    ): Promise<ListRelatorioColunasDto> {
+        return await this.relatorioModeloService.listColunas(dto.fonte, dto.parametros ?? {}, user);
     }
 
     @Get()

@@ -24,22 +24,22 @@ Os rótulos abaixo reproduzem exatamente os cabeçalhos que o relatório já emi
 incluindo a capitalização irregular de 'Zona de atuação' (todos os demais usam Title
 Case): mudar cabeçalho entregue ao usuário é decisão de negócio, não desta refatoração.
 
-| Coluna | Tipo | Rótulo | Customizável | Formatação | Descrição |
-| --- | --- | --- | --- | --- | --- |
-| `id` | `INTEGER` | ID do Parlamentar | não | sem formatação | — |
-| `nome_civil` | `VARCHAR` | Nome Civil | sim | — | — |
-| `nome_parlamentar` | `VARCHAR` | Nome Parlamentar | sim | — | — |
-| `partido_sigla` | `VARCHAR` | Sigla do Partido | sim | — | — |
-| `ano_eleicao` | `INTEGER` | Ano da Eleição | sim | sem formatação | — |
-| `cargo` | `VARCHAR` | Cargo | sim | — | — |
-| `uf` | `VARCHAR` | UF | sim | — | — |
-| `titular_suplente` | `VARCHAR` | Titular/Suplente/Efetivado | sim | — | — |
-| `endereco` | `VARCHAR` | Endereço | sim | — | — |
-| `gabinete` | `VARCHAR` | Gabinete | sim | — | — |
-| `telefone` | `VARCHAR` | Telefone | sim | guard Excel | — |
-| `dia_aniversario` | `INTEGER` | Dia Aniversário | sim | sem formatação | — |
-| `mes_aniversario` | `INTEGER` | Mês Aniversário | sim | sem formatação | — |
-| `email` | `VARCHAR` | E-mail | sim | — | — |
-| `zona_atuacao` | `VARCHAR` | Zona de atuação | sim | — | — |
+| Coluna | Tipo | Rótulo | Formatação | Descrição |
+| --- | --- | --- | --- | --- |
+| `id` | `INTEGER` | ID do Parlamentar | sem formatação | — |
+| `nome_civil` | `VARCHAR` | Nome Civil | — | — |
+| `nome_parlamentar` | `VARCHAR` | Nome Parlamentar | — | — |
+| `partido_sigla` | `VARCHAR` | Sigla do Partido | — | — |
+| `ano_eleicao` | `INTEGER` | Ano da Eleição | sem formatação | — |
+| `cargo` | `VARCHAR` | Cargo | — | — |
+| `uf` | `VARCHAR` | UF | — | — |
+| `titular_suplente` | `VARCHAR` | Titular/Suplente/Efetivado | — | — |
+| `endereco` | `VARCHAR` | Endereço | — | — |
+| `gabinete` | `VARCHAR` | Gabinete | — | — |
+| `telefone` | `VARCHAR` | Telefone | guard Excel | — |
+| `dia_aniversario` | `INTEGER` | Dia Aniversário | sem formatação | — |
+| `mes_aniversario` | `INTEGER` | Mês Aniversário | sem formatação | — |
+| `email` | `VARCHAR` | E-mail | — | — |
+| `zona_atuacao` | `VARCHAR` | Zona de atuação | — | — |
 
 [← todos os arquivos](../report-columns.md)

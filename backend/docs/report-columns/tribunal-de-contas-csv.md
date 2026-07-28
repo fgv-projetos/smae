@@ -22,20 +22,20 @@ Os rótulos abaixo reproduzem exatamente os cabeçalhos que o relatório já emi
 incluindo 'Dotação Orçamentaria' (sem o acento em "Orçamentária"): o arquivo é entregue
 ao Tribunal de Contas e a correção do rótulo teria de ser combinada com o negócio.
 
-| Coluna | Tipo | Rótulo | Customizável | Formatação | Descrição |
-| --- | --- | --- | --- | --- | --- |
-| `emenda` | `VARCHAR` | Emenda | sim | guard Excel | — |
-| `programa` | `VARCHAR` | Programa | sim | guard Excel | — |
-| `ano` | `INTEGER` | Ano | sim | sem formatação | — |
-| `parlamentar` | `VARCHAR` | Parlamentar | sim | — | — |
-| `valor_repasse` | `DECIMAL(18,2)` | Valor de Repasse | sim | R$, 2 casas | — |
-| `acao` | `VARCHAR` | Ação | sim | — | — |
-| `gestor_municipal` | `VARCHAR` | Gestor Municipal | sim | — | — |
-| `prazo_vigencia` | `DATE` | Prazo de Vigência | sim | — | — |
-| `dotacao_orcamentaria` | `VARCHAR` | Dotação Orçamentaria | sim | guard Excel | — |
-| `rubrica_de_receita` | `VARCHAR` | Rubrica de Receita | sim | — | — |
-| `finalidade` | `VARCHAR` | Política pública | sim | — | — |
-| `valor_empenho` | `DECIMAL(18,2)` | Empenho | sim | R$, 2 casas | — |
-| `liquidacao_pagamento` | `DECIMAL(18,2)` | Liquidação/Pagamento | sim | R$, 2 casas | — |
+| Coluna | Tipo | Rótulo | Formatação | Descrição |
+| --- | --- | --- | --- | --- |
+| `emenda` | `VARCHAR` | Emenda | guard Excel | — |
+| `programa` | `VARCHAR` | Programa | guard Excel | — |
+| `ano` | `INTEGER` | Ano | sem formatação | — |
+| `parlamentar` | `VARCHAR` | Parlamentar | — | — |
+| `valor_repasse` | `DECIMAL(18,2)` | Valor de Repasse | R$, 2 casas | — |
+| `acao` | `VARCHAR` | Ação | — | — |
+| `gestor_municipal` | `VARCHAR` | Gestor Municipal | — | — |
+| `prazo_vigencia` | `DATE` | Prazo de Vigência | — | — |
+| `dotacao_orcamentaria` | `VARCHAR` | Dotação Orçamentaria | guard Excel | — |
+| `rubrica_de_receita` | `VARCHAR` | Rubrica de Receita | — | — |
+| `finalidade` | `VARCHAR` | Política pública | — | — |
+| `valor_empenho` | `DECIMAL(18,2)` | Empenho | R$, 2 casas | — |
+| `liquidacao_pagamento` | `DECIMAL(18,2)` | Liquidação/Pagamento | R$, 2 casas | — |
 
 [← todos os arquivos](../report-columns.md)

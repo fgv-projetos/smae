@@ -76,6 +76,28 @@ describe('invariantes dos schemas de relatório', () => {
             expect(schema.colunas.filter((c) => !c.label?.trim())).toEqual([]);
         });
 
+        it('não repete label entre colunas, ignorando caixa e espaços', () => {
+            // O modelo padrão seleciona TODAS as colunas do schema, então duas colunas com o
+            // mesmo label saem no mesmo CSV e o DuckDB desambigua sozinho, sufixando `_1`. O
+            // usuário recebe "Orgão Concedente_1" sem nunca ter pedido isso.
+            //
+            // A comparação é case-insensitive porque a colisão real que motivou esta invariante
+            // — 'Dotação Orçamentária' × 'Dotação orçamentária' — só diferia na caixa, e o
+            // sufixo `_1` apareceu do mesmo jeito. Espaços nas pontas entram na normalização
+            // pelo mesmo motivo: não são visíveis no cabeçalho.
+            const porLabel = new Map<string, string[]>();
+            for (const c of schema.colunas) {
+                const chave = c.label.trim().toLocaleLowerCase('pt-BR');
+                porLabel.set(chave, [...(porLabel.get(chave) ?? []), c.name]);
+            }
+
+            const colisoes = [...porLabel.entries()]
+                .filter(([, nomes]) => nomes.length > 1)
+                .map(([label, nomes]) => `${label}: ${nomes.join(', ')}`);
+
+            expect(colisoes).toEqual([]);
+        });
+
         it('não aplica guard de texto do Excel em coluna numérica ou de data', () => {
             // Guard emite `="valor"`: em coluna tipada isso viraria texto no XLSX,
             // perdendo a soma/ordenação que é justamente o ponto do tipo nativo.

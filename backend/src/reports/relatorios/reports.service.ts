@@ -215,6 +215,11 @@ export class ReportsService {
      * apenas entregaria CSV cru; então ela virou um controle da customização, não do pipeline.
      * O papel de escape hatch fica com o `catch` de falha segura abaixo.
      *
+     * O default é **ligado**: com ele desligado, criar um modelo é aceito pela API e ignorado
+     * na execução — o relatório sai no layout padrão e a divergência só aparece para quem for
+     * ler `motivo_padrao` no `resumo_saida`. Deixar a customização inerte por omissão é pior
+     * do que exigir que quem não a queira desligue explicitamente.
+     *
      * **Falha segura**: qualquer erro aqui devolve os arquivos originais. Uma extração pode
      * levar minutos/horas; perder o relatório inteiro por um problema de formatação seria
      * um péssimo negócio. O resultado (ok/erro/motivo do skip) vai para o `resumo_saida`.
@@ -239,7 +244,7 @@ export class ReportsService {
             return files;
         }
 
-        const customizavel = await this.smaeConfigService.getConfigBooleanWithDefault('REPORT_POST_PROCESS', false);
+        const customizavel = await this.smaeConfigService.getConfigBooleanWithDefault('REPORT_POST_PROCESS', true);
 
         try {
             const schemas: ReportFileSchema[] = await service.describeSchema(parametros);

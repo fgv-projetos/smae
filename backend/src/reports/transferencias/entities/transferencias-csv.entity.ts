@@ -174,7 +174,9 @@ export class RelTransferenciasCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Programa Orçamentário Municipal', format: { excelTextGuard: true } })
     distribuicao_recurso__programa_orcamentario_municipal: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Dotação orçamentária', format: { excelTextGuard: true } })
+    // Colidia com `dotacao` ('Dotação Orçamentária') — só diferiam na caixa, e a saída vinha
+    // como 'Dotação orçamentária_1'. Segue o prefixo 'Distribuição - ' já usado nas irmãs.
+    @ReportColumn({ type: 'VARCHAR', label: 'Distribuição - Dotação Orçamentária', format: { excelTextGuard: true } })
     distribuicao_recurso__dotacao: string | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'N° Proposta', format: { excelTextGuard: true } })
@@ -229,9 +231,11 @@ export class RelTransferenciasCsvRow {
     // Como o CSV bruto agora é o "compute store", elas ficam disponíveis para os modelos
     // (nenhum modelo padrão as seleciona, então nada muda para quem baixa o relatório).
 
-    // Label idêntico ao de `orgao_concedente__descricao`: no relatório resumido esta era a
-    // coluna rotulada 'Orgão Concedente'. Os dois nunca aparecem juntos nas seleções padrão.
-    @ReportColumn({ type: 'VARCHAR', label: 'Orgão Concedente' })
+    // No relatório resumido esta era a coluna rotulada 'Orgão Concedente' — mesmo label de
+    // `orgao_concedente__descricao`. A suposição de que "os dois nunca aparecem juntos" não se
+    // sustenta: o modelo padrão seleciona TODAS as colunas do schema, então os dois saíam no
+    // mesmo CSV e o DuckDB desambiguava sozinho, entregando 'Orgão Concedente_1' ao usuário.
+    @ReportColumn({ type: 'VARCHAR', label: 'Sigla do Orgão Concedente' })
     orgao_concedente__sigla: string | null;
 
     @ReportColumn({ type: 'BIGINT', label: 'ID do Orgão Concedente', format: { raw: true } })

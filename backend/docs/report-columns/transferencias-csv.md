@@ -65,9 +65,9 @@ Booleanos que o negócio exibe como `Sim`/`Não` continuam sendo traduzidos na e
 | `distribuicao_recurso__empenho` | `VARCHAR` | Distribuição - Empenho | sim | — | — |
 | `distribuicao_recurso__programa_orcamentario_estadual` | `VARCHAR` | Programa Orçamentário Estadual ou Federal | sim | guard Excel | — |
 | `distribuicao_recurso__programa_orcamentario_municipal` | `VARCHAR` | Programa Orçamentário Municipal | sim | guard Excel | — |
-| `distribuicao_recurso__dotacao` | `VARCHAR` | Dotação orçamentária | sim | guard Excel | — |
+| `distribuicao_recurso__dotacao` | `VARCHAR` | Distribuição - Dotação Orçamentária | sim | guard Excel | — |
 | `distribuicao_recurso__proposta` | `VARCHAR` | N° Proposta | sim | guard Excel | — |
-| `distribuicao_recurso__contrato` | `VARCHAR` | Nº do Contrato | sim | guard Excel | — |
+| `distribuicao_recurso__contrato` | `VARCHAR` | Número do Instrumento | sim | guard Excel | — |
 | `distribuicao_recurso__convenio` | `VARCHAR` | Nº do Convênio/Pré Convênio | sim | guard Excel | — |
 | `distribuicao_recurso__assinatura_termo_aceite` | `DATE` | Data de assinatura do termo de aceite | sim | — | — |
 | `distribuicao_recurso__assinatura_municipio` | `DATE` | Data de assinatura do representante do Município | sim | — | — |
@@ -82,7 +82,7 @@ Booleanos que o negócio exibe como `Sim`/`Não` continuam sendo traduzidos na e
 | `distribuicao_recurso__agencia` | `VARCHAR` | Distribuição - Agência | sim | guard Excel | — |
 | `distribuicao_recurso__conta` | `VARCHAR` | Distribuição - Conta Corrente | sim | guard Excel | — |
 | `distribuicao_recurso__gestor_conta` | `VARCHAR` | Distribuição - Gestor da Conta | sim | guard Excel | — |
-| `orgao_concedente__sigla` | `VARCHAR` | Orgão Concedente | sim | — | — |
+| `orgao_concedente__sigla` | `VARCHAR` | Sigla do Orgão Concedente | sim | — | — |
 | `orgao_concedente__id` | `BIGINT` | ID do Orgão Concedente | sim | sem formatação | — |
 | `programa` | `VARCHAR` | Programa | sim | guard Excel | — |
 | `pendente_preenchimento_valores` | `VARCHAR` | Pendente preenchimento de valores | sim | — | — |

@@ -63,20 +63,37 @@ export function modeloPadraoDeSchemas(schemas: ReportFileSchema[]): RelatorioMod
     return { arquivos: schemas.map((s) => ({ arquivo: s.arquivo })) };
 }
 
-/** Referência do modelo que o schema atual não tem mais. */
+/** Referência do modelo que o schema desta execução não tem. */
 export type ModeloReferenciaIgnorada = {
     arquivo: string;
     onde: 'colunas' | 'filtros' | 'order_by';
     coluna: string;
 };
 
+/**
+ * Colunas que a fonte declara somando **todas** as variantes, por arquivo.
+ *
+ * Serve só para separar duas ausências que são muito diferentes entre si: coluna que existe
+ * na fonte mas não nesta execução (recorte esperado) e coluna que a fonte não tem mais
+ * (schema mudou embaixo do modelo). Sem isto, as duas viravam o mesmo aviso.
+ */
+export type ColunasDaFonte = Map<string, Set<string>>;
+
 export type AplicarModeloResultado = {
     arquivos: FileOutput[];
     /**
-     * O que foi degradado por não existir no schema atual. Vai para o `resumo_saida` do
-     * relatório: o modelo não falha, mas a perda não pode ser silenciosa.
+     * Referência que a fonte **não conhece mais** — modelo salvo antes de a coluna ser
+     * removida do relatório. Vai para o `resumo_saida`: o modelo não falha, mas a perda não
+     * pode ser silenciosa.
      */
     ignoradas: ModeloReferenciaIgnorada[];
+    /**
+     * Referência recortada por não se aplicar a **estes parâmetros** — meta/iniciativa/
+     * atividade num orçamento de projeto, `mes`/`ano` num Consolidado. Situação normal: o
+     * modelo é montado uma vez, sobre a união das variantes, e recortado a cada execução.
+     * Registrado como informação, não como problema.
+     */
+    recortadas: ModeloReferenciaIgnorada[];
     /** Arquivos que o modelo pediu para não entregar (`incluir: false`). */
     descartados: string[];
 };
@@ -107,10 +124,12 @@ export class ReportPostProcessService {
     async aplicarModelo(
         files: FileOutput[],
         schemas: ReportFileSchema[],
-        modelo: RelatorioModeloConfigDto
+        modelo: RelatorioModeloConfigDto,
+        colunasDaFonte?: ColunasDaFonte
     ): Promise<AplicarModeloResultado> {
         const out: FileOutput[] = [];
         const ignoradas: ModeloReferenciaIgnorada[] = [];
+        const recortadas: ModeloReferenciaIgnorada[] = [];
         const descartados: string[] = [];
 
         for (const file of files) {
@@ -132,10 +151,18 @@ export class ReportPostProcessService {
 
             const cfg: RelatorioModeloArquivoDto = doModelo ?? { arquivo: file.name };
 
+            // Sem o mapa da fonte não dá para separar recorte de deriva; nesse caso tudo cai em
+            // `ignoradas`, que é o comportamento conservador (avisa demais, nunca de menos).
+            const conhecidas = colunasDaFonte?.get(file.name);
+
             const registrar = (onde: ModeloReferenciaIgnorada['onde'], coluna: string) => {
+                if (conhecidas?.has(coluna)) {
+                    recortadas.push({ arquivo: file.name, onde, coluna });
+                    return;
+                }
                 ignoradas.push({ arquivo: file.name, onde, coluna });
                 this.logger.warn(
-                    `Modelo referencia "${coluna}" em ${onde} de ${file.name}, que não existe no schema atual.`
+                    `Modelo referencia "${coluna}" em ${onde} de ${file.name}, que a fonte não declara mais.`
                 );
             };
 
@@ -165,7 +192,7 @@ export class ReportPostProcessService {
             this.removerTemporario(file.localFile);
         }
 
-        return { arquivos: out, ignoradas, descartados };
+        return { arquivos: out, ignoradas, recortadas, descartados };
     }
 
     /** Remove o CSV bruto já consumido (ou descartado): ele não entra no zip e ninguém mais o lê. */
@@ -183,12 +210,19 @@ export class ReportPostProcessService {
      * na ausência dela, todas as colunas do schema na ordem declarada. Labels e
      * formatação do modelo sobrescrevem os padrões do schema.
      *
-     * Coluna que o schema atual não tem mais **não** derruba o relatório: ela sai como NULL,
-     * na posição pedida, com o nome como cabeçalho. Um modelo salvo hoje precisa continuar
-     * rodando depois de uma coluna ser removida do relatório — falhar aqui significaria
-     * perder a extração inteira (que pode levar horas) por uma coluna cosmética.
-     * A validação estrita segue valendo na criação/edição do modelo (`validaConfig`), onde
-     * uma coluna inexistente é erro de digitação e não deriva de mudança de schema.
+     * A seleção do modelo é um **superconjunto**, e aqui ela é *recortada* contra o schema
+     * desta execução: fica a interseção, na ordem que o modelo pediu. Isso é o que permite
+     * criar o modelo antes de saber com que parâmetros ele vai rodar — que é a ordem natural,
+     * já que o modelo é montado uma vez e reusado em execuções diferentes.
+     *
+     * Uma coluna pedida e ausente é **descartada**, não emitida como NULL. Emitir NULL
+     * entregava uma coluna vazia com o nome de máquina no cabeçalho (`meta__titulo` em vez de
+     * "Título da Meta") toda vez que o modelo cobria uma variante que aquela execução não
+     * tem — por exemplo meta/iniciativa/atividade num orçamento de projeto.
+     *
+     * Em nenhum caso a ausência derruba o relatório: perder uma extração de horas por uma
+     * coluna cosmética seria um péssimo negócio. A validação estrita segue na criação/edição
+     * do modelo (`validaConfig`), onde coluna inexistente é erro de digitação.
      */
     private resolverColunas(
         schema: ReportFileSchema,
@@ -198,23 +232,17 @@ export class ReportPostProcessService {
         if (!cfg.colunas?.length) return schema.colunas;
 
         const porNome = new Map(schema.colunas.map((c) => [c.name, c]));
+        const out: ReportColumnDef[] = [];
 
-        return cfg.colunas.map((sel, i) => {
+        for (const sel of cfg.colunas) {
             const def = porNome.get(sel.coluna);
 
             if (!def) {
                 registrar('colunas', sel.coluna);
-                return {
-                    // Identificador gerado: o nome vindo do modelo nunca vira identificador SQL.
-                    name: `coluna_ausente_${i}`,
-                    type: 'VARCHAR' as const,
-                    label: sel.label ?? sel.coluna,
-                    format: { raw: true },
-                    ausente: true,
-                };
+                continue;
             }
 
-            return {
+            out.push({
                 ...def,
                 label: sel.label ?? def.label,
                 format: {
@@ -222,8 +250,14 @@ export class ReportPostProcessService {
                     ...(sel.decimais !== undefined ? { decimalPlaces: sel.decimais } : {}),
                     ...(sel.formato_data !== undefined ? { dateFormat: sel.formato_data } : {}),
                 },
-            };
-        });
+            });
+        }
+
+        // Recorte que zerou a seleção: entrega o schema inteiro em vez de um CSV sem coluna
+        // nenhuma. Acontece com modelo montado só para outra variante da fonte.
+        if (!out.length) return schema.colunas;
+
+        return out;
     }
 
     /**
@@ -282,9 +316,6 @@ export class ReportPostProcessService {
         // `="..."`. No XLSX a coluna segue com o tipo nativo.
         report.select(
             colunas.map((c) => {
-                // Coluna que o schema não tem mais: NULL tipado, para o XLSX ter tipo.
-                if (c.ausente) return [`CAST(NULL AS VARCHAR)`, c.name] as [string, string];
-
                 if (saida === 'csv' && c.format?.excelTextGuard) {
                     const id = quoteIdent(c.name);
                     return [

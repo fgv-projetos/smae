@@ -75,18 +75,24 @@ describe('ReportPostProcessService', () => {
         }
     });
 
-    async function aplicar(modelo: RelatorioModeloConfigDto) {
+    async function aplicar(modelo: RelatorioModeloConfigDto, colunasDaFonte?: Map<string, Set<string>>) {
         const bruto = escreverCsvBruto();
-        const { arquivos: out, ignoradas } = await service.aplicarModelo(
-            [{ name: 'exemplo.csv', localFile: bruto }],
-            [SCHEMA],
-            modelo
-        );
+        const {
+            arquivos: out,
+            ignoradas,
+            recortadas,
+        } = await service.aplicarModelo([{ name: 'exemplo.csv', localFile: bruto }], [SCHEMA], modelo, colunasDaFonte);
         for (const f of out) if (f.localFile) criados.push(f.localFile);
 
         const csv = out.find((f) => f.name.endsWith('.csv'))!;
         const xlsx = out.find((f) => f.name.endsWith('.xlsx'))!;
-        return { out, ignoradas, csvTexto: fs.readFileSync(csv.localFile!, 'utf-8'), xlsxPath: xlsx.localFile! };
+        return {
+            out,
+            ignoradas,
+            recortadas,
+            csvTexto: fs.readFileSync(csv.localFile!, 'utf-8'),
+            xlsxPath: xlsx.localFile!,
+        };
     }
 
     it('não deixa o apóstrofo do texto virar aspa de campo', async () => {
@@ -331,7 +337,7 @@ describe('ReportPostProcessService', () => {
     });
 
     describe('tolerância a schema que mudou depois do modelo salvo', () => {
-        it('coluna que não existe mais sai como NULL, sem derrubar o relatório', async () => {
+        it('coluna ausente é recortada, não emitida vazia', async () => {
             const { csvTexto, ignoradas } = await aplicar({
                 arquivos: [
                     {
@@ -342,20 +348,44 @@ describe('ReportPostProcessService', () => {
             });
 
             const linhas = csvTexto.trim().split('\n');
-            // A coluna continua na posição pedida, com o nome como cabeçalho, e vazia.
-            expect(linhas[0]).toBe('ID;coluna_removida;Órgão');
-            expect(linhas[1]).toBe('1;;SMUL');
+            // Emitir NULL entregava uma coluna vazia com o nome de máquina no cabeçalho — o
+            // usuário via `coluna_removida` num relatório que ele nunca pediu assim.
+            expect(linhas[0]).toBe('ID;Órgão');
+            expect(linhas[1]).toBe('1;SMUL');
             expect(ignoradas).toEqual([{ arquivo: 'exemplo.csv', onde: 'colunas', coluna: 'coluna_removida' }]);
         });
 
-        it('respeita o label do modelo na coluna ausente', async () => {
+        it('recorte que zera a seleção cai no schema inteiro, e não num CSV sem colunas', async () => {
+            // Modelo montado só para outra variante da fonte: nenhuma das colunas pedidas existe
+            // nesta execução. Entregar zero coluna seria pior do que ignorar a seleção.
             const { csvTexto } = await aplicar({
-                arquivos: [
-                    { arquivo: 'exemplo.csv', colunas: [{ coluna: 'sumiu', label: 'Campo Antigo' }, { coluna: 'id' }] },
-                ],
+                arquivos: [{ arquivo: 'exemplo.csv', colunas: [{ coluna: 'sumiu' }, { coluna: 'sumiu_tambem' }] }],
             });
 
-            expect(csvTexto.trim().split('\n')[0]).toBe('Campo Antigo;ID');
+            expect(csvTexto.trim().split('\n')[0]).toBe(SCHEMA.colunas.map((c) => c.label).join(';'));
+        });
+
+        it('separa recorte por parâmetro de coluna que a fonte não declara mais', async () => {
+            // `so_em_outra_variante` existe na fonte (só não nesta execução) => recorte esperado.
+            // `nunca_existiu` a fonte não conhece => o modelo ficou para trás, e isso é aviso.
+            const daFonte = new Map([['exemplo.csv', new Set(['id', 'orgao__sigla', 'so_em_outra_variante'])]]);
+
+            const { ignoradas, recortadas } = await aplicar(
+                {
+                    arquivos: [
+                        {
+                            arquivo: 'exemplo.csv',
+                            colunas: [{ coluna: 'id' }, { coluna: 'so_em_outra_variante' }, { coluna: 'nunca_existiu' }],
+                        },
+                    ],
+                },
+                daFonte
+            );
+
+            expect(recortadas).toEqual([
+                { arquivo: 'exemplo.csv', onde: 'colunas', coluna: 'so_em_outra_variante' },
+            ]);
+            expect(ignoradas).toEqual([{ arquivo: 'exemplo.csv', onde: 'colunas', coluna: 'nunca_existiu' }]);
         });
 
         it('descarta filtro sobre coluna ausente em vez de zerar o relatório', async () => {

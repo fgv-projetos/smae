@@ -99,13 +99,12 @@ export class ListRelatorioColunasDto {
     fonte: FonteRelatorio;
 
     /**
-     * `true` quando as colunas vieram do schema **daquela combinação de parâmetros** — mesmas
-     * colunas e mesmos rótulos que a execução vai produzir.
+     * `false` (padrão): união das variantes da fonte, com os rótulos padrão. **É a lista para
+     * montar um modelo** — ele é criado antes de se saber os parâmetros da execução, e o
+     * recorte para o que existe em cada execução acontece no pós-processamento.
      *
-     * `false` quando são a união das variantes da fonte, com os rótulos padrão (nenhum
-     * `parametros` informado, ou fonte sem schema declarado). Nesse modo a lista pode conter
-     * coluna que a execução não terá e rótulo que ela vai substituir — não monte um seletor de
-     * modelo em cima dele.
+     * `true`: pré-visualização de uma combinação de parâmetros — mesmas colunas e mesmos
+     * rótulos que aquela execução vai produzir.
      */
     @ApiProperty()
     parametrizado: boolean;

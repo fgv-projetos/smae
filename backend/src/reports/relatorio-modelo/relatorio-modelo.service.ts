@@ -232,16 +232,15 @@ export class RelatorioModeloService {
     /**
      * Colunas disponíveis para montar um modelo — é o que o frontend usa no seletor de colunas.
      *
-     * Com `parametros`, devolve o schema **daquela execução**: mesmas colunas e mesmos rótulos
-     * que o relatório rodado com esses parâmetros vai produzir (ver
-     * `ReportsService.describeSchemaDaFonte`). É o modo correto para montar um modelo, porque
-     * várias fontes mudam de colunas conforme o parâmetro — `Orcamento` traz meta/iniciativa/
-     * atividade só com `pdm_id` e projeto só sem ele, `mes`/`ano` só no `Analitico` — e os
-     * rótulos de iniciativa/atividade vêm do PDM ("Ação estratégica", "Ação programada").
+     * Sem `parametros` (o caso normal), vem do registro de decoradores: a **união** das
+     * variantes com os rótulos padrão. É o que o seletor de modelo deve mostrar — o modelo é
+     * criado antes de se saber os parâmetros, então ele cita a união e a execução recorta.
      *
-     * Sem `parametros`, cai no registro de decoradores, que devolve a **união** das variantes
-     * com os rótulos padrão. Serve para uma visão geral da fonte, não para montar modelo:
-     * a união oferece coluna que a execução não terá.
+     * Com `parametros`, devolve o schema **daquela execução** (ver
+     * `ReportsService.describeSchemaDaFonte`): as colunas e os rótulos que o relatório rodado
+     * com esses parâmetros vai produzir. Pré-visualização — `Orcamento` traz meta/iniciativa/
+     * atividade só com `pdm_id` e projeto só sem ele, `mes`/`ano` só no `Analitico`, e os
+     * rótulos de iniciativa/atividade vêm do PDM ("Ação estratégica", "Ação programada").
      */
     async listColunas(
         fonte: FonteRelatorio,

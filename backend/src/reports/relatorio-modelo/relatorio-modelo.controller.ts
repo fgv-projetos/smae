@@ -80,12 +80,16 @@ export class RelatorioModeloController {
     }
 
     /**
-     * União das colunas declaradas de uma fonte, com os rótulos padrão.
+     * União das colunas que a fonte declara, com os rótulos padrão — **é a lista para montar
+     * um modelo**.
      *
-     * Visão geral da fonte — **não** é a lista certa para montar um modelo: várias fontes mudam
-     * de colunas conforme os parâmetros, e aqui vem a união das variantes. Para o seletor use
-     * `POST /relatorio-modelo/colunas`, que devolve exatamente o que aquela execução produz.
-     * A resposta traz `parametrizado: false` para deixar o modo explícito.
+     * O modelo é criado antes de se saber com que parâmetros vai rodar, e é reusado em
+     * execuções diferentes; por isso ele cita a união das variantes. Quem recorta é a
+     * execução: o pós-processamento fica com a interseção entre o modelo e o schema daquela
+     * execução, preservando a ordem escolhida (ver `resolverColunas`).
+     *
+     * A resposta traz `parametrizado: false`. Para pré-visualizar o recorte de uma combinação
+     * específica existe `POST /relatorio-modelo/colunas`.
      *
      * Rota declarada antes de `:id` para não ser capturada por ela.
      */
@@ -101,13 +105,16 @@ export class RelatorioModeloController {
     }
 
     /**
-     * Colunas de uma fonte **para uma combinação de parâmetros** — é o que o frontend deve usar
-     * para montar o seletor de colunas do modelo.
+     * Pré-visualização: colunas de uma fonte **para uma combinação de parâmetros**.
      *
-     * Recebe os mesmos `parametros` que serão enviados em `POST /relatorios` e devolve o schema
-     * que aquela execução vai produzir: sem as colunas de variantes que não se aplicam (as de
+     * Recebe os mesmos `parametros` que irão para `POST /relatorios` e devolve o schema que
+     * aquela execução produz — sem as colunas das variantes que não se aplicam (as de
      * meta/iniciativa/atividade num orçamento de projeto, por exemplo) e já com os rótulos
      * configurados no PDM ("Ação estratégica" no lugar de "Iniciativa").
+     *
+     * **Opcional.** Montar modelo não depende disto: a lista para montar é a união
+     * (`GET /colunas`), e o recorte acontece na execução. Serve para responder "com estes
+     * parâmetros, o que este modelo vai me dar?" antes de rodar.
      *
      * É `POST` por causa do corpo: `parametros` é um objeto aninhado, que não cabe bem numa
      * query string. Não escreve nada.

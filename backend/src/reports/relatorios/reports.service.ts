@@ -43,7 +43,16 @@ import { PPProjetoService } from '../pp-projeto/pp-projeto.service';
 import { PPProjetosService } from '../pp-projetos/pp-projetos.service';
 import { PPStatusService } from '../pp-status/pp-status.service';
 import { RelatorioModeloConfigDto } from '../post-process/dto/relatorio-modelo.dto';
-import { modeloPadraoDeSchemas, ReportPostProcessService } from '../post-process/report-post-process.service';
+import {
+    ColunasDaFonte,
+    modeloPadraoDeSchemas,
+    ReportPostProcessService,
+} from '../post-process/report-post-process.service';
+import {
+    findReportRowClassesByFonte,
+    getReportRowColumns,
+    getReportRowsOptions,
+} from '../post-process/report-column.decorator';
 import { isSchemaAware, ReportFileSchema } from '../post-process/report-schema';
 import { PrevisaoCustoService } from '../previsao-custo/previsao-custo.service';
 import { PSMonitoramentoMensal } from '../ps-monitoramento-mensal/ps-monitoramento-mensal.service';
@@ -86,6 +95,29 @@ const FONTES_TIPO_PDM_CALC: readonly FonteRelatorio[] = [
     FonteRelatorio.PSIndicadores,
     FonteRelatorio.PSMonitoramentoMensal,
 ];
+
+/**
+ * Todas as colunas que a fonte declara, somando as variantes, por arquivo.
+ *
+ * Vem do registro de decoradores — que é estático e por isso contém a UNIÃO — enquanto
+ * `describeSchema(params)` devolve só o recorte desta execução. A diferença entre os dois é
+ * exatamente o conjunto de colunas que o modelo pode citar legitimamente sem que elas apareçam
+ * agora; é o que permite separar recorte esperado de coluna que sumiu da fonte.
+ */
+function colunasDeclaradasDaFonte(fonte: FonteRelatorio): ColunasDaFonte {
+    const mapa: ColunasDaFonte = new Map();
+
+    for (const cls of findReportRowClassesByFonte(fonte)) {
+        const opts = getReportRowsOptions(cls);
+        if (!opts) continue;
+
+        const nomes = mapa.get(opts.arquivo) ?? new Set<string>();
+        for (const c of getReportRowColumns(cls)) nomes.add(c.propriedade);
+        mapa.set(opts.arquivo, nomes);
+    }
+
+    return mapa;
+}
 
 export const GetTempFileName = function (prefix?: string, suffix?: string) {
     prefix = typeof prefix !== 'undefined' ? prefix : 'tmp.';
@@ -263,7 +295,12 @@ export class ReportsService {
             const salvo = modeloId && customizavel ? await this.carregarModeloConfig(modeloId, dto.fonte) : null;
             const config = salvo ?? modeloPadraoDeSchemas(schemas);
 
-            const { arquivos, ignoradas, descartados } = await this.postProcess.aplicarModelo(files, schemas, config);
+            const { arquivos, ignoradas, recortadas, descartados } = await this.postProcess.aplicarModelo(
+                files,
+                schemas,
+                config,
+                colunasDeclaradasDaFonte(dto.fonte)
+            );
             await ctx.resumoSaida('pos_processamento', {
                 aplicado: true,
                 modelo: salvo ? 'salvo' : 'padrao',
@@ -274,10 +311,13 @@ export class ReportsService {
                 // Arquivos que o modelo pediu para não entregar: sem isto, um zip com menos
                 // planilhas do que a fonte produz pareceria falha de extração.
                 ...(descartados.length ? { arquivos_descartados: descartados } : {}),
-                // Colunas/filtros do modelo que o schema atual não tem mais. O relatório sai
-                // (coluna ausente vira NULL), mas fica registrado para quem for investigar
-                // "por que essa coluna está vazia?" não precisar adivinhar.
+                // Colunas que a FONTE não declara mais: modelo salvo antes de a coluna sair do
+                // relatório. É o caso que merece investigação.
                 ...(ignoradas.length ? { referencias_ignoradas: ignoradas } : {}),
+                // Colunas recortadas por não se aplicarem a estes parâmetros. Esperado — o
+                // modelo cobre a união das variantes —, mas registrado para responder
+                // "por que a coluna que escolhi não veio?" sem ter que adivinhar.
+                ...(recortadas.length ? { colunas_recortadas: recortadas } : {}),
             });
             return arquivos;
         } catch (error) {

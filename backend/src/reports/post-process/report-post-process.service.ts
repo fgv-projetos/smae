@@ -34,6 +34,20 @@ function sqlLit(value: string): string {
 }
 
 /**
+ * Delimitador do CSV de apresentação. É o mesmo da extração (o padrão do json2csv), e tem que
+ * ser: o CSV pós-processado **substitui** o bruto no zip, então mudá-lo aqui mudaria o dialeto
+ * de todo relatório do SMAE de uma vez, quebrando quem lê os arquivos por automação.
+ *
+ * Ele já foi `;` (o separador que o Excel pt-BR espera), o que era coerente com o decimal-vírgula
+ * da formatação, mas trocava a compatibilidade de todos os consumidores por conveniência de um
+ * duplo-clique — e esse caso hoje é atendido pelo `.xlsx` que sai ao lado de cada CSV.
+ *
+ * Vale para a escrita e para a releitura em `csvParaXlsx`: são o mesmo arquivo, e quando os dois
+ * lados divergiam o XLSX de `xlsx_tipado: false` saía com todas as colunas colapsadas em uma.
+ */
+const DELIMITADOR_SAIDA = ',';
+
+/**
  * Nome da aba do XLSX, a partir do nome do arquivo do relatório — sem isto toda aba sai
  * como o "Sheet1" do DuckDB, o que é ruim quando o usuário abre vários relatórios juntos.
  *
@@ -327,7 +341,7 @@ export class ReportPostProcessService {
             const res = await report.buildToFile(destino, {
                 format: saida,
                 header: true,
-                ...(saida === 'csv' ? { delimiter: ';' } : { sheet: aba }),
+                ...(saida === 'csv' ? { delimiter: DELIMITADOR_SAIDA } : { sheet: aba }),
             });
             return res.rowCount;
         } finally {
@@ -386,7 +400,8 @@ export class ReportPostProcessService {
             await con.run('INSTALL excel');
             await con.run('LOAD excel');
             await con.run(
-                `COPY (SELECT * FROM read_csv(${sqlLit(csv)}, delim = ';', header = true, all_varchar = true)) ` +
+                `COPY (SELECT * FROM read_csv(${sqlLit(csv)}, delim = ${sqlLit(DELIMITADOR_SAIDA)}, ` +
+                    `header = true, all_varchar = true)) ` +
                     `TO ${sqlLit(destino)} (FORMAT xlsx, HEADER true, SHEET ${sqlLit(aba)})`
             );
         } finally {

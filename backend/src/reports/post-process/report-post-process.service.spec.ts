@@ -119,7 +119,7 @@ describe('ReportPostProcessService', () => {
         expect(csvTexto).toContain("'SMUL'");
         expect(csvTexto).toContain("'SEHAB'");
         expect(csvTexto).toContain('0001.02');
-        expect(csvTexto).not.toMatch(/;SMUL;|;SMUL$|;SMUL\r/m);
+        expect(csvTexto).not.toMatch(/,SMUL,|,SMUL$|,SMUL\r/m);
     });
 
     it('emite CSV e XLSX a partir do mesmo CSV bruto', async () => {
@@ -132,14 +132,14 @@ describe('ReportPostProcessService', () => {
         const { csvTexto } = await aplicar({ arquivos: [{ arquivo: 'exemplo.csv' }] });
         const linhas = csvTexto.trim().split('\n');
 
-        expect(linhas[0]).toBe('ID;Valor;Vigência;Dotação;Órgão');
+        expect(linhas[0]).toBe('ID,Valor,Vigência,Dotação,Órgão');
         expect(linhas[1]).toContain('R$');
         expect(linhas[1]).toContain('1.234,56');
         expect(linhas[1]).toContain('15/10/2024');
 
         // Célula numérica vazia com prefixo de moeda sai vazia, não como a string "R$ ".
         // (a lib usava CONCAT, que ignora NULL; desde a 0.4.0 usa `||`, que propaga)
-        expect(linhas[3]).toBe('3;;;;SMUL');
+        expect(linhas[3]).toBe('3,,,,SMUL');
         expect(linhas[3]).not.toContain('R$');
     });
 
@@ -187,7 +187,7 @@ describe('ReportPostProcessService', () => {
             ],
         });
 
-        expect(csvTexto.trim().split('\n')[0]).toBe('Secretaria;ID');
+        expect(csvTexto.trim().split('\n')[0]).toBe('Secretaria,ID');
     });
 
     it('filtra e ordena no pós-processamento', async () => {
@@ -258,7 +258,7 @@ describe('ReportPostProcessService', () => {
 
         // ...e o não citado sai como o modelo padrão: todas as colunas, labels e pt-BR.
         const csvB = fs.readFileSync(out.find((f) => f.name === 'outro.csv')!.localFile!, 'utf-8');
-        expect(csvB.trim().split('\n')[0]).toBe('ID;Valor;Vigência;Dotação;Órgão');
+        expect(csvB.trim().split('\n')[0]).toBe('ID,Valor,Vigência,Dotação,Órgão');
         expect(csvB).toContain('1.234,56');
         expect(csvB).toContain('15/10/2024');
     });
@@ -310,11 +310,11 @@ describe('ReportPostProcessService', () => {
         const linhas = csvTexto.trim().split('\n');
 
         // Cabeçalho humano (não `id;valor;vigencia;...`) e formatação pt-BR completa.
-        expect(linhas[0]).toBe('ID;Valor;Vigência;Dotação;Órgão');
+        expect(linhas[0]).toBe('ID,Valor,Vigência,Dotação,Órgão');
         expect(linhas[1]).toContain('1.234,56');
         expect(linhas[1]).toContain('15/10/2024');
         // Texto sai cru: o guard `="..."` não faz mais parte do pipeline.
-        expect(linhas[1]).toContain(';2024.10.15.3350;');
+        expect(linhas[1]).toContain(',2024.10.15.3350,');
     });
 
     it('ordena por vários campos, na ordem declarada', async () => {
@@ -332,7 +332,7 @@ describe('ReportPostProcessService', () => {
         });
 
         // SEHAB antes de SMUL; dentro de SMUL, id decrescente (3 antes de 1).
-        expect(csvTexto.trim().split('\n')).toEqual(['Órgão;ID', 'SEHAB;2', 'SMUL;3', 'SMUL;1']);
+        expect(csvTexto.trim().split('\n')).toEqual(['Órgão,ID', 'SEHAB,2', 'SMUL,3', 'SMUL,1']);
     });
 
     describe('tolerância a schema que mudou depois do modelo salvo', () => {
@@ -349,8 +349,8 @@ describe('ReportPostProcessService', () => {
             const linhas = csvTexto.trim().split('\n');
             // Emitir NULL entregava uma coluna vazia com o nome de máquina no cabeçalho — o
             // usuário via `coluna_removida` num relatório que ele nunca pediu assim.
-            expect(linhas[0]).toBe('ID;Órgão');
-            expect(linhas[1]).toBe('1;SMUL');
+            expect(linhas[0]).toBe('ID,Órgão');
+            expect(linhas[1]).toBe('1,SMUL');
             expect(ignoradas).toEqual([{ arquivo: 'exemplo.csv', onde: 'colunas', coluna: 'coluna_removida' }]);
         });
 
@@ -361,7 +361,7 @@ describe('ReportPostProcessService', () => {
                 arquivos: [{ arquivo: 'exemplo.csv', colunas: [{ coluna: 'sumiu' }, { coluna: 'sumiu_tambem' }] }],
             });
 
-            expect(csvTexto.trim().split('\n')[0]).toBe(SCHEMA.colunas.map((c) => c.label).join(';'));
+            expect(csvTexto.trim().split('\n')[0]).toBe(SCHEMA.colunas.map((c) => c.label).join(','));
         });
 
         it('separa recorte por parâmetro de coluna que a fonte não declara mais', async () => {

@@ -36,8 +36,8 @@ export class CsvSchemaProvider extends BaseDataSourceProvider {
     constructor(
         private readonly csvPath: string,
         private readonly fileSchema: ReportFileSchema,
-        // O CSV bruto é escrito pelo json2csv com o delimitador padrão (vírgula);
-        // o ';' aparece só na SAÍDA pós-processada, por ser o separador do Excel pt-BR.
+        // O CSV bruto é escrito pelo json2csv com o delimitador padrão (vírgula), e a saída
+        // pós-processada usa o mesmo — ver `DELIMITADOR_SAIDA` em report-post-process.service.
         private readonly delimiter: string = ','
     ) {
         super();

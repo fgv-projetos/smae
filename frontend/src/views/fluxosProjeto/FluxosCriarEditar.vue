@@ -252,7 +252,6 @@ watch(statusesDistribuicaoSelecionados, (newValue) => {
           name="nome"
           type="text"
           class="inputtext light mb1"
-          :disabled="emFoco?.edicao_restrita"
         />
         <ErrorMessage
           class="error-msg mb1"

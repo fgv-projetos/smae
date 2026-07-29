@@ -9,8 +9,16 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
  *
  * Regra geral: os valores aqui são "compute store" — números como números, datas em ISO
  * (`YYYY-MM-DD`), `null` para ausência de valor, sem máscara de moeda e sem o hack
- * `="valor"`. Moeda, separador decimal pt-BR, `dd/mm/aaaa` e o guard de texto do Excel são
- * aplicados na etapa de pós-processamento.
+ * `="valor"`. Moeda, separador decimal pt-BR e `dd/mm/aaaa` são aplicados na etapa de
+ * pós-processamento.
+ *
+ * Sobre o `excelTextGuard`: **nenhuma coluna o declara**. A extração deste relatório nunca
+ * emitiu `="valor"`, e ligar o guard mudaria os bytes da célula para quem consome o CSV
+ * programaticamente — que é a maioria de quem baixa este arquivo. Várias colunas abaixo
+ * (`codigo`, `numero`, `data_base`, `processos_sei`, códigos SOF, CEP…) o Excel de fato
+ * reinterpreta ao abrir o CSV direto; o caminho certo para quem trabalha no Excel é o
+ * `.xlsx` tipado, que sai ao lado do CSV e já nasce com a célula VARCHAR. As notas por
+ * coluna registram onde o risco existe.
  *
  * Particularidade deste relatório: a extração é feita por consultas SQL planas
  * (`streamQueryToCSV`), então **não havia rótulos humanos** — o cabeçalho era o próprio
@@ -43,8 +51,8 @@ export class RelObrasCsvRow {
     @ReportColumn({ type: 'BIGINT', label: 'obra_id', format: { raw: true } })
     obra_id: number;
 
-    /** Código do tipo `2024.0001`: sem o guard o Excel o converteria em número. */
-    @ReportColumn({ type: 'VARCHAR', label: 'codigo', format: { excelTextGuard: true } })
+    /** Código do tipo `2024.0001`: o Excel o converte em número ao abrir o CSV direto. */
+    @ReportColumn({ type: 'VARCHAR', label: 'codigo' })
     codigo: string | null;
 
     @ReportColumn({ type: 'BIGINT', label: 'portfolio_id', format: { raw: true } })
@@ -249,7 +257,7 @@ export class RelObrasCsvRow {
     @ReportColumn({ type: 'BIGINT', label: 'empreendimento_id', format: { raw: true } })
     empreendimento_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'empreendimento_identificador', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'empreendimento_identificador' })
     empreendimento_identificador: string | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'mdo_observacoes' })
@@ -274,8 +282,8 @@ export class RelObrasCsvRow {
     @ReportColumn({ type: 'DATE', label: 'data_revisao' })
     data_revisao: string | null;
 
-    /** Texto livre (ex.: `1.0`): guard para o Excel não o transformar em número. */
-    @ReportColumn({ type: 'VARCHAR', label: 'versao', format: { excelTextGuard: true } })
+    /** Texto livre (ex.: `1.0`): o Excel o transforma em número ao abrir o CSV direto. */
+    @ReportColumn({ type: 'VARCHAR', label: 'versao' })
     versao: string | null;
 
     @ReportColumn({ type: 'INTEGER', label: 'n_unidades_habitacionais', format: { raw: true } })
@@ -306,7 +314,7 @@ export class RelObrasCronogramaCsvRow {
     @ReportColumn({ type: 'BIGINT', label: 'obra_id', format: { raw: true } })
     obra_id: number;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'obra_codigo', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'obra_codigo' })
     obra_codigo: string | null;
 
     @ReportColumn({ type: 'BIGINT', label: 'tarefa_id', format: { raw: true } })
@@ -319,9 +327,9 @@ export class RelObrasCronogramaCsvRow {
      * a numeração é montada em memória por `TarefaService.tarefasHierarquia()` e não existe
      * no SQL. Ficou fora deste PR de propósito — preencher exige carregar o cronograma
      * inteiro de cada obra em memória, o que é uma mudança de arquitetura da extração e não
-     * de apresentação. O guard fica declarado para quando a coluna passar a ter conteúdo.
+     * de apresentação.
      */
-    @ReportColumn({ type: 'VARCHAR', label: 'hierarquia', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'hierarquia' })
     hierarquia: string | null;
 
     @ReportColumn({ type: 'INTEGER', label: 'numero', format: { raw: true } })
@@ -397,7 +405,7 @@ export class RelObrasAcompanhamentosCsvRow {
     @ReportColumn({ type: 'BIGINT', label: 'obra_id', format: { raw: true } })
     obra_id: number;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'obra_codigo', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'obra_codigo' })
     obra_codigo: string | null;
 
     @ReportColumn({ type: 'DATE', label: 'data_registro' })
@@ -486,8 +494,8 @@ export class RelObrasFontesRecursoCsvRow {
     @ReportColumn({ type: 'INTEGER', label: 'fonte_recurso_ano', format: { raw: true } })
     fonte_recurso_ano: number;
 
-    /** Código SOF (`00`, `01`…): guard para o Excel não comer o zero à esquerda. */
-    @ReportColumn({ type: 'VARCHAR', label: 'fonte_recurso_cod_sof', format: { excelTextGuard: true } })
+    /** Código SOF (`00`, `01`…): o Excel come o zero à esquerda ao abrir o CSV direto. */
+    @ReportColumn({ type: 'VARCHAR', label: 'fonte_recurso_cod_sof' })
     fonte_recurso_cod_sof: string;
 }
 
@@ -508,8 +516,8 @@ export class RelObrasContratosCsvRow {
     @ReportColumn({ type: 'BIGINT', label: 'obra_id', format: { raw: true } })
     obra_id: number;
 
-    /** Número do tipo `001/2024`: guard obrigatório, o Excel o leria como data. */
-    @ReportColumn({ type: 'VARCHAR', label: 'numero', format: { excelTextGuard: true } })
+    /** Número do tipo `001/2024`: o Excel o lê como data ao abrir o CSV direto. */
+    @ReportColumn({ type: 'VARCHAR', label: 'numero' })
     numero: string;
 
     @ReportColumn({ type: 'BOOLEAN', label: 'exclusivo' })
@@ -531,7 +539,7 @@ export class RelObrasContratosCsvRow {
     empresa_contratada: string | null;
 
     /** Já sai mascarado pela função SQL `f_formata_cnpj` — é limpeza de dado, não locale. */
-    @ReportColumn({ type: 'VARCHAR', label: 'cnpj_contratada', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'cnpj_contratada' })
     cnpj_contratada: string | null;
 
     @ReportColumn({ type: 'INTEGER', label: 'prazo', format: { raw: true } })
@@ -540,8 +548,8 @@ export class RelObrasContratosCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'unidade_prazo' })
     unidade_prazo: string | null;
 
-    /** `mês/ano` montado no SQL (ex.: `6/2024`): sem guard o Excel o converteria em data. */
-    @ReportColumn({ type: 'VARCHAR', label: 'data_base', format: { excelTextGuard: true } })
+    /** `mês/ano` montado no SQL (ex.: `6/2024`): o Excel o converte em data ao abrir o CSV direto. */
+    @ReportColumn({ type: 'VARCHAR', label: 'data_base' })
     data_base: string | null;
 
     @ReportColumn({ type: 'DATE', label: 'data_inicio' })
@@ -597,11 +605,11 @@ export class RelObrasContratosCsvRow {
     percentual_medido: string | null;
 
     /** Processos SEI já formatados por `format_proc_sei_sinproc`, separados por `|`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'processos_sei', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'processos_sei' })
     processos_sei: string | null;
 
     /** Códigos SOF das fontes do contrato, separados por `|`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'fontes_recurso', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'fontes_recurso' })
     fontes_recurso: string | null;
 }
 
@@ -622,8 +630,8 @@ export class RelObrasAditivosCsvRow {
     @ReportColumn({ type: 'BIGINT', label: 'contrato_id', format: { raw: true } })
     contrato_id: number;
 
-    /** `contrato_aditivo.numero` é texto no banco; guard pelo mesmo motivo do contrato. */
-    @ReportColumn({ type: 'VARCHAR', label: 'numero', format: { excelTextGuard: true } })
+    /** `contrato_aditivo.numero` é texto no banco; mesmo risco no Excel que o número do contrato. */
+    @ReportColumn({ type: 'VARCHAR', label: 'numero' })
     numero: string;
 
     @ReportColumn({ type: 'BIGINT', label: 'tipo_aditivo_id', format: { raw: true } })
@@ -708,9 +716,9 @@ export class RelObrasProcessosSeiCsvRow {
 
     /**
      * Já formatado por `format_proc_sei_sinproc` na consulta (limpeza de dado, não locale).
-     * Guard obrigatório: `6016.2024/0000000-0` seria reinterpretado pelo Excel.
+     * `6016.2024/0000000-0` é reinterpretado pelo Excel ao abrir o CSV direto.
      */
-    @ReportColumn({ type: 'VARCHAR', label: 'processo_sei', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'processo_sei' })
     processo_sei: string;
 
     @ReportColumn({ type: 'VARCHAR', label: 'descricao' })
@@ -759,8 +767,8 @@ export class RelObrasEnderecosCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'subprefeitura' })
     subprefeitura: string | null;
 
-    /** `lat,long` concatenado no SQL: guard para o Excel não tentar interpretar. */
-    @ReportColumn({ type: 'VARCHAR', label: 'geojson.geometry.coordinates', format: { excelTextGuard: true } })
+    /** `lat,long` concatenado no SQL: o Excel tenta interpretar ao abrir o CSV direto. */
+    @ReportColumn({ type: 'VARCHAR', label: 'geojson.geometry.coordinates' })
     coordinates: string | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'geojson.type' })
@@ -770,7 +778,7 @@ export class RelObrasEnderecosCsvRow {
     geometry_type: string | null;
 
     /** CEP com zeros à esquerda. */
-    @ReportColumn({ type: 'VARCHAR', label: 'geojson.properties.cep', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'geojson.properties.cep' })
     cep: string | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'geojson.properties.rua' })
@@ -804,7 +812,7 @@ export class RelObrasEnderecosCsvRow {
     geometry_name: string | null;
 
     /** Array JSON serializado como texto. */
-    @ReportColumn({ type: 'VARCHAR', label: 'geojson.bbox', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'geojson.bbox' })
     bbox: string | null;
 }
 
@@ -822,7 +830,7 @@ export class RelObrasArquivosCsvRow {
     @ReportColumn({ type: 'BIGINT', label: 'obra_id', format: { raw: true } })
     obra_id: number;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'obra_codigo', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'obra_codigo' })
     obra_codigo: string | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'nome_original' })

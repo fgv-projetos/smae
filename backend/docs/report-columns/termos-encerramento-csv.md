@@ -13,7 +13,7 @@ Colunas do CSV bruto de `termos-encerramento.csv` da fonte `Projeto`.
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
 | `projeto_id` | `BIGINT` | projeto_id | sem formatação | — |
-| `projeto_codigo` | `VARCHAR` | projeto_codigo | guard Excel | — |
+| `projeto_codigo` | `VARCHAR` | projeto_codigo | — | — |
 | `nome_projeto` | `VARCHAR` | nome_projeto | — | — |
 | `orgao_responsavel_nome` | `VARCHAR` | orgao_responsavel_nome | — | — |
 | `portfolios_nomes` | `VARCHAR` | portfolios_nomes | — | — |

@@ -10,8 +10,8 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
  * parlamentar/mandato), então nenhum nome precisa do `__` usado nos relatórios aninhados.
  *
  * Regra geral: valores aqui são "compute store" — números como números, `null` para
- * ausência de valor, sem máscara e sem o hack de forçar texto no Excel. Rótulos e o guard
- * de texto são aplicados na etapa de pós-processamento.
+ * ausência de valor, sem máscara e sem o hack de forçar texto no Excel. Os rótulos são
+ * aplicados na etapa de pós-processamento.
  *
  * Os rótulos abaixo reproduzem exatamente os cabeçalhos que o relatório já emitia hoje,
  * incluindo a capitalização irregular de 'Zona de atuação' (todos os demais usam Title
@@ -64,15 +64,16 @@ export class RelParlamentaresCsvRow {
     gabinete: string | null;
 
     /**
-     * A extração emite o telefone cru (ou `null`); o guard de texto vem do pós-processamento.
+     * A extração emite o telefone cru (ou `null`).
      *
      * Antes a própria extração prefixava o valor com U+200C (zero-width non-joiner) para o
-     * Excel não reinterpretar `11 3396-4000` / `(11) 3396-4000` como número ou data — é o
-     * mesmo problema que o `excelTextGuard` resolve, só que de forma declarada e sem sujar o
-     * dado com um caractere invisível (que também vazava para o XLSX e para quem lia o CSV
-     * programaticamente).
+     * Excel não reinterpretar `11 3396-4000` / `(11) 3396-4000` como número ou data. O
+     * prefixo saiu: sujava o dado com um caractere invisível que vazava para o XLSX e para
+     * quem lia o CSV programaticamente. Não foi trocado por `excelTextGuard` porque isso
+     * apenas substituiria um hack por outro nos bytes da célula — quem trabalha no Excel deve
+     * usar o `.xlsx` tipado que sai ao lado do CSV, onde a célula já nasce VARCHAR.
      */
-    @ReportColumn({ type: 'VARCHAR', label: 'Telefone', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Telefone' })
     telefone: string | null;
 
     /** Dia do mês (1–31): número sem formatação de locale. */

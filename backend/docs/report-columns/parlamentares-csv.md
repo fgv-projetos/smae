@@ -17,8 +17,8 @@ sai como 5ª coluna, logo depois da sigla do partido). O schema é plano (uma li
 parlamentar/mandato), então nenhum nome precisa do `__` usado nos relatórios aninhados.
 
 Regra geral: valores aqui são "compute store" — números como números, `null` para
-ausência de valor, sem máscara e sem o hack de forçar texto no Excel. Rótulos e o guard
-de texto são aplicados na etapa de pós-processamento.
+ausência de valor, sem máscara e sem o hack de forçar texto no Excel. Os rótulos são
+aplicados na etapa de pós-processamento.
 
 Os rótulos abaixo reproduzem exatamente os cabeçalhos que o relatório já emitia hoje,
 incluindo a capitalização irregular de 'Zona de atuação' (todos os demais usam Title
@@ -36,7 +36,7 @@ Case): mudar cabeçalho entregue ao usuário é decisão de negócio, não desta
 | `titular_suplente` | `VARCHAR` | Titular/Suplente/Efetivado | — | — |
 | `endereco` | `VARCHAR` | Endereço | — | — |
 | `gabinete` | `VARCHAR` | Gabinete | — | — |
-| `telefone` | `VARCHAR` | Telefone | guard Excel | — |
+| `telefone` | `VARCHAR` | Telefone | — | — |
 | `dia_aniversario` | `INTEGER` | Dia Aniversário | sem formatação | — |
 | `mes_aniversario` | `INTEGER` | Mês Aniversário | sem formatação | — |
 | `email` | `VARCHAR` | E-mail | — | — |

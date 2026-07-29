@@ -19,7 +19,7 @@ Dois campos do `detail` são objetos e, portanto, achatados: `projeto_etapa` (`I
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
 | `projeto_id` | `BIGINT` | projeto_id | sem formatação | — |
-| `codigo` | `VARCHAR` | codigo | guard Excel | — |
+| `codigo` | `VARCHAR` | codigo | — | — |
 | `portfolio_id` | `BIGINT` | portfolio_id | sem formatação | — |
 | `nome` | `VARCHAR` | nome | — | — |
 | `portfolio_titulo` | `VARCHAR` | portfolio_titulo | — | — |
@@ -51,11 +51,11 @@ Dois campos do `detail` são objetos e, portanto, achatados: `projeto_etapa` (`I
 | `coordenador_ue` | `VARCHAR` | coordenador_ue | — | — |
 | `data_aprovacao` | `DATE` | data_aprovacao | — | — |
 | `data_revisao` | `DATE` | data_revisao | — | — |
-| `versao` | `VARCHAR` | versao | guard Excel | — |
+| `versao` | `VARCHAR` | versao | — | — |
 | `arquivado` | `BOOLEAN` | arquivado | — | — |
 | `iniciativa_id` | `BIGINT` | iniciativa_id | sem formatação | — |
 | `atividade_id` | `BIGINT` | atividade_id | sem formatação | — |
-| `meta_codigo` | `VARCHAR` | meta_codigo | guard Excel | — |
+| `meta_codigo` | `VARCHAR` | meta_codigo | — | — |
 | `resumo` | `VARCHAR` | resumo | — | — |
 | `publico_alvo` | `VARCHAR` | publico_alvo | — | — |
 | `realizado_inicio` | `DATE` | realizado_inicio | — | — |
@@ -71,7 +71,7 @@ Dois campos do `detail` são objetos e, portanto, achatados: `projeto_etapa` (`I
 | `percentual_concluido` | `DOUBLE` | percentual_concluido | 2 casas, unidade `%` | — |
 | `portfolio_nivel_maximo_tarefa` | `INTEGER` | portfolio_nivel_maximo_tarefa | sem formatação | — |
 | `meta__id` | `BIGINT` | meta.id | sem formatação | — |
-| `meta__codigo` | `VARCHAR` | meta.codigo | guard Excel | — |
+| `meta__codigo` | `VARCHAR` | meta.codigo | — | — |
 | `meta__titulo` | `VARCHAR` | meta.titulo | — | — |
 | `meta__pdm_id` | `BIGINT` | meta.pdm_id | sem formatação | — |
 | `meta__pdm_nome` | `VARCHAR` | meta.pdm_nome | — | — |

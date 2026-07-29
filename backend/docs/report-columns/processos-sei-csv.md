@@ -16,7 +16,7 @@ Ordem do `SELECT` de `_queryDataObrasSei()` — sem `fields` explícito.
 | --- | --- | --- | --- | --- |
 | `obra_id` | `BIGINT` | obra_id | sem formatação | — |
 | `categoria` | `VARCHAR` | categoria | — | — |
-| `processo_sei` | `VARCHAR` | processo_sei | guard Excel | — |
+| `processo_sei` | `VARCHAR` | processo_sei | — | — |
 | `descricao` | `VARCHAR` | descricao | — | — |
 | `link` | `VARCHAR` | link | — | — |
 | `comentarios` | `VARCHAR` | comentarios | — | — |

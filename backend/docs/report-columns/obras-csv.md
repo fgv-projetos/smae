@@ -19,7 +19,7 @@ Uma obra pode aparecer em mais de uma linha: a consulta faz `LEFT JOIN` com
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
 | `obra_id` | `BIGINT` | obra_id | sem formatação | — |
-| `codigo` | `VARCHAR` | codigo | guard Excel | — |
+| `codigo` | `VARCHAR` | codigo | — | — |
 | `portfolio_id` | `BIGINT` | portfolio_id | sem formatação | — |
 | `nome` | `VARCHAR` | nome | — | — |
 | `portfolio_titulo` | `VARCHAR` | portfolio_titulo | — | — |
@@ -80,7 +80,7 @@ Uma obra pode aparecer em mais de uma linha: a consulta faz `LEFT JOIN` com
 | `subprefeituras` | `VARCHAR` | subprefeituras | — | — |
 | `programa_habitacional` | `VARCHAR` | programa_habitacional | — | — |
 | `empreendimento_id` | `BIGINT` | empreendimento_id | sem formatação | — |
-| `empreendimento_identificador` | `VARCHAR` | empreendimento_identificador | guard Excel | — |
+| `empreendimento_identificador` | `VARCHAR` | empreendimento_identificador | — | — |
 | `mdo_observacoes` | `VARCHAR` | mdo_observacoes | — | — |
 | `portfolios_compartilhados_titulos` | `VARCHAR` | portfolios_compartilhados_titulos | — | — |
 | `secretario_responsavel` | `VARCHAR` | secretario_responsavel | — | — |
@@ -88,7 +88,7 @@ Uma obra pode aparecer em mais de uma linha: a consulta faz `LEFT JOIN` com
 | `coordenador_ue` | `VARCHAR` | coordenador_ue | — | — |
 | `data_aprovacao` | `DATE` | data_aprovacao | — | — |
 | `data_revisao` | `DATE` | data_revisao | — | — |
-| `versao` | `VARCHAR` | versao | guard Excel | — |
+| `versao` | `VARCHAR` | versao | — | — |
 | `n_unidades_habitacionais` | `INTEGER` | n_unidades_habitacionais | sem formatação | — |
 | `n_familias_beneficiadas` | `INTEGER` | n_familias_beneficiadas | sem formatação | — |
 | `n_unidades_atendidas` | `INTEGER` | n_unidades_atendidas | sem formatação | — |

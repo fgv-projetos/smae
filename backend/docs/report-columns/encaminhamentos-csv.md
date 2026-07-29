@@ -13,7 +13,7 @@ Colunas do CSV bruto de `encaminhamentos.csv` (uma linha por encaminhamento).
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
 | `acompanhamento_id` | `BIGINT` | acompanhamento_id | sem formatação | — |
-| `numero_encaminhamento` | `VARCHAR` | numero_encaminhamento | guard Excel | — |
+| `numero_encaminhamento` | `VARCHAR` | numero_encaminhamento | — | — |
 | `encaminhamento` | `VARCHAR` | encaminhamento | — | — |
 | `responsavel` | `VARCHAR` | responsavel | — | — |
 | `prazo_encaminhamento` | `DATE` | prazo_encaminhamento | — | — |

@@ -22,9 +22,9 @@ A ordem reproduz exatamente o antigo array `cronogramaFields`.
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
 | `obra_id` | `BIGINT` | obra_id | sem formatação | — |
-| `obra_codigo` | `VARCHAR` | obra_codigo | guard Excel | — |
+| `obra_codigo` | `VARCHAR` | obra_codigo | — | — |
 | `tarefa_id` | `BIGINT` | tarefa_id | sem formatação | — |
-| `hierarquia` | `VARCHAR` | hierarquia | guard Excel | — |
+| `hierarquia` | `VARCHAR` | hierarquia | — | — |
 | `numero` | `INTEGER` | numero | sem formatação | — |
 | `nivel` | `INTEGER` | nivel | sem formatação | — |
 | `tarefa` | `VARCHAR` | tarefa | — | — |
@@ -54,7 +54,7 @@ esse o cabeçalho emitido no CSV.
 | --- | --- | --- | --- | --- |
 | `projeto_id` | `BIGINT` | projeto_id | sem formatação | — |
 | `tarefa_id` | `BIGINT` | tarefa_id | sem formatação | — |
-| `hirearquia` | `VARCHAR` | hirearquia | guard Excel | — |
+| `hirearquia` | `VARCHAR` | hirearquia | — | — |
 | `tarefa` | `VARCHAR` | tarefa | — | — |
 | `inicio_planejado` | `DATE` | inicio_planejado | — | — |
 | `termino_planejado` | `DATE` | termino_planejado | — | — |

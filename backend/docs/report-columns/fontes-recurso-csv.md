@@ -19,6 +19,6 @@ explícito, então o cabeçalho vinha da própria consulta.
 | `valor_percentual` | `DOUBLE` | valor_percentual | 2 casas | — |
 | `valor_nominal` | `DECIMAL(18,2)` | valor_nominal | R$, 2 casas | — |
 | `fonte_recurso_ano` | `INTEGER` | fonte_recurso_ano | sem formatação | — |
-| `fonte_recurso_cod_sof` | `VARCHAR` | fonte_recurso_cod_sof | guard Excel | — |
+| `fonte_recurso_cod_sof` | `VARCHAR` | fonte_recurso_cod_sof | — | — |
 
 [← todos os arquivos](../report-columns.md)

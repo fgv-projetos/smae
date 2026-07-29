@@ -46,10 +46,10 @@ Mesmo nome de arquivo do `enderecos.csv` de `Demandas`; veja a nota em
 | `zona` | `VARCHAR` | zona | — | — |
 | `distrito` | `VARCHAR` | distrito | — | — |
 | `subprefeitura` | `VARCHAR` | subprefeitura | — | — |
-| `coordinates` | `VARCHAR` | geojson.geometry.coordinates | guard Excel | — |
+| `coordinates` | `VARCHAR` | geojson.geometry.coordinates | — | — |
 | `geojson_type` | `VARCHAR` | geojson.type | — | — |
 | `geometry_type` | `VARCHAR` | geojson.geometry.type | — | — |
-| `cep` | `VARCHAR` | geojson.properties.cep | guard Excel | — |
+| `cep` | `VARCHAR` | geojson.properties.cep | — | — |
 | `rua` | `VARCHAR` | geojson.properties.rua | — | — |
 | `pais` | `VARCHAR` | geojson.properties.pais | — | — |
 | `bairro` | `VARCHAR` | geojson.properties.bairro | — | — |
@@ -60,7 +60,7 @@ Mesmo nome de arquivo do `enderecos.csv` de `Demandas`; veja a nota em
 | `codigo_pais` | `VARCHAR` | geojson.properties.codigo_pais | — | — |
 | `string_endereco` | `VARCHAR` | geojson.properties.string_endereco | — | — |
 | `geometry_name` | `VARCHAR` | geojson.geometry_name | — | — |
-| `bbox` | `VARCHAR` | geojson.bbox | guard Excel | — |
+| `bbox` | `VARCHAR` | geojson.bbox | — | — |
 
 ## `RelProjetoEnderecoCsvRow`
 
@@ -82,7 +82,7 @@ cabeçalho); o que não pode ter ponto é o nome da coluna.
 | `coordinates` | `VARCHAR` | geojson.geometry.coordinates | — | — |
 | `geojson_type` | `VARCHAR` | geojson.type | — | — |
 | `geometry_type` | `VARCHAR` | geojson.geometry.type | — | — |
-| `cep` | `VARCHAR` | geojson.properties.cep | guard Excel | — |
+| `cep` | `VARCHAR` | geojson.properties.cep | — | — |
 | `rua` | `VARCHAR` | geojson.properties.rua | — | — |
 | `pais` | `VARCHAR` | geojson.properties.pais | — | — |
 | `bairro` | `VARCHAR` | geojson.properties.bairro | — | — |

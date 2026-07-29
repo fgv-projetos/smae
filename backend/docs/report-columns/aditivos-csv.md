@@ -18,7 +18,7 @@ Ordem do `SELECT` de `_queryDataAditivos()` — sem `fields` explícito.
 | --- | --- | --- | --- | --- |
 | `aditivo_id` | `BIGINT` | aditivo_id | sem formatação | — |
 | `contrato_id` | `BIGINT` | contrato_id | sem formatação | — |
-| `numero` | `VARCHAR` | numero | guard Excel | — |
+| `numero` | `VARCHAR` | numero | — | — |
 | `tipo_aditivo_id` | `BIGINT` | tipo_aditivo_id | sem formatação | — |
 | `tipo_aditivo_nome` | `VARCHAR` | tipo_aditivo_nome | — | — |
 | `tipo_categoria` | `VARCHAR` | tipo_categoria | — | — |

@@ -18,17 +18,17 @@ A ordem reproduz exatamente o antigo array `contratosFields`.
 | --- | --- | --- | --- | --- |
 | `contrato_id` | `BIGINT` | contrato_id | sem formatação | — |
 | `obra_id` | `BIGINT` | obra_id | sem formatação | — |
-| `numero` | `VARCHAR` | numero | guard Excel | — |
+| `numero` | `VARCHAR` | numero | — | — |
 | `exclusivo` | `BOOLEAN` | exclusivo | — | — |
 | `status` | `VARCHAR` | status | — | — |
 | `objeto` | `VARCHAR` | objeto | — | — |
 | `descricao_detalhada` | `VARCHAR` | descricao_detalhada | — | — |
 | `contratante` | `VARCHAR` | contratante | — | — |
 | `empresa_contratada` | `VARCHAR` | empresa_contratada | — | — |
-| `cnpj_contratada` | `VARCHAR` | cnpj_contratada | guard Excel | — |
+| `cnpj_contratada` | `VARCHAR` | cnpj_contratada | — | — |
 | `prazo` | `INTEGER` | prazo | sem formatação | — |
 | `unidade_prazo` | `VARCHAR` | unidade_prazo | — | — |
-| `data_base` | `VARCHAR` | data_base | guard Excel | — |
+| `data_base` | `VARCHAR` | data_base | — | — |
 | `data_inicio` | `DATE` | data_inicio | — | — |
 | `data_termino` | `DATE` | data_termino | — | — |
 | `data_termino_atualizada` | `DATE` | data_termino_atualizada | — | — |
@@ -43,8 +43,8 @@ A ordem reproduz exatamente o antigo array `contratosFields`.
 | `orgao_sigla` | `VARCHAR` | orgao_sigla | — | — |
 | `orgao_descricao` | `VARCHAR` | orgao_descricao | — | — |
 | `percentual_medido` | `DECIMAL(18,4)` | percentual_medido | 2 casas | — |
-| `processos_sei` | `VARCHAR` | processos_sei | guard Excel | — |
-| `fontes_recurso` | `VARCHAR` | fontes_recurso | guard Excel | — |
+| `processos_sei` | `VARCHAR` | processos_sei | — | — |
+| `fontes_recurso` | `VARCHAR` | fontes_recurso | — | — |
 
 ## `RelProjetoContratoCsvRow`
 
@@ -54,7 +54,7 @@ Colunas do CSV bruto de `contratos.csv` da fonte `Projeto` (uma linha por contra
 | --- | --- | --- | --- | --- |
 | `contrato_id` | `BIGINT` | contrato_id | sem formatação | — |
 | `projeto_id` | `BIGINT` | projeto_id | sem formatação | — |
-| `numero` | `VARCHAR` | numero | guard Excel | — |
+| `numero` | `VARCHAR` | numero | — | — |
 | `exclusivo` | `BOOLEAN` | exclusivo | — | — |
 | `status` | `VARCHAR` | status | — | — |
 | `objeto` | `VARCHAR` | objeto | — | — |
@@ -63,7 +63,7 @@ Colunas do CSV bruto de `contratos.csv` da fonte `Projeto` (uma linha por contra
 | `empresa_contratada` | `VARCHAR` | empresa_contratada | — | — |
 | `prazo` | `INTEGER` | prazo | sem formatação | — |
 | `unidade_prazo` | `VARCHAR` | unidade_prazo | — | — |
-| `data_base` | `VARCHAR` | data_base | guard Excel | — |
+| `data_base` | `VARCHAR` | data_base | — | — |
 | `data_inicio` | `DATE` | data_inicio | — | — |
 | `data_termino` | `DATE` | data_termino | — | — |
 | `data_termino_atualizada` | `DATE` | data_termino_atualizada | — | — |
@@ -78,9 +78,9 @@ Colunas do CSV bruto de `contratos.csv` da fonte `Projeto` (uma linha por contra
 | `area_gestora__sigla` | `VARCHAR` | area_gestora.sigla | — | — |
 | `area_gestora__descricao` | `VARCHAR` | area_gestora.descricao | — | — |
 | `percentual_medido` | `DECIMAL(18,4)` | percentual_medido | 2 casas, unidade `%` | — |
-| `processos_sei` | `VARCHAR` | processos_sei | guard Excel | — |
-| `fontes_recurso` | `VARCHAR` | fontes_recurso | guard Excel | — |
-| `cnpj_contratada` | `VARCHAR` | cnpj_contratada | guard Excel | — |
+| `processos_sei` | `VARCHAR` | processos_sei | — | — |
+| `fontes_recurso` | `VARCHAR` | fontes_recurso | — | — |
+| `cnpj_contratada` | `VARCHAR` | cnpj_contratada | — | — |
 
 ## `RelProjetosContratosCsvRow`
 

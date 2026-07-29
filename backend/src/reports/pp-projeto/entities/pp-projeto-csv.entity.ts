@@ -21,8 +21,15 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
  * referência qualificada por fonte. O aninhamento nos nomes usa `__`.
  *
  * Regra geral: valores aqui são "compute store" — números como números, datas em ISO
- * (`YYYY-MM-DD`), sem máscara de moeda e sem o hack `="valor"`. Moeda, separador decimal,
- * `dd/mm/aaaa` e o guard de texto do Excel são aplicados no pós-processamento.
+ * (`YYYY-MM-DD`), sem máscara de moeda e sem o hack `="valor"`. Moeda, separador decimal e
+ * `dd/mm/aaaa` são aplicados no pós-processamento.
+ *
+ * Sobre o `excelTextGuard`: **nenhuma coluna o declara**. A extração deste relatório nunca
+ * emitiu `="valor"`, e ligar o guard mudaria os bytes da célula para quem consome o CSV
+ * programaticamente. Várias colunas abaixo (`codigo`, `versao`, `hirearquia`, `data_base`,
+ * `processos_sei`, CEP…) o Excel de fato reinterpreta ao abrir o CSV direto; o caminho certo
+ * para quem trabalha no Excel é o `.xlsx` tipado, que sai ao lado do CSV e já nasce com a
+ * célula VARCHAR. As notas por coluna registram onde o risco existe.
  *
  * Traduções de **domínio** (enum de status de risco → texto humano, `ProjetoStatusParaExibicao`)
  * continuam na extração: não são formatação de locale.
@@ -46,8 +53,8 @@ export class RelProjetoDetalheCsvRow {
     @ReportColumn({ type: 'BIGINT', label: 'projeto_id', format: { raw: true } })
     projeto_id: number;
 
-    /** Guard: códigos como `2024.03` seriam reinterpretados como número/data pelo Excel. */
-    @ReportColumn({ type: 'VARCHAR', label: 'codigo', format: { excelTextGuard: true } })
+    /** Códigos como `2024.03` o Excel reinterpreta como número/data ao abrir o CSV direto. */
+    @ReportColumn({ type: 'VARCHAR', label: 'codigo' })
     codigo: string | null;
 
     @ReportColumn({ type: 'BIGINT', label: 'portfolio_id', format: { raw: true } })
@@ -146,8 +153,8 @@ export class RelProjetoDetalheCsvRow {
     @ReportColumn({ type: 'DATE', label: 'data_revisao' })
     data_revisao: string | null;
 
-    /** Guard: versões como `1.10` viram número no Excel. */
-    @ReportColumn({ type: 'VARCHAR', label: 'versao', format: { excelTextGuard: true } })
+    /** Versões como `1.10` viram número no Excel ao abrir o CSV direto. */
+    @ReportColumn({ type: 'VARCHAR', label: 'versao' })
     versao: string | null;
 
     @ReportColumn({ type: 'BOOLEAN', label: 'arquivado' })
@@ -159,8 +166,8 @@ export class RelProjetoDetalheCsvRow {
     @ReportColumn({ type: 'BIGINT', label: 'atividade_id', format: { raw: true } })
     atividade_id: number | null;
 
-    /** Guard: códigos de meta são numéricos com pontos (`1.2.3`). */
-    @ReportColumn({ type: 'VARCHAR', label: 'meta_codigo', format: { excelTextGuard: true } })
+    /** Códigos de meta são numéricos com pontos (`1.2.3`) — o Excel os reinterpreta. */
+    @ReportColumn({ type: 'VARCHAR', label: 'meta_codigo' })
     meta_codigo: string | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'resumo' })
@@ -213,7 +220,7 @@ export class RelProjetoDetalheCsvRow {
     @ReportColumn({ type: 'BIGINT', label: 'meta.id', format: { raw: true } })
     meta__id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'meta.codigo', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'meta.codigo' })
     meta__codigo: string | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'meta.titulo' })
@@ -271,8 +278,8 @@ export class RelProjetoCronogramaCsvRow {
     @ReportColumn({ type: 'BIGINT', label: 'tarefa_id', format: { raw: true } })
     tarefa_id: number;
 
-    /** Guard: `1.2.3` seria reinterpretado como número/data pelo Excel. */
-    @ReportColumn({ type: 'VARCHAR', label: 'hirearquia', format: { excelTextGuard: true } })
+    /** `1.2.3` o Excel reinterpreta como número/data ao abrir o CSV direto. */
+    @ReportColumn({ type: 'VARCHAR', label: 'hirearquia' })
     hirearquia: string | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'tarefa' })
@@ -287,8 +294,8 @@ export class RelProjetoCronogramaCsvRow {
     /**
      * VARCHAR (e não DECIMAL) de propósito: quando a tarefa tem custo anualizado o valor é o
      * texto `ano: valor; ano: valor`; só no fallback (`backup_custo_estimado`) é um número.
-     * Sem guard justamente por isso — no caso numérico o guard transformaria um número em
-     * texto no Excel, e o caso textual não corre risco de reinterpretação.
+     * No caso numérico um guard de texto transformaria um número em texto no Excel, e o caso
+     * textual não corre risco de reinterpretação.
      */
     @ReportColumn({ type: 'VARCHAR', label: 'custo_estimado' })
     custo_estimado: string | number | null;
@@ -383,8 +390,8 @@ export class RelProjetoEncaminhamentoCsvRow {
     @ReportColumn({ type: 'BIGINT', label: 'acompanhamento_id', format: { raw: true } })
     acompanhamento_id: number;
 
-    /** Guard: identificadores como `1.2` viram número/data no Excel. */
-    @ReportColumn({ type: 'VARCHAR', label: 'numero_encaminhamento', format: { excelTextGuard: true } })
+    /** Identificadores como `1.2` viram número/data no Excel ao abrir o CSV direto. */
+    @ReportColumn({ type: 'VARCHAR', label: 'numero_encaminhamento' })
     numero_encaminhamento: string | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'encaminhamento' })
@@ -524,8 +531,8 @@ export class RelProjetoContratoCsvRow {
     @ReportColumn({ type: 'BIGINT', label: 'projeto_id', format: { raw: true } })
     projeto_id: number;
 
-    /** Guard: número de contrato é código, não valor numérico. */
-    @ReportColumn({ type: 'VARCHAR', label: 'numero', format: { excelTextGuard: true } })
+    /** Número de contrato é código, não valor numérico — o Excel o reinterpreta. */
+    @ReportColumn({ type: 'VARCHAR', label: 'numero' })
     numero: string | null;
 
     @ReportColumn({ type: 'BOOLEAN', label: 'exclusivo' })
@@ -552,8 +559,8 @@ export class RelProjetoContratoCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'unidade_prazo' })
     unidade_prazo: string | null;
 
-    /** `mes/ano` (ex.: `3/2024`). Guard obrigatório: o Excel leria como data. */
-    @ReportColumn({ type: 'VARCHAR', label: 'data_base', format: { excelTextGuard: true } })
+    /** `mes/ano` (ex.: `3/2024`): o Excel lê como data ao abrir o CSV direto. */
+    @ReportColumn({ type: 'VARCHAR', label: 'data_base' })
     data_base: string | null;
 
     @ReportColumn({ type: 'DATE', label: 'data_inicio' })
@@ -607,16 +614,16 @@ export class RelProjetoContratoCsvRow {
     @ReportColumn({ type: 'DECIMAL(18,4)', label: 'percentual_medido', format: { decimalPlaces: 2, unit: '%' } })
     percentual_medido: string | null;
 
-    /** Processos SEI já formatados, separados por `|`. Guard: são números com pontos. */
-    @ReportColumn({ type: 'VARCHAR', label: 'processos_sei', format: { excelTextGuard: true } })
+    /** Processos SEI já formatados, separados por `|`: são números com pontos. */
+    @ReportColumn({ type: 'VARCHAR', label: 'processos_sei' })
     processos_sei: string | null;
 
-    /** Códigos SOF separados por `|`. Guard: preservam zeros à esquerda. */
-    @ReportColumn({ type: 'VARCHAR', label: 'fontes_recurso', format: { excelTextGuard: true } })
+    /** Códigos SOF separados por `|`: têm zeros à esquerda, que o Excel come. */
+    @ReportColumn({ type: 'VARCHAR', label: 'fontes_recurso' })
     fontes_recurso: string | null;
 
-    /** Já formatado por `f_formata_cnpj` no SQL. Guard: senão vira número no Excel. */
-    @ReportColumn({ type: 'VARCHAR', label: 'cnpj_contratada', format: { excelTextGuard: true } })
+    /** Já formatado por `f_formata_cnpj` no SQL. O Excel o lê como número. */
+    @ReportColumn({ type: 'VARCHAR', label: 'cnpj_contratada' })
     cnpj_contratada: string | null;
 }
 
@@ -702,7 +709,7 @@ export class RelProjetoTermoEncerramentoCsvRow {
     @ReportColumn({ type: 'BIGINT', label: 'projeto_id', format: { raw: true } })
     projeto_id: number;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'projeto_codigo', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'projeto_codigo' })
     projeto_codigo: string | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'nome_projeto' })
@@ -791,7 +798,7 @@ export class RelProjetoEnderecoCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'subprefeitura' })
     subprefeitura: string | null;
 
-    /** `lat,lon` — o par de vírgulas já impede o Excel de ler como número, sem guard. */
+    /** `lat,lon` — o par de vírgulas já impede o Excel de ler como número. */
     @ReportColumn({ type: 'VARCHAR', label: 'geojson.geometry.coordinates' })
     coordinates: string | null;
 
@@ -801,8 +808,8 @@ export class RelProjetoEnderecoCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'geojson.geometry.type' })
     geometry_type: string | null;
 
-    /** Guard: CEP tem zeros à esquerda. */
-    @ReportColumn({ type: 'VARCHAR', label: 'geojson.properties.cep', format: { excelTextGuard: true } })
+    /** CEP tem zeros à esquerda, que o Excel come ao abrir o CSV direto. */
+    @ReportColumn({ type: 'VARCHAR', label: 'geojson.properties.cep' })
     cep: string | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'geojson.properties.rua' })

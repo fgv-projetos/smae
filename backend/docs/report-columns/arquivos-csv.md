@@ -17,7 +17,7 @@ Ordem do `SELECT` de `_queryDataArquivos()` — sem `fields` explícito.
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
 | `obra_id` | `BIGINT` | obra_id | sem formatação | — |
-| `obra_codigo` | `VARCHAR` | obra_codigo | guard Excel | — |
+| `obra_codigo` | `VARCHAR` | obra_codigo | — | — |
 | `nome_original` | `VARCHAR` | nome_original | — | — |
 | `criado_em` | `TIMESTAMP` | criado_em | — | — |
 | `criador_id` | `BIGINT` | criador_id | sem formatação | — |

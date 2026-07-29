@@ -17,7 +17,7 @@ A ordem reproduz exatamente o antigo array `acompanhamentosFields`.
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
 | `obra_id` | `BIGINT` | obra_id | sem formatação | — |
-| `obra_codigo` | `VARCHAR` | obra_codigo | guard Excel | — |
+| `obra_codigo` | `VARCHAR` | obra_codigo | — | — |
 | `data_registro` | `DATE` | data_registro | — | — |
 | `participantes` | `VARCHAR` | participantes | — | — |
 | `cronograma_paralizado` | `BOOLEAN` | cronograma_paralizado | — | — |

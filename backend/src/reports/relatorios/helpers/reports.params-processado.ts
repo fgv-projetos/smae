@@ -1,6 +1,6 @@
 import { InputJsonValue } from '@prisma/client/runtime/client';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { CreateReportDto } from '../dto/create-report.dto';
+import { CreateReportDto, PARAM_BRUTO } from '../dto/create-report.dto';
 import { RelatorioParamDto } from '../entities/report.entity';
 import { FonteRelatorio, ParlamentarCargo, TipoRelatorio } from '@prisma/client';
 import { EnumHumano } from 'src/reports/utils/utils.service';
@@ -143,6 +143,8 @@ export const BuildParametrosProcessados = async (
     for (const paramKey of Object.keys(parametros)) {
         // "eh_publico" é um param deprecated, mas como algumas linhas ainda podem ter ele, vamos ignorar.
         if (paramKey === 'eh_publico') continue;
+        // Chave interna do modo bruto (ver PARAM_BRUTO): não é filtro, não vai para a tela.
+        if (paramKey === PARAM_BRUTO) continue;
 
         let valor = parametros[paramKey];
         if (!valor) continue;

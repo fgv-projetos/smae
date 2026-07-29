@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional, refs } from '@nestjs/swagger';
+import { ApiHideProperty, ApiProperty, ApiPropertyOptional, refs } from '@nestjs/swagger';
 import { FonteRelatorio } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsIn, IsInt, IsOptional } from 'class-validator';
@@ -23,6 +23,19 @@ import { CreateRelProjetoDto } from '../../pp-projeto/dto/create-previsao-custo.
 import { CreatePsMonitoramentoMensalFilterDto } from '../../ps-monitoramento-mensal/dto/create-ps-monitoramento-mensal-filter.dto';
 import { ReportValidatorOf } from '../report-validator-of';
 import { CreateRelTribunalDeContasDto } from 'src/reports/tribunal-de-contas/dto/create-tribunal-de-contas.dto';
+
+/**
+ * Chave que carrega o `bruto` dentro de `relatorio.parametros`.
+ *
+ * A task roda depois do POST e reconstrói o DTO a partir da linha do banco, então a flag precisa
+ * viajar em algum campo persistido. Vai no JSON que já existe em vez de numa coluna nova porque
+ * não é atributo do relatório, e sim de quem pediu aquela execução — não há o que consultar,
+ * agregar ou migrar sobre ela.
+ *
+ * Como `ParseParametrosDaFonte` roda com `excludeExtraneousValues`, a chave é descartada antes de
+ * chegar ao service de extração: nenhuma fonte precisa conhecê-la.
+ */
+export const PARAM_BRUTO = '__bruto';
 
 export class CreateReportDto {
     @ApiProperty({ enum: FonteRelatorio, enumName: 'FonteRelatorio' })
@@ -72,6 +85,20 @@ export class CreateReportDto {
     @IsInt()
     @Type(() => Number)
     modelo_id?: number;
+
+    /**
+     * Entrega os arquivos da extração como eles saem: cabeçalho técnico, valores sem máscara,
+     * nenhum `.xlsx` ao lado e `modelo_id` ignorado (bruto é bruto). É o atalho para quem consome
+     * relatório por código e não quer desfazer a apresentação para chegar ao dado.
+     *
+     * Não é opção de usuário final — fica fora do Swagger e sem coluna própria no banco (viaja
+     * dentro de `parametros`, ver `PARAM_BRUTO`). O registro de que a execução foi bruta fica no
+     * `info.json` do zip.
+     */
+    @ApiHideProperty()
+    @IsOptional()
+    @IsBoolean()
+    bruto?: boolean;
 
     /**
      * Escopo de visibilidade do relatório. Define `visibilidade` + `restrito_para` via o mapa de

@@ -59,7 +59,7 @@ import { PSMonitoramentoMensal } from '../ps-monitoramento-mensal/ps-monitoramen
 import { TransferenciasService } from '../transferencias/transferencias.service';
 import { TribunalDeContasService } from '../tribunal-de-contas/tribunal-de-contas.service';
 import { FileOutput, ParseParametrosDaFonte, ReportableService } from '../utils/utils.service';
-import { CreateReportDto } from './dto/create-report.dto';
+import { CreateReportDto, PARAM_BRUTO } from './dto/create-report.dto';
 import { FilterRelatorioDto } from './dto/filter-relatorio.dto';
 import { ListVisibilidadeTipoDto, RelatorioDto, RelatorioProcessamentoDto } from './entities/report.entity';
 import { ReportContext } from './helpers/reports.contexto';
@@ -217,6 +217,10 @@ export class ReportsService {
                 horario: Date2YMD.tzSp2UTC(now),
                 tipo: dto.fonte,
                 file_name: service.getClassFileName(),
+                // Único registro de que a execução saiu crua. Sem isto, um zip sem rótulos e sem
+                // xlsx seria indistinguível de falha do pós-processamento (que grava o motivo no
+                // `resumo_saida`); aqui o próprio arquivo diz que foi pedido assim.
+                ...(dto.bruto ? { bruto: true } : {}),
             },
             undefined,
             4
@@ -264,6 +268,11 @@ export class ReportsService {
         ctx: ReportContext
     ): Promise<FileOutput[]> {
         const modeloId = dto.modelo_id ?? null;
+
+        // `bruto`: o pedido é o arquivo da extração, e ele já está em `files`. Sai antes de
+        // qualquer coisa — inclusive antes de `resumoSaida`, porque bruto por escolha não é
+        // ocorrência de execução; quem quer saber lê o `info.json`.
+        if (dto.bruto) return files;
 
         // Fonte sem schema: nada a fazer, a extração dela já entrega formatado.
         if (!isSchemaAware(service)) {
@@ -533,7 +542,12 @@ export class ReportsService {
         }
     }
 
-    async zipFiles(files: FileOutput[]) {
+    /**
+     * @param gerarXlsx converte cada CSV sem `.xlsx` companheiro pelo caminho legado
+     * (`convertCsvToXlsx`). Falso no modo `bruto`, em que o zip tem que conter só o que a
+     * extração escreveu.
+     */
+    async zipFiles(files: FileOutput[], gerarXlsx: boolean = true) {
         const zip = new AdmZip();
 
         // Basenames que já chegam como XLSX pronto (caminho do pós-processamento, que emite
@@ -549,7 +563,9 @@ export class ReportsService {
                 // Só lê o conteúdo do CSV quando ele realmente vai ser convertido — arquivos
                 // grandes já pós-processados não precisam ser carregados em memória.
                 const precisaConverter =
-                    file.name.endsWith('.csv') && !xlsxJaPresentes.has(file.name.slice(0, -'.csv'.length));
+                    gerarXlsx &&
+                    file.name.endsWith('.csv') &&
+                    !xlsxJaPresentes.has(file.name.slice(0, -'.csv'.length));
 
                 if (file.buffer) {
                     zip.addFile(file.name, file.buffer);
@@ -687,7 +703,10 @@ export class ReportsService {
                     restrito_para: restrito_para ?? undefined,
                     tipo: TipoRelatorio[parametros.tipo as TipoRelatorio] ? parametros.tipo : null,
                     modelo_id: dto.modelo_id ?? null,
-                    parametros: parametros,
+                    // `PARAM_BRUTO` entra só aqui, no JSON persistido: o `parametros` em memória
+                    // segue limpo para o `BuildParametrosProcessados` abaixo, que lista as chaves
+                    // como filtros na tela.
+                    parametros: dto.bruto ? { ...parametros, [PARAM_BRUTO]: true } : parametros,
                     parametros_processados: await BuildParametrosProcessados(this.prisma, {
                         ...dto,
                         parametros: parametros,
@@ -1209,11 +1228,14 @@ export class ReportsService {
                 ? await this.pessoaService.reportPessoaFromJwt(relatorio.criado_por, relatorio.sistema)
                 : null;
 
+            const bruto = (relatorio.parametros as Record<string, unknown> | null)?.[PARAM_BRUTO] === true;
+
             await this.runReport(
                 {
                     fonte: relatorio.fonte,
                     parametros: relatorio.parametros,
                     modelo_id: relatorio.modelo_id ?? undefined,
+                    bruto: bruto,
                 },
                 pessoaJwt,
                 contexto
@@ -1226,7 +1248,7 @@ export class ReportsService {
 
             filename = filename.replace('CasaCivil', 'TransfVoluntarias'); // Ajuste para o nome correto do arquivo
 
-            const zipBuffer = await this.zipFiles(contexto.getFiles());
+            const zipBuffer = await this.zipFiles(contexto.getFiles(), !bruto);
 
             const arquivoId = await this.uploadService.uploadReport(
                 relatorio.fonte,

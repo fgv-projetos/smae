@@ -21,15 +21,14 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
  * referência qualificada por fonte. O aninhamento nos nomes usa `__`.
  *
  * Regra geral: valores aqui são "compute store" — números como números, datas em ISO
- * (`YYYY-MM-DD`), sem máscara de moeda e sem o hack `="valor"`. Moeda, separador decimal e
- * `dd/mm/aaaa` são aplicados no pós-processamento.
+ * (`YYYY-MM-DD`), sem máscara de moeda e sem o hack `="valor"` — que não existe mais em
+ * ponto nenhum do pipeline. Moeda, separador decimal e `dd/mm/aaaa` são aplicados no
+ * pós-processamento.
  *
- * Sobre o `excelTextGuard`: **nenhuma coluna o declara**. A extração deste relatório nunca
- * emitiu `="valor"`, e ligar o guard mudaria os bytes da célula para quem consome o CSV
- * programaticamente. Várias colunas abaixo (`codigo`, `versao`, `hirearquia`, `data_base`,
- * `processos_sei`, CEP…) o Excel de fato reinterpreta ao abrir o CSV direto; o caminho certo
- * para quem trabalha no Excel é o `.xlsx` tipado, que sai ao lado do CSV e já nasce com a
- * célula VARCHAR. As notas por coluna registram onde o risco existe.
+ * Várias colunas abaixo (`codigo`, `versao`, `hirearquia`, `data_base`, `processos_sei`,
+ * CEP…) o Excel reinterpreta ao abrir o CSV direto; o caminho para quem trabalha no Excel é
+ * o `.xlsx`, que sai ao lado do CSV e já nasce com a célula tipada. As notas por coluna
+ * registram onde o risco existe.
  *
  * Traduções de **domínio** (enum de status de risco → texto humano, `ProjetoStatusParaExibicao`)
  * continuam na extração: não são formatação de locale.
@@ -294,8 +293,7 @@ export class RelProjetoCronogramaCsvRow {
     /**
      * VARCHAR (e não DECIMAL) de propósito: quando a tarefa tem custo anualizado o valor é o
      * texto `ano: valor; ano: valor`; só no fallback (`backup_custo_estimado`) é um número.
-     * No caso numérico um guard de texto transformaria um número em texto no Excel, e o caso
-     * textual não corre risco de reinterpretação.
+     * O caso textual não corre risco de reinterpretação pelo Excel.
      */
     @ReportColumn({ type: 'VARCHAR', label: 'custo_estimado' })
     custo_estimado: string | number | null;

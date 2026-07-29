@@ -31,13 +31,6 @@ O `flatten` roda com `arrays: false` (padrão do json2csv): campo array vira **u
 serializada, nunca N colunas. É isso que mantém o conjunto de colunas fixo mesmo com a
 extração em lotes (`processDataInBatches`).
 
-## Guard do Excel
-
-Nenhuma coluna recebe `excelTextGuard`. A extração deste relatório nunca emitiu `="..."`
-em campo nenhum — ligar o guard mudaria os bytes do arquivo para quem consome o CSV
-programaticamente. Manter a equivalência com a saída de hoje vale mais do que corrigir a
-interpretação do Excel numa refatoração de infraestrutura.
-
 ## Tipos
 
 `INTEGER` para as colunas `Int` do Postgres, `DOUBLE` para as `Float` (não há precisão

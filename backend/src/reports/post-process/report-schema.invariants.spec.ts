@@ -46,8 +46,8 @@ for (const arquivo of arquivosDeEntidade(path.resolve(__dirname, '..'))) {
  * Invariantes que valem para QUALQUER schema declarado.
  *
  * Existem porque cada uma delas corresponde a uma falha real e silenciosa: um ponto no
- * nome vira referência qualificada no builder, um label duplicado gera coluna ambígua no
- * Excel, e um guard em coluna numérica transforma número em texto no XLSX.
+ * nome vira referência qualificada no builder e um label duplicado gera coluna ambígua no
+ * Excel.
  */
 describe('invariantes dos schemas de relatório', () => {
     const classes = listReportRowClasses();
@@ -96,15 +96,6 @@ describe('invariantes dos schemas de relatório', () => {
                 .map(([label, nomes]) => `${label}: ${nomes.join(', ')}`);
 
             expect(colisoes).toEqual([]);
-        });
-
-        it('não aplica guard de texto do Excel em coluna numérica ou de data', () => {
-            // Guard emite `="valor"`: em coluna tipada isso viraria texto no XLSX,
-            // perdendo a soma/ordenação que é justamente o ponto do tipo nativo.
-            const invalidas = schema.colunas
-                .filter((c) => c.format?.excelTextGuard && c.type !== 'VARCHAR')
-                .map((c) => `${c.name} (${c.type})`);
-            expect(invalidas).toEqual([]);
         });
 
         it('declara fontes que produzem o arquivo', () => {

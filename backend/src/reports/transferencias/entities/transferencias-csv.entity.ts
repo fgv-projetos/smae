@@ -11,7 +11,7 @@ import { TipoRelatorioTransferencia } from '../dto/create-transferencias.dto';
  *
  * Regra geral: valores aqui são "compute store" — números como números, datas em ISO
  * (`YYYY-MM-DD`), sem máscara de moeda e sem o hack `="valor"`. Moeda, separador decimal,
- * `dd/mm/aaaa` e o guard de texto do Excel são aplicados na etapa de pós-processamento.
+ * `dd/mm/aaaa` são aplicados na etapa de pós-processamento.
  *
  * Booleanos que o negócio exibe como `Sim`/`Não` continuam sendo traduzidos na extração:
  * é tradução de domínio (e não formatação de locale), então permanece `VARCHAR`.
@@ -31,10 +31,10 @@ export class RelTransferenciasCsvRow {
     @ReportColumn({ type: 'INTEGER', label: 'Ano', format: { raw: true } })
     ano: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Objeto', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Objeto' })
     objeto: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Detalhamento', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Detalhamento' })
     detalhamento: string | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Clausula Suspensiva' })
@@ -43,13 +43,13 @@ export class RelTransferenciasCsvRow {
     @ReportColumn({ type: 'DATE', label: 'Data de vencimento da Suspensiva' })
     clausula_suspensiva_vencimento: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Normativa', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Normativa' })
     normativa: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Observações', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Observações' })
     observacoes: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Nome Programa / Portfólio', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Nome Programa / Portfólio' })
     nome_programa: string | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Empenho' })
@@ -68,54 +68,52 @@ export class RelTransferenciasCsvRow {
     @ReportColumn({ type: 'DECIMAL(18,2)', label: 'Contrapartida', format: { currency: 'R$', decimalPlaces: 2 } })
     valor_contrapartida: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Emenda', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Emenda' })
     emenda: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Dotação Orçamentária', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Dotação Orçamentária' })
     dotacao: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Número da Demanda/Proposta', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Número da Demanda/Proposta' })
     demanda: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Conta - Banco da Secretaria fim', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Conta - Banco da Secretaria fim' })
     banco_fim: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Conta - Número da Secretaria fim', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Conta - Número da Secretaria fim' })
     conta_fim: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Conta - Agência da Secretaria fim', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Conta - Agência da Secretaria fim' })
     agencia_fim: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Conta - Banco do aceite', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Conta - Banco do aceite' })
     banco_aceite: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Conta - Agência do aceite', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Conta - Agência do aceite' })
     agencia_aceite: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Conta - Número do aceite', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Conta - Número do aceite' })
     conta_aceite: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Emenda Unitária', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Emenda Unitária' })
     emenda_unitaria: string | null;
 
     @ReportColumn({
         type: 'VARCHAR',
         label: 'Gestor Municipal do Contrato (secretaria)',
-        format: { excelTextGuard: true },
     })
     distribuicao_recurso__orgao_gestor_descricao: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Ordenador de despesas', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Ordenador de despesas' })
     ordenador_despesa: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Secretaria do órgão concedente', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Secretaria do órgão concedente' })
     secretaria_concedente: string | null;
 
     @ReportColumn({
         type: 'VARCHAR',
         label: 'Plano de Ação',
         descricao: 'Código do detalhamento do uso dos repasses parlamentares nas transferências especiais.',
-        format: { excelTextGuard: true },
     })
     plano_de_acao: string | null;
 
@@ -125,7 +123,7 @@ export class RelTransferenciasCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Esfera' })
     esfera: string;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Parlamentares', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Parlamentares' })
     parlamentares_info: string | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Orgão Concedente' })
@@ -134,10 +132,10 @@ export class RelTransferenciasCsvRow {
     @ReportColumn({ type: 'BIGINT', label: 'ID Distribuição de Recurso', format: { raw: true } })
     distribuicao_recurso__id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Gestor Municipal (servidor)', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Gestor Municipal (servidor)' })
     distribuicao_recurso__nome_responsavel: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Objeto detalhado', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Objeto detalhado' })
     distribuicao_recurso__objeto: string | null;
 
     @ReportColumn({
@@ -167,25 +165,24 @@ export class RelTransferenciasCsvRow {
     @ReportColumn({
         type: 'VARCHAR',
         label: 'Programa Orçamentário Estadual ou Federal',
-        format: { excelTextGuard: true },
     })
     distribuicao_recurso__programa_orcamentario_estadual: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Programa Orçamentário Municipal', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Programa Orçamentário Municipal' })
     distribuicao_recurso__programa_orcamentario_municipal: string | null;
 
     // Colidia com `dotacao` ('Dotação Orçamentária') — só diferiam na caixa, e a saída vinha
     // como 'Dotação orçamentária_1'. Segue o prefixo 'Distribuição - ' já usado nas irmãs.
-    @ReportColumn({ type: 'VARCHAR', label: 'Distribuição - Dotação Orçamentária', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Distribuição - Dotação Orçamentária' })
     distribuicao_recurso__dotacao: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'N° Proposta', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'N° Proposta' })
     distribuicao_recurso__proposta: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Número do Instrumento', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Número do Instrumento' })
     distribuicao_recurso__contrato: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Nº do Convênio/Pré Convênio', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Nº do Convênio/Pré Convênio' })
     distribuicao_recurso__convenio: string | null;
 
     @ReportColumn({ type: 'DATE', label: 'Data de assinatura do termo de aceite' })
@@ -215,16 +212,16 @@ export class RelTransferenciasCsvRow {
     @ReportColumn({ type: 'DOUBLE', label: 'Investimento/Capital (%)', format: { decimalPlaces: 2, unit: '%' } })
     distribuicao_recurso__pct_investimento: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Distribuição - Banco', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Distribuição - Banco' })
     distribuicao_recurso__banco: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Distribuição - Agência', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Distribuição - Agência' })
     distribuicao_recurso__agencia: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Distribuição - Conta Corrente', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Distribuição - Conta Corrente' })
     distribuicao_recurso__conta: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Distribuição - Gestor da Conta', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Distribuição - Gestor da Conta' })
     distribuicao_recurso__gestor_conta: string | null;
 
     // --- Colunas abaixo não estavam em nenhuma das saídas antigas, mas já eram extraídas.
@@ -241,22 +238,22 @@ export class RelTransferenciasCsvRow {
     @ReportColumn({ type: 'BIGINT', label: 'ID do Orgão Concedente', format: { raw: true } })
     orgao_concedente__id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Programa', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Programa' })
     programa: string | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Pendente preenchimento de valores' })
     pendente_preenchimento_valores: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Gestor do Contrato', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Gestor do Contrato' })
     gestor_contrato: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Número de Identificação', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Número de Identificação' })
     numero_identificacao: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Tipo de Transferência', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Tipo de Transferência' })
     tipo_transferencia: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Classificação', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Classificação' })
     classificacao: string | null;
 
     @ReportColumn({ type: 'BIGINT', label: 'ID da Transferência (Distribuição)', format: { raw: true } })
@@ -278,7 +275,7 @@ export class RelTransferenciaCronogramaCsvRow {
     @ReportColumn({ type: 'BIGINT', label: 'ID da Transferência', format: { raw: true } })
     transferencia_id: number;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Hierarquia', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Hierarquia' })
     hierarquia: string | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Tarefa' })

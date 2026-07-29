@@ -5,7 +5,8 @@
  * cada `toFileOutput`:
  *
  *   1. **Extração** — produzir as linhas o mais próximo possível do "compute store":
- *      números como números, datas em ISO, sem máscara de moeda e sem o hack `="valor"`.
+ *      números como números, datas em ISO, sem máscara de moeda e sem o hack `="valor"`
+ *      (que não existe mais em lugar nenhum do pipeline — ver `ReportColumnFormat`).
  *   2. **Apresentação** — selecionar/reordenar/renomear colunas, filtrar, ordenar e
  *      aplicar formatação de locale.
  *
@@ -38,15 +39,6 @@ export class ReportColumnFormat {
     dateFormat?: string;
     /** Não formatar (útil para IDs numéricos). */
     raw?: boolean;
-    /**
-     * Envolve o valor em `="..."` **apenas no CSV**.
-     *
-     * Necessário porque o CSV não carrega schema: ao abrir o arquivo direto no Excel,
-     * valores como `0001.02` (dotação) ou `2024.10.15.3350` seriam reinterpretados como
-     * número/data. No XLSX isso é desnecessário — lá a célula já nasce VARCHAR, então
-     * o guard nunca é aplicado no caminho do XLSX.
-     */
-    excelTextGuard?: boolean;
 }
 
 export class ReportColumnDef {

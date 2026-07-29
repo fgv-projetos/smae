@@ -24,7 +24,7 @@ const SCHEMA: ReportFileSchema = {
         { name: 'id', type: 'BIGINT', label: 'ID', format: { raw: true } },
         { name: 'valor', type: 'DECIMAL(18,2)', label: 'Valor', format: { currency: 'R$', decimalPlaces: 2 } },
         { name: 'vigencia', type: 'DATE', label: 'Vigência' },
-        { name: 'dotacao', type: 'VARCHAR', label: 'Dotação', format: { excelTextGuard: true } },
+        { name: 'dotacao', type: 'VARCHAR', label: 'Dotação' },
         { name: 'orgao__sigla', type: 'VARCHAR', label: 'Órgão' },
     ],
 };
@@ -118,7 +118,6 @@ describe('ReportPostProcessService', () => {
         const csvTexto = fs.readFileSync(out.find((f) => f.name.endsWith('.csv'))!.localFile!, 'utf-8');
         expect(csvTexto).toContain("'SMUL'");
         expect(csvTexto).toContain("'SEHAB'");
-        // A dotação tem o guard do Excel, então vem como `="'0001.02'"` com as aspas dobradas.
         expect(csvTexto).toContain('0001.02');
         expect(csvTexto).not.toMatch(/;SMUL;|;SMUL$|;SMUL\r/m);
     });
@@ -140,22 +139,21 @@ describe('ReportPostProcessService', () => {
 
         // Célula numérica vazia com prefixo de moeda sai vazia, não como a string "R$ ".
         // (a lib usava CONCAT, que ignora NULL; desde a 0.4.0 usa `||`, que propaga)
-        // O `""` é a Dotação: o guard devolve string vazia para NULL, e o writer de CSV
-        // do DuckDB a escreve entre aspas para distingui-la de NULL (que sai como nada).
-        expect(linhas[3]).toBe('3;;;"";SMUL');
+        expect(linhas[3]).toBe('3;;;;SMUL');
         expect(linhas[3]).not.toContain('R$');
     });
 
-    it('protege texto no CSV com o guard e NÃO no XLSX', async () => {
+    it('não envolve texto em ="..." em nenhuma das duas saídas', async () => {
         const { csvTexto, xlsxPath } = await aplicar({ arquivos: [{ arquivo: 'exemplo.csv' }] });
 
-        // No CSV, sem schema, o Excel reinterpretaria 2024.10.15.3350 — daí o guard.
-        // O campo contém aspas, então o writer CSV o envolve em aspas e as dobra
-        // (`"=""..."""`), que é como o Excel espera receber `="..."`.
-        expect(csvTexto).toContain('"=""2024.10.15.3350"""');
-        expect(csvTexto).toContain('"=""0001.02"""');
+        // O guard de texto do Excel foi removido do pipeline: a célula sai crua nos dois
+        // formatos. Quem abre o CSV direto no Excel vê 2024.10.15.3350 ser reinterpretado —
+        // é aceito, porque `="..."` corrompia o arquivo para quem o lê por automação, que é a
+        // maioria. O caminho para o Excel é o `.xlsx`, onde a célula nasce com o tipo.
+        expect(csvTexto).not.toContain('="');
+        expect(csvTexto).toContain('2024.10.15.3350');
+        expect(csvTexto).toContain('0001.02');
 
-        // No XLSX a célula já nasce texto; o guard seria ruído visível.
         const linhas = await lerXlsx(xlsxPath);
         expect(linhas[0]['Dotação']).toBe('2024.10.15.3350');
         expect(linhas[1]['Dotação']).toBe('0001.02');
@@ -315,7 +313,8 @@ describe('ReportPostProcessService', () => {
         expect(linhas[0]).toBe('ID;Valor;Vigência;Dotação;Órgão');
         expect(linhas[1]).toContain('1.234,56');
         expect(linhas[1]).toContain('15/10/2024');
-        expect(csvTexto).toContain('"=""2024.10.15.3350"""');
+        // Texto sai cru: o guard `="..."` não faz mais parte do pipeline.
+        expect(linhas[1]).toContain(';2024.10.15.3350;');
     });
 
     it('ordena por vários campos, na ordem declarada', async () => {
@@ -375,16 +374,18 @@ describe('ReportPostProcessService', () => {
                     arquivos: [
                         {
                             arquivo: 'exemplo.csv',
-                            colunas: [{ coluna: 'id' }, { coluna: 'so_em_outra_variante' }, { coluna: 'nunca_existiu' }],
+                            colunas: [
+                                { coluna: 'id' },
+                                { coluna: 'so_em_outra_variante' },
+                                { coluna: 'nunca_existiu' },
+                            ],
                         },
                     ],
                 },
                 daFonte
             );
 
-            expect(recortadas).toEqual([
-                { arquivo: 'exemplo.csv', onde: 'colunas', coluna: 'so_em_outra_variante' },
-            ]);
+            expect(recortadas).toEqual([{ arquivo: 'exemplo.csv', onde: 'colunas', coluna: 'so_em_outra_variante' }]);
             expect(ignoradas).toEqual([{ arquivo: 'exemplo.csv', onde: 'colunas', coluna: 'nunca_existiu' }]);
         });
 

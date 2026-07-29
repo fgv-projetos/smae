@@ -16,7 +16,7 @@ recurso), então nenhum nome precisa do `__` usado nos relatórios aninhados.
 
 Regra geral: valores aqui são "compute store" — números como números, datas em ISO
 (`YYYY-MM-DD`), sem máscara de moeda e sem o hack `="valor"`. Moeda, separador decimal,
-`dd/mm/aaaa` e o guard de texto do Excel são aplicados na etapa de pós-processamento.
+`dd/mm/aaaa` são aplicados na etapa de pós-processamento.
 
 Os rótulos abaixo reproduzem exatamente os cabeçalhos que o relatório já emitia hoje,
 incluindo 'Dotação Orçamentaria' (sem o acento em "Orçamentária"): o arquivo é entregue
@@ -24,15 +24,15 @@ ao Tribunal de Contas e a correção do rótulo teria de ser combinada com o neg
 
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
-| `emenda` | `VARCHAR` | Emenda | guard Excel | — |
-| `programa` | `VARCHAR` | Programa | guard Excel | — |
+| `emenda` | `VARCHAR` | Emenda | — | — |
+| `programa` | `VARCHAR` | Programa | — | — |
 | `ano` | `INTEGER` | Ano | sem formatação | — |
 | `parlamentar` | `VARCHAR` | Parlamentar | — | — |
 | `valor_repasse` | `DECIMAL(18,2)` | Valor de Repasse | R$, 2 casas | — |
 | `acao` | `VARCHAR` | Ação | — | — |
 | `gestor_municipal` | `VARCHAR` | Gestor Municipal | — | — |
 | `prazo_vigencia` | `DATE` | Prazo de Vigência | — | — |
-| `dotacao_orcamentaria` | `VARCHAR` | Dotação Orçamentaria | guard Excel | — |
+| `dotacao_orcamentaria` | `VARCHAR` | Dotação Orçamentaria | — | — |
 | `rubrica_de_receita` | `VARCHAR` | Rubrica de Receita | — | — |
 | `finalidade` | `VARCHAR` | Política pública | — | — |
 | `valor_empenho` | `DECIMAL(18,2)` | Empenho | R$, 2 casas | — |

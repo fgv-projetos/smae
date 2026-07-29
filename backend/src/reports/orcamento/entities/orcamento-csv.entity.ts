@@ -194,8 +194,8 @@ export class RelOrcamentoExecutadoCsvRow {
     /**
      * Dotação já concatenada com o complemento na extração (`dotacao.complemento`).
      *
-     * Sem `excelTextGuard`: o relatório nunca emitiu `="..."` aqui e ligar o guard agora mudaria
-     * o conteúdo da célula entregue hoje.
+     * Sai crua: o relatório nunca emitiu `="..."` aqui, e o Excel a reinterpreta como número
+     * ao abrir o CSV direto.
      */
     @ReportColumn({ type: 'VARCHAR', label: 'dotacao' })
     dotacao: string;
@@ -414,7 +414,7 @@ export class RelOrcamentoPlanejadoCsvRow {
     @ReportColumn({ type: 'INTEGER', label: 'ID do Projeto', format: { raw: true } })
     projeto__id: number | null;
 
-    /** Sem complemento aqui (o planejado não tem `dotacao_complemento`) e sem guard, como hoje. */
+    /** Sem complemento aqui: o planejado não tem `dotacao_complemento`. */
     @ReportColumn({ type: 'VARCHAR', label: 'dotacao' })
     dotacao: string;
 

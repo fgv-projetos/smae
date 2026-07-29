@@ -16,10 +16,7 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
  * Os rótulos abaixo reproduzem **exatamente** os cabeçalhos que o relatório já emitia,
  * incluindo os que estão sem acento ('Serie', 'Data de Referencia', 'Analise Qualitativa
  * ...'): são cabeçalhos já entregues ao usuário e corrigi-los é decisão de negócio.
- *
- * Nenhuma coluna usa `excelTextGuard`: este relatório nunca emitiu o hack `="valor"`, e
- * ligá-lo agora mudaria o conteúdo do CSV entregue. Se um dia os códigos (`1.01`) passarem
- * a ser mastigados pelo Excel, o guard entra aqui — mas como decisão de produto.
+
  */
 
 /**

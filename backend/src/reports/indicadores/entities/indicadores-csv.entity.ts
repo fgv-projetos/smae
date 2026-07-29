@@ -31,9 +31,7 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
  * `rotulo_contexto_meta`, `rotulo_complementacao_meta`). Como `@ReportColumn` só aceita label
  * estático, aqui ficam os padrões do banco e o serviço aplica a sobrescrita via
  * `rotulosPdmIndicadores()`.
- *
- * Nenhuma coluna leva `excelTextGuard`: o relatório nunca emitiu o hack `="valor"`, e
- * acrescentá-lo agora mudaria o conteúdo das células.
+
  */
 
 /**

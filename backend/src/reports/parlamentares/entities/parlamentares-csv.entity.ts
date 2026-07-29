@@ -69,9 +69,9 @@ export class RelParlamentaresCsvRow {
      * Antes a própria extração prefixava o valor com U+200C (zero-width non-joiner) para o
      * Excel não reinterpretar `11 3396-4000` / `(11) 3396-4000` como número ou data. O
      * prefixo saiu: sujava o dado com um caractere invisível que vazava para o XLSX e para
-     * quem lia o CSV programaticamente. Não foi trocado por `excelTextGuard` porque isso
-     * apenas substituiria um hack por outro nos bytes da célula — quem trabalha no Excel deve
-     * usar o `.xlsx` tipado que sai ao lado do CSV, onde a célula já nasce VARCHAR.
+     * quem lia o CSV programaticamente. Não foi trocado por outro hack nos bytes da célula:
+     * quem trabalha no Excel deve usar o `.xlsx` que sai ao lado do CSV, onde a célula já
+     * nasce VARCHAR.
      */
     @ReportColumn({ type: 'VARCHAR', label: 'Telefone' })
     telefone: string | null;

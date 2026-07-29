@@ -13,8 +13,8 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
  *
  * Regra geral: valores aqui são "compute store" — números como números, datas em ISO
  * (`YYYY-MM-DD`), `null` para ausência de valor, sem máscara de moeda e sem o hack
- * `="valor"`. Moeda, separador decimal, `dd/mm/aaaa` e o guard de texto do Excel são
- * aplicados na etapa de pós-processamento.
+ * `="valor"`. Moeda, separador decimal e `dd/mm/aaaa` são aplicados na etapa de
+ * pós-processamento.
  */
 @ReportRows({
     arquivo: 'atividades-pendentes.csv',

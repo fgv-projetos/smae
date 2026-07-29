@@ -26,9 +26,6 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
  * enquanto o nome de máquina passa a ser o do campo que realmente existe. Ver o comentário na
  * própria coluna.
  *
- * Nenhuma coluna leva `excelTextGuard`: o relatório nunca emitiu o hack `="valor"`, e
- * acrescentá-lo agora mudaria o conteúdo das células.
- *
  * Regra geral: valores aqui são "compute store" — números como números, datas em ISO, sem
  * máscara de moeda e sem o hack `="valor"`. Separador decimal pt-BR, `dd/mm/aaaa` e rótulos
  * são aplicados na etapa de pós-processamento.

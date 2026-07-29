@@ -69,9 +69,7 @@ function entityFiles(dir: string): string[] {
 
 /** Importa os arquivos que citam `@ReportRows`, populando o registro global. */
 function carregarClasses(extras: string[]): void {
-    const candidatos = entityFiles(SRC_REPORTS).filter((f) =>
-        fs.readFileSync(f, 'utf8').includes('@ReportRows')
-    );
+    const candidatos = entityFiles(SRC_REPORTS).filter((f) => fs.readFileSync(f, 'utf8').includes('@ReportRows'));
 
     for (const file of [...candidatos, ...extras.map((e) => path.resolve(process.cwd(), e))]) {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -141,7 +139,6 @@ function formatoCompacto(format?: ReportColumnFormat): string {
     if (format.unit) partes.push(`unidade \`${format.unit}\``);
     if (format.dateFormat) partes.push(humanizarData(format.dateFormat));
     if (format.raw) partes.push('sem formatação');
-    if (format.excelTextGuard) partes.push('guard Excel');
     return partes.length ? partes.join(', ') : '—';
 }
 

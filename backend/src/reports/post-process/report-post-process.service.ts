@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { FileOutput } from '../utils/utils.service';
-import { CsvSchemaProvider, quoteIdent } from './csv-schema.provider';
+import { CsvSchemaProvider } from './csv-schema.provider';
 import {
     RelatorioModeloArquivoDto,
     RelatorioModeloConfigDto,
@@ -108,11 +108,14 @@ export class ReportPostProcessService {
      * Para cada arquivo com schema declarado, produz dois artefatos a partir da mesma
      * tabela tipada:
      *
-     *   - **CSV**: formatação pt-BR completa (moeda, datas dd/mm/aaaa) + labels + o
-     *     `excelTextGuard` onde declarado, porque o CSV não carrega schema.
+     *   - **CSV**: formatação pt-BR completa (moeda, datas dd/mm/aaaa) + labels.
      *   - **XLSX**: apenas renomeação, tipos nativos preservados — células somáveis no
-     *     Excel, escritas direto pelo sink `xlsx` da lib. Nunca recebe o guard `="..."`,
-     *     então `fixFormulaStringsInXlsx` deixa de ser necessário neste caminho.
+     *     Excel, escritas direto pelo sink `xlsx` da lib.
+     *
+     * Nenhum dos dois recebe o hack `="valor"`: o guard de texto do Excel foi removido do
+     * pipeline. Quem abre o CSV direto no Excel vê `0001.02` virar número; o caminho para
+     * quem trabalha no Excel é o `.xlsx`, onde a célula nasce com o tipo declarado. Como
+     * consequência `fixFormulaStringsInXlsx` não é necessário em nenhum destes caminhos.
      *
      * Arquivos sem schema declarado são devolvidos intactos, para o caminho legado de `zipFiles`.
      *
@@ -292,7 +295,7 @@ export class ReportPostProcessService {
      * é materializada no heap do Node).
      *
      * `saida` controla a semântica de formatação:
-     *   - `csv`  → formatação completa + labels + guard de texto
+     *   - `csv`  → formatação completa + labels
      *   - `xlsx` → apenas renomeação, tipos nativos (a lib trata xlsx como parquet)
      */
     private async executar(
@@ -312,20 +315,7 @@ export class ReportPostProcessService {
             .context({ from: new Date(0), until: new Date('9999-12-31'), timezone: 'America/Sao_Paulo' })
             .load('raw', new CsvSchemaProvider(csvPath, schema));
 
-        // No CSV, colunas com excelTextGuard viram expressão VARCHAR já envolvida em
-        // `="..."`. No XLSX a coluna segue com o tipo nativo.
-        report.select(
-            colunas.map((c) => {
-                if (saida === 'csv' && c.format?.excelTextGuard) {
-                    const id = quoteIdent(c.name);
-                    return [
-                        `CASE WHEN ${id} IS NULL THEN '' ELSE '="' || replace(${id}::VARCHAR, '"', '""') || '"' END`,
-                        c.name,
-                    ] as [string, string];
-                }
-                return c.name;
-            })
-        );
+        report.select(colunas.map((c) => c.name));
 
         for (const f of filtros) report.filter(f);
         // A lib acumula (`outputOrderBy.push`) e emite `ORDER BY a, b, ...` na ordem recebida.
@@ -367,8 +357,7 @@ export class ReportPostProcessService {
             const fmt = c.format ?? {};
             columns[c.name] = {
                 rename: c.label,
-                // O guard já produziu VARCHAR no SELECT; formatar de novo corromperia o valor.
-                ...(fmt.excelTextGuard || fmt.raw ? { raw: true } : {}),
+                ...(fmt.raw ? { raw: true } : {}),
                 ...(fmt.decimalPlaces !== undefined ? { decimalPlaces: fmt.decimalPlaces } : {}),
                 ...(fmt.currency ? { currency: fmt.currency } : {}),
                 ...(fmt.unit ? { unit: fmt.unit } : {}),

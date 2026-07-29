@@ -9,7 +9,7 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
  *
  * Regra geral: valores aqui são "compute store" — números como números, datas em ISO
  * (`YYYY-MM-DD`), sem máscara de moeda e sem o hack `="valor"`. Moeda, separador decimal,
- * `dd/mm/aaaa` e o guard de texto do Excel são aplicados na etapa de pós-processamento.
+ * `dd/mm/aaaa` são aplicados na etapa de pós-processamento.
  *
  * Os rótulos abaixo reproduzem exatamente os cabeçalhos que o relatório já emitia hoje,
  * incluindo 'Dotação Orçamentaria' (sem o acento em "Orçamentária"): o arquivo é entregue
@@ -25,11 +25,11 @@ export class RelTribunalDeContasCsvRow {
      * Já vem com os não-dígitos removidos na extração: é regra de limpeza de dado
      * (o Tribunal só aceita o número da emenda), não formatação de locale.
      */
-    @ReportColumn({ type: 'VARCHAR', label: 'Emenda', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Emenda' })
     emenda: string | null;
 
     /** Idem `emenda`: apenas dígitos, definido na extração. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Programa', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Programa' })
     programa: string | null;
 
     @ReportColumn({ type: 'INTEGER', label: 'Ano', format: { raw: true } })
@@ -61,9 +61,9 @@ export class RelTribunalDeContasCsvRow {
 
     /**
      * Concatenação das dotações da distribuição com os vínculos de dotação, separadas
-     * por ` | `. Precisa do guard: `0001.02...` seria reinterpretado como número no Excel.
+     * por ` | `. `0001.02...` o Excel reinterpreta como número ao abrir o CSV direto.
      */
-    @ReportColumn({ type: 'VARCHAR', label: 'Dotação Orçamentaria', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Dotação Orçamentaria' })
     dotacao_orcamentaria: string | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'Rubrica de Receita' })

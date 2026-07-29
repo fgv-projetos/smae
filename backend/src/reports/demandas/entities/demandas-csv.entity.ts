@@ -9,15 +9,17 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
  *
  * Regra geral: valores aqui são "compute store" — números como números, datas em ISO
  * (`YYYY-MM-DD`), sem máscara de moeda e sem o hack `="valor"`. Moeda, separador decimal,
- * `dd/mm/aaaa` e o guard de texto do Excel são aplicados na etapa de pós-processamento.
+ * `dd/mm/aaaa` são aplicados na etapa de pós-processamento.
  *
  * `status` e `finalidade` saem com o valor cru do enum do Prisma (`DemandaStatus` /
  * `DemandaFinalidade`), exatamente como o relatório já fazia — não existe hoje tradução
  * humana desses valores e inventá-la aqui mudaria o conteúdo entregue.
  *
- * Todas as colunas de texto levam `excelTextGuard` porque a extração antiga envolvia
- * **todo** campo string em `="..."` (`formatExcelString`); o guard no schema é o que
- * reproduz esse comportamento agora que a extração emite o valor cru.
+ * A extração antiga envolvia **todo** campo string em `="..."` (`formatExcelString`), e a
+ * migração reproduziu isso declarando o guard no schema. O guard foi removido do pipeline:
+ * o CSV agora entrega o valor cru. Quem abre o arquivo direto no Excel perde zeros à
+ * esquerda em CEP e vê código virar número — o caminho para o Excel é o `.xlsx` que sai ao
+ * lado do CSV, onde a célula nasce VARCHAR.
  */
 @ReportRows({
     arquivo: 'demandas.csv',
@@ -39,31 +41,31 @@ export class RelDemandasCsvRow {
     data_publicado: string | null;
 
     /** Nome de exibição do órgão gestor (`orgao.descricao`). */
-    @ReportColumn({ type: 'VARCHAR', label: 'Gestor Municipal', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Gestor Municipal' })
     orgao_gestor: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Unidade Responsável', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Unidade Responsável' })
     unidade_responsavel: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Nome do Responsável', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Nome do Responsável' })
     nome_responsavel: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Cargo do Responsável', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Cargo do Responsável' })
     cargo_responsavel: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'E-mail do Responsável', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'E-mail do Responsável' })
     email_responsavel: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Telefone do Responsável', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Telefone do Responsável' })
     telefone_responsavel: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Nome do Projeto', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Nome do Projeto' })
     nome_projeto: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Descrição', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Descrição' })
     descricao: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Justificativa', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Justificativa' })
     justificativa: string | null;
 
     /**
@@ -77,10 +79,10 @@ export class RelDemandasCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Finalidade' })
     finalidade: string;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Observação', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Observação' })
     observacao: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Área Temática', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Área Temática' })
     area_tematica: string | null;
 
     /**
@@ -88,7 +90,7 @@ export class RelDemandasCsvRow {
      * singular ('Ação') no relatório entregue hoje; mantido byte-a-byte para não mudar
      * o cabeçalho sem decisão de negócio.
      */
-    @ReportColumn({ type: 'VARCHAR', label: 'Ação', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Ação' })
     acoes: string | null;
 }
 
@@ -109,24 +111,24 @@ export class RelDemandasEnderecosCsvRow {
     @ReportColumn({ type: 'BIGINT', label: 'ID da Demanda', format: { raw: true } })
     demanda_id: number;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Nome do Projeto', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Nome do Projeto' })
     nome_projeto: string | null;
 
-    /** Precisa do guard: `01234-567` (e principalmente CEPs só-dígitos) viraria número no Excel. */
-    @ReportColumn({ type: 'VARCHAR', label: 'CEP', format: { excelTextGuard: true } })
+    /** `01234-567` (e principalmente CEPs só-dígitos) o Excel lê como número. */
+    @ReportColumn({ type: 'VARCHAR', label: 'CEP' })
     cep: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Endereço', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Endereço' })
     endereco: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Bairro', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Bairro' })
     bairro: string | null;
 
     /** Regiões de nível 3 do georreferenciamento, concatenadas por `, `. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Subprefeitura', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Subprefeitura' })
     subprefeitura: string | null;
 
     /** Regiões de nível 4 do georreferenciamento, concatenadas por `, `. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Distrito', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'Distrito' })
     distrito: string | null;
 }

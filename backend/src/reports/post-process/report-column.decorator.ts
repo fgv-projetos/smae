@@ -70,12 +70,15 @@ export function getReportRowSchema(cls: ReportRowClass): ReportFileSchema {
     const opts = getReportRowsOptions(cls);
     if (!opts) throw new Error(`Classe ${cls.name} não está decorada com @ReportRows.`);
 
-    return { arquivo: opts.arquivo, colunas: coletarColunas(cls).map(({ propriedade, options }) => ({
-        name: propriedade,
-        type: options.type,
-        label: options.label,
-        format: options.format,
-    })) };
+    return {
+        arquivo: opts.arquivo,
+        colunas: coletarColunas(cls).map(({ propriedade, options }) => ({
+            name: propriedade,
+            type: options.type,
+            label: options.label,
+            format: options.format,
+        })),
+    };
 }
 
 /** Metadados completos (inclui `descricao`), para docgen e API. */

@@ -9,16 +9,13 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
  *
  * Regra geral: os valores aqui são "compute store" — números como números, datas em ISO
  * (`YYYY-MM-DD`), `null` para ausência de valor, sem máscara de moeda e sem o hack
- * `="valor"`. Moeda, separador decimal pt-BR e `dd/mm/aaaa` são aplicados na etapa de
- * pós-processamento.
+ * `="valor"` — que não existe mais em ponto nenhum do pipeline. Moeda, separador decimal
+ * pt-BR e `dd/mm/aaaa` são aplicados na etapa de pós-processamento.
  *
- * Sobre o `excelTextGuard`: **nenhuma coluna o declara**. A extração deste relatório nunca
- * emitiu `="valor"`, e ligar o guard mudaria os bytes da célula para quem consome o CSV
- * programaticamente — que é a maioria de quem baixa este arquivo. Várias colunas abaixo
- * (`codigo`, `numero`, `data_base`, `processos_sei`, códigos SOF, CEP…) o Excel de fato
- * reinterpreta ao abrir o CSV direto; o caminho certo para quem trabalha no Excel é o
- * `.xlsx` tipado, que sai ao lado do CSV e já nasce com a célula VARCHAR. As notas por
- * coluna registram onde o risco existe.
+ * Várias colunas abaixo (`codigo`, `numero`, `data_base`, `processos_sei`, códigos SOF,
+ * CEP…) o Excel reinterpreta ao abrir o CSV direto; o caminho para quem trabalha no Excel é
+ * o `.xlsx`, que sai ao lado do CSV e já nasce com a célula tipada. As notas por coluna
+ * registram onde o risco existe.
  *
  * Particularidade deste relatório: a extração é feita por consultas SQL planas
  * (`streamQueryToCSV`), então **não havia rótulos humanos** — o cabeçalho era o próprio

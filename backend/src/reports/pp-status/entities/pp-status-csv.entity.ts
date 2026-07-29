@@ -19,11 +19,7 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
  * automação, então os `label` abaixo o repetem tal e qual. Traduzi-los para PT-BR é decisão
  * de negócio — e quem quiser rótulos legíveis pode renomear coluna por coluna num modelo de
  * relatório, que é para isso que o `rename` do pós-processamento existe.
- *
- * Sobre o guard do Excel: nenhuma coluna recebe `excelTextGuard`. A extração atual não
- * emite `="..."` em campo nenhum, e ligar o guard mudaria os bytes do arquivo para quem
- * consome o CSV programaticamente. Manter a equivalência com a saída de hoje vale mais do
- * que corrigir a interpretação do Excel numa refatoração de infraestrutura.
+
  */
 export abstract class RelPPStatusCsvRowBase {
     /** Id do projeto/obra. Chave de conciliação: não pode ser removida por um modelo. */

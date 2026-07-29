@@ -19,12 +19,12 @@ contrário um modelo salvo não teria como referenciar o arquivo.
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
 | `demanda_id` | `BIGINT` | ID da Demanda | sem formatação | — |
-| `nome_projeto` | `VARCHAR` | Nome do Projeto | guard Excel | — |
-| `cep` | `VARCHAR` | CEP | guard Excel | — |
-| `endereco` | `VARCHAR` | Endereço | guard Excel | — |
-| `bairro` | `VARCHAR` | Bairro | guard Excel | — |
-| `subprefeitura` | `VARCHAR` | Subprefeitura | guard Excel | — |
-| `distrito` | `VARCHAR` | Distrito | guard Excel | — |
+| `nome_projeto` | `VARCHAR` | Nome do Projeto | — | — |
+| `cep` | `VARCHAR` | CEP | — | — |
+| `endereco` | `VARCHAR` | Endereço | — | — |
+| `bairro` | `VARCHAR` | Bairro | — | — |
+| `subprefeitura` | `VARCHAR` | Subprefeitura | — | — |
+| `distrito` | `VARCHAR` | Distrito | — | — |
 
 ## `RelObrasEnderecosCsvRow`
 

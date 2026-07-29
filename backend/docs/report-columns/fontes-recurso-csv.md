@@ -15,10 +15,10 @@ explícito, então o cabeçalho vinha da própria consulta.
 
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
-| `obra_id` | `BIGINT` | ID da Obra | sem formatação | — |
-| `valor_percentual` | `DOUBLE` | Percentual | 2 casas | — |
-| `valor_nominal` | `DECIMAL(18,2)` | Valor Nominal | R$, 2 casas | — |
-| `fonte_recurso_ano` | `INTEGER` | Ano | sem formatação | — |
-| `fonte_recurso_cod_sof` | `VARCHAR` | Código SOF | guard Excel | — |
+| `obra_id` | `BIGINT` | obra_id | sem formatação | — |
+| `valor_percentual` | `DOUBLE` | valor_percentual | 2 casas | — |
+| `valor_nominal` | `DECIMAL(18,2)` | valor_nominal | R$, 2 casas | — |
+| `fonte_recurso_ano` | `INTEGER` | fonte_recurso_ano | sem formatação | — |
+| `fonte_recurso_cod_sof` | `VARCHAR` | fonte_recurso_cod_sof | guard Excel | — |
 
 [← todos os arquivos](../report-columns.md)

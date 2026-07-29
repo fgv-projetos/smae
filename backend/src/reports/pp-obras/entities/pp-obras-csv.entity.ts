@@ -14,9 +14,13 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
  *
  * Particularidade deste relatório: a extração é feita por consultas SQL planas
  * (`streamQueryToCSV`), então **não havia rótulos humanos** — o cabeçalho era o próprio
- * nome técnico da coluna SQL. Os `label` abaixo são, portanto, rótulos novos em PT-BR
- * (exceto em `enderecos.csv`, único arquivo que já declarava rótulos próprios e onde eles
- * foram preservados byte-a-byte).
+ * nome técnico da coluna SQL. Os `label` abaixo repetem esse nome de propósito: o cabeçalho
+ * é contrato com quem consome o arquivo por automação, e traduzi-lo para PT-BR é decisão de
+ * negócio, não desta refatoração. `enderecos.csv` é o único arquivo que já declarava rótulos
+ * próprios, e eles seguem preservados byte-a-byte.
+ *
+ * Quem quiser rótulos legíveis pode renomear coluna por coluna num modelo de relatório —
+ * é exatamente para isso que o `rename` do pós-processamento existe.
  *
  * Nenhum nome precisa do `__` de aninhamento: as linhas vêm direto do SQL, já planas.
  */
@@ -36,171 +40,171 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
     descricao: 'Uma linha por combinação de obra × fonte de recurso × órgão participante (efeito dos LEFT JOINs 1:N).',
 })
 export class RelObrasCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'obra_id', format: { raw: true } })
     obra_id: number;
 
     /** Código do tipo `2024.0001`: sem o guard o Excel o converteria em número. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Código', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'codigo', format: { excelTextGuard: true } })
     codigo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Portfólio', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'portfolio_id', format: { raw: true } })
     portfolio_id: number;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Nome' })
+    @ReportColumn({ type: 'VARCHAR', label: 'nome' })
     nome: string;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Portfólio' })
+    @ReportColumn({ type: 'VARCHAR', label: 'portfolio_titulo' })
     portfolio_titulo: string | null;
 
     /** Descrições das etiquetas da obra, separadas por `|`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Etiquetas' })
+    @ReportColumn({ type: 'VARCHAR', label: 'etiquetas' })
     etiquetas: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Status' })
+    @ReportColumn({ type: 'VARCHAR', label: 'status' })
     status: string;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Etapa' })
+    @ReportColumn({ type: 'VARCHAR', label: 'projeto_etapa' })
     projeto_etapa: string | null;
 
     /** Vem do cronograma (`tarefa_cronograma.previsao_inicio`), não do cadastro da obra. */
-    @ReportColumn({ type: 'DATE', label: 'Início Planejado' })
+    @ReportColumn({ type: 'DATE', label: 'inicio_planejado' })
     inicio_planejado: string | null;
 
     /** Vem do cronograma (`tarefa_cronograma.previsao_termino`). */
-    @ReportColumn({ type: 'DATE', label: 'Término Planejado' })
+    @ReportColumn({ type: 'DATE', label: 'termino_planejado' })
     termino_planejado: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Previsão de Início' })
+    @ReportColumn({ type: 'DATE', label: 'previsao_inicio' })
     previsao_inicio: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Previsão de Término' })
+    @ReportColumn({ type: 'DATE', label: 'previsao_termino' })
     previsao_termino: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Previsão de Duração', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'previsao_duracao', format: { raw: true } })
     previsao_duracao: number | null;
 
     @ReportColumn({
         type: 'DECIMAL(18,2)',
-        label: 'Previsão de Custo',
+        label: 'previsao_custo',
         format: { currency: 'R$', decimalPlaces: 2 },
     })
     previsao_custo: string | null;
 
-    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'Custo Planejado', format: { currency: 'R$', decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'custo_planejado', format: { currency: 'R$', decimalPlaces: 2 } })
     custo_planejado: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Objeto' })
+    @ReportColumn({ type: 'VARCHAR', label: 'objeto' })
     objeto: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Objetivo' })
+    @ReportColumn({ type: 'VARCHAR', label: 'objetivo' })
     objetivo: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Escopo' })
+    @ReportColumn({ type: 'VARCHAR', label: 'escopo' })
     escopo: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Não Escopo' })
+    @ReportColumn({ type: 'VARCHAR', label: 'nao_escopo' })
     nao_escopo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Grupo Temático', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'grupo_tematico_id', format: { raw: true } })
     grupo_tematico_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Grupo Temático' })
+    @ReportColumn({ type: 'VARCHAR', label: 'grupo_tematico_nome' })
     grupo_tematico_nome: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Tipo de Intervenção', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'tipo_intervencao_id', format: { raw: true } })
     tipo_intervencao_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Tipo de Intervenção' })
+    @ReportColumn({ type: 'VARCHAR', label: 'tipo_intervencao_nome' })
     tipo_intervencao_nome: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Conceito do Tipo de Intervenção' })
+    @ReportColumn({ type: 'VARCHAR', label: 'tipo_intervencao_conceito' })
     tipo_intervencao_conceito: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Equipamento', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'equipamento_id', format: { raw: true } })
     equipamento_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Equipamento' })
+    @ReportColumn({ type: 'VARCHAR', label: 'equipamento_nome' })
     equipamento_nome: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Órgão Responsável', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'orgao_responsavel_id', format: { raw: true } })
     orgao_responsavel_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Sigla do Órgão Responsável' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_responsavel_sigla' })
     orgao_responsavel_sigla: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Órgão Responsável' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_responsavel_descricao' })
     orgao_responsavel_descricao: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Responsável', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'responsavel_id', format: { raw: true } })
     responsavel_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Responsável' })
+    @ReportColumn({ type: 'VARCHAR', label: 'responsavel_nome_exibicao' })
     responsavel_nome_exibicao: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Órgão Gestor', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'orgao_gestor_id', format: { raw: true } })
     orgao_gestor_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Sigla do Órgão Gestor' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_gestor_sigla' })
     orgao_gestor_sigla: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Órgão Gestor' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_gestor_descricao' })
     orgao_gestor_descricao: string | null;
 
     /** Órgão **participante** (`projeto_orgao_participante`) — é o join 1:N que multiplica linhas. */
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Órgão Participante', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'orgao_id', format: { raw: true } })
     orgao_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Sigla do Órgão Participante' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_sigla' })
     orgao_sigla: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Órgão Participante' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_descricao' })
     orgao_descricao: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Órgão Executor', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'orgao_executor_id', format: { raw: true } })
     orgao_executor_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Sigla do Órgão Executor' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_executor_sigla' })
     orgao_executor_sigla: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Órgão Executor' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_executor_descricao' })
     orgao_executor_descricao: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Órgão de Origem', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'orgao_origem_id', format: { raw: true } })
     orgao_origem_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Sigla do Órgão de Origem' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_origem_sigla' })
     orgao_origem_sigla: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Órgão de Origem' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_origem_descricao' })
     orgao_origem_descricao: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Órgão Colaborador', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'orgao_colaborador_id', format: { raw: true } })
     orgao_colaborador_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Sigla do Órgão Colaborador' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_colaborador_sigla' })
     orgao_colaborador_sigla: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Órgão Colaborador' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_colaborador_descricao' })
     orgao_colaborador_descricao: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Meta', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'meta_id', format: { raw: true } })
     meta_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Meta' })
+    @ReportColumn({ type: 'VARCHAR', label: 'meta_nome' })
     meta_nome: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Programa de Metas', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'pdm_id', format: { raw: true } })
     pdm_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Programa de Metas' })
+    @ReportColumn({ type: 'VARCHAR', label: 'pdm_nome' })
     pdm_nome: string | null;
 
     /** Nomes de exibição dos responsáveis no órgão gestor, separados por `|`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Assessores' })
+    @ReportColumn({ type: 'VARCHAR', label: 'assessores' })
     assessores: string | null;
 
     /** Nomes de exibição dos colaboradores no órgão, separados por `|`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Pontos Focais Colaboradores' })
+    @ReportColumn({ type: 'VARCHAR', label: 'pontos_focais_colaboradores' })
     pontos_focais_colaboradores: string | null;
 
     /**
@@ -208,79 +212,79 @@ export class RelObrasCsvRow {
      * confirmar sem banco se o valor é 0–100 ou 0–1, e apor o sufixo errado seria pior
      * que não apor nenhum.
      */
-    @ReportColumn({ type: 'DOUBLE', label: 'Fonte de Recurso - Percentual', format: { decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DOUBLE', label: 'fonte_recurso_valor_pct', format: { decimalPlaces: 2 } })
     fonte_recurso_valor_pct: number | null;
 
     @ReportColumn({
         type: 'DECIMAL(18,2)',
-        label: 'Fonte de Recurso - Valor Nominal',
+        label: 'fonte_recurso_valor_nominal',
         format: { currency: 'R$', decimalPlaces: 2 },
     })
     fonte_recurso_valor_nominal: string | null;
 
     /** `projeto.mdo_detalhamento`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Detalhamento' })
+    @ReportColumn({ type: 'VARCHAR', label: 'detalhamento' })
     detalhamento: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Tipo de Origem' })
+    @ReportColumn({ type: 'VARCHAR', label: 'origem_tipo' })
     origem_tipo: string;
 
     /** `projeto.origem_outro` — texto livre usado quando a origem não é uma meta do PdM. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Descrição da Origem' })
+    @ReportColumn({ type: 'VARCHAR', label: 'descricao' })
     descricao: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Secretário Colaborador' })
+    @ReportColumn({ type: 'VARCHAR', label: 'secretario_colaborador' })
     secretario_colaborador: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Data de Inauguração Planejada' })
+    @ReportColumn({ type: 'DATE', label: 'data_inauguracao_planejada' })
     data_inauguracao_planejada: string | null;
 
     /** Descrições das regiões da obra, separadas por `|`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Subprefeituras' })
+    @ReportColumn({ type: 'VARCHAR', label: 'subprefeituras' })
     subprefeituras: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Programa Habitacional' })
+    @ReportColumn({ type: 'VARCHAR', label: 'programa_habitacional' })
     programa_habitacional: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Empreendimento', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'empreendimento_id', format: { raw: true } })
     empreendimento_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Identificador do Empreendimento', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'empreendimento_identificador', format: { excelTextGuard: true } })
     empreendimento_identificador: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Observações' })
+    @ReportColumn({ type: 'VARCHAR', label: 'mdo_observacoes' })
     mdo_observacoes: string | null;
 
     /** Títulos dos portfólios em que a obra foi compartilhada, separados por ` | `. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Portfólios Compartilhados' })
+    @ReportColumn({ type: 'VARCHAR', label: 'portfolios_compartilhados_titulos' })
     portfolios_compartilhados_titulos: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Secretário Responsável' })
+    @ReportColumn({ type: 'VARCHAR', label: 'secretario_responsavel' })
     secretario_responsavel: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Secretário Executivo' })
+    @ReportColumn({ type: 'VARCHAR', label: 'secretario_executivo' })
     secretario_executivo: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Coordenador da Unidade Executora' })
+    @ReportColumn({ type: 'VARCHAR', label: 'coordenador_ue' })
     coordenador_ue: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Data de Aprovação' })
+    @ReportColumn({ type: 'DATE', label: 'data_aprovacao' })
     data_aprovacao: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Data de Revisão' })
+    @ReportColumn({ type: 'DATE', label: 'data_revisao' })
     data_revisao: string | null;
 
     /** Texto livre (ex.: `1.0`): guard para o Excel não o transformar em número. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Versão', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'versao', format: { excelTextGuard: true } })
     versao: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Nº de Unidades Habitacionais', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'n_unidades_habitacionais', format: { raw: true } })
     n_unidades_habitacionais: number | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Nº de Famílias Beneficiadas', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'n_familias_beneficiadas', format: { raw: true } })
     n_familias_beneficiadas: number | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Nº de Unidades Atendidas', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'n_unidades_atendidas', format: { raw: true } })
     n_unidades_atendidas: number | null;
 }
 
@@ -299,13 +303,13 @@ export class RelObrasCsvRow {
     descricao: 'Uma linha por tarefa do cronograma das obras filtradas.',
 })
 export class RelObrasCronogramaCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'obra_id', format: { raw: true } })
     obra_id: number;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Código da Obra', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'obra_codigo', format: { excelTextGuard: true } })
     obra_codigo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Tarefa', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'tarefa_id', format: { raw: true } })
     tarefa_id: number;
 
     /**
@@ -317,22 +321,22 @@ export class RelObrasCronogramaCsvRow {
      * inteiro de cada obra em memória, o que é uma mudança de arquitetura da extração e não
      * de apresentação. O guard fica declarado para quando a coluna passar a ter conteúdo.
      */
-    @ReportColumn({ type: 'VARCHAR', label: 'Hierarquia', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'hierarquia', format: { excelTextGuard: true } })
     hierarquia: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Número', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'numero', format: { raw: true } })
     numero: number | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Nível', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'nivel', format: { raw: true } })
     nivel: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Tarefa' })
+    @ReportColumn({ type: 'VARCHAR', label: 'tarefa' })
     tarefa: string;
 
-    @ReportColumn({ type: 'DATE', label: 'Início Planejado' })
+    @ReportColumn({ type: 'DATE', label: 'inicio_planejado' })
     inicio_planejado: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Término Planejado' })
+    @ReportColumn({ type: 'DATE', label: 'termino_planejado' })
     termino_planejado: string | null;
 
     /**
@@ -341,24 +345,24 @@ export class RelObrasCronogramaCsvRow {
      * `backup_custo_estimado` convertido para texto. Tipar como número quebraria o
      * primeiro caso.
      */
-    @ReportColumn({ type: 'VARCHAR', label: 'Custo Estimado' })
+    @ReportColumn({ type: 'VARCHAR', label: 'custo_estimado' })
     custo_estimado: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Início Real' })
+    @ReportColumn({ type: 'DATE', label: 'inicio_real' })
     inicio_real: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Término Real' })
+    @ReportColumn({ type: 'DATE', label: 'termino_real' })
     termino_real: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Duração Real', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'duracao_real', format: { raw: true } })
     duracao_real: number | null;
 
     /** Sem `unit: '%'` pelo mesmo motivo de `fonte_recurso_valor_pct` em `obras.csv`. */
-    @ReportColumn({ type: 'DOUBLE', label: 'Percentual Concluído', format: { decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DOUBLE', label: 'percentual_concluido', format: { decimalPlaces: 2 } })
     percentual_concluido: number | null;
 
     /** Mesma regra de `custo_estimado`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Custo Real' })
+    @ReportColumn({ type: 'VARCHAR', label: 'custo_real' })
     custo_real: string | null;
 
     /**
@@ -366,16 +370,16 @@ export class RelObrasCronogramaCsvRow {
      * (`{"id":1,"tipo":"termina_pro_inicio","latencia":0}`). Difere da versão legível do
      * `asJSON`, que resolve id → hierarquia; manter como está preserva a saída atual.
      */
-    @ReportColumn({ type: 'VARCHAR', label: 'Dependências' })
+    @ReportColumn({ type: 'VARCHAR', label: 'dependencias' })
     dependencias: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Atraso (dias)', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'atraso', format: { raw: true } })
     atraso: number | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Responsável', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'responsavel_id', format: { raw: true } })
     responsavel_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Responsável' })
+    @ReportColumn({ type: 'VARCHAR', label: 'responsavel_nome_exibicao' })
     responsavel_nome_exibicao: string | null;
 }
 
@@ -390,16 +394,16 @@ export class RelObrasCronogramaCsvRow {
     descricao: 'Uma linha por item de acompanhamento das obras (acompanhamento × item, via LEFT JOIN 1:N).',
 })
 export class RelObrasAcompanhamentosCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'obra_id', format: { raw: true } })
     obra_id: number;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Código da Obra', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'obra_codigo', format: { excelTextGuard: true } })
     obra_codigo: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Data do Registro' })
+    @ReportColumn({ type: 'DATE', label: 'data_registro' })
     data_registro: string;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Participantes' })
+    @ReportColumn({ type: 'VARCHAR', label: 'participantes' })
     participantes: string;
 
     /**
@@ -410,50 +414,50 @@ export class RelObrasAcompanhamentosCsvRow {
      * consulta passou a apelidar a coluna como `cronograma_paralizado`; o nome e a posição
      * foram preservados para não quebrar quem já consome o arquivo.
      */
-    @ReportColumn({ type: 'BOOLEAN', label: 'Cronograma Paralisado' })
+    @ReportColumn({ type: 'BOOLEAN', label: 'cronograma_paralizado' })
     cronograma_paralizado: boolean | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Prazo do Encaminhamento' })
+    @ReportColumn({ type: 'DATE', label: 'prazo_encaminhamento' })
     prazo_encaminhamento: string | null;
 
     /** HTML, como cadastrado. A versão em texto puro vem na coluna seguinte. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Pauta' })
+    @ReportColumn({ type: 'VARCHAR', label: 'pauta' })
     pauta: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Pauta (texto)' })
+    @ReportColumn({ type: 'VARCHAR', label: 'pauta_texto' })
     pauta_texto: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Prazo Realizado' })
+    @ReportColumn({ type: 'DATE', label: 'prazo_realizado' })
     prazo_realizado: string | null;
 
     /** HTML, como cadastrado. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Detalhamento' })
+    @ReportColumn({ type: 'VARCHAR', label: 'detalhamento' })
     detalhamento: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Detalhamento (texto)' })
+    @ReportColumn({ type: 'VARCHAR', label: 'detalhamento_texto' })
     detalhamento_texto: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Encaminhamento' })
+    @ReportColumn({ type: 'VARCHAR', label: 'encaminhamento' })
     encaminhamento: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Responsável' })
+    @ReportColumn({ type: 'VARCHAR', label: 'responsavel' })
     responsavel: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Observação' })
+    @ReportColumn({ type: 'VARCHAR', label: 'observacao' })
     observacao: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Detalhamento do Status' })
+    @ReportColumn({ type: 'VARCHAR', label: 'detalhamento_status' })
     detalhamento_status: string | null;
 
     /** HTML, como cadastrado. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Pontos de Atenção' })
+    @ReportColumn({ type: 'VARCHAR', label: 'pontos_atencao' })
     pontos_atencao: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Pontos de Atenção (texto)' })
+    @ReportColumn({ type: 'VARCHAR', label: 'pontos_atencao_texto' })
     pontos_atencao_texto: string | null;
 
     /** Códigos dos riscos vinculados ao acompanhamento, separados por `|`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Riscos' })
+    @ReportColumn({ type: 'VARCHAR', label: 'riscos' })
     riscos: string | null;
 }
 
@@ -469,21 +473,21 @@ export class RelObrasAcompanhamentosCsvRow {
     descricao: 'Uma linha por fonte de recurso vinculada à obra.',
 })
 export class RelObrasFontesRecursoCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'obra_id', format: { raw: true } })
     obra_id: number;
 
     /** Sem `unit: '%'` — veja a nota em `RelObrasCsvRow.fonte_recurso_valor_pct`. */
-    @ReportColumn({ type: 'DOUBLE', label: 'Percentual', format: { decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DOUBLE', label: 'valor_percentual', format: { decimalPlaces: 2 } })
     valor_percentual: number | null;
 
-    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'Valor Nominal', format: { currency: 'R$', decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'valor_nominal', format: { currency: 'R$', decimalPlaces: 2 } })
     valor_nominal: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Ano', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'fonte_recurso_ano', format: { raw: true } })
     fonte_recurso_ano: number;
 
     /** Código SOF (`00`, `01`…): guard para o Excel não comer o zero à esquerda. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Código SOF', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'fonte_recurso_cod_sof', format: { excelTextGuard: true } })
     fonte_recurso_cod_sof: string;
 }
 
@@ -498,90 +502,90 @@ export class RelObrasFontesRecursoCsvRow {
     descricao: 'Uma linha por contrato vinculado à obra.',
 })
 export class RelObrasContratosCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Contrato', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'contrato_id', format: { raw: true } })
     contrato_id: number;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'obra_id', format: { raw: true } })
     obra_id: number;
 
     /** Número do tipo `001/2024`: guard obrigatório, o Excel o leria como data. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Número', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'numero', format: { excelTextGuard: true } })
     numero: string;
 
-    @ReportColumn({ type: 'BOOLEAN', label: 'Exclusivo' })
+    @ReportColumn({ type: 'BOOLEAN', label: 'exclusivo' })
     exclusivo: boolean;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Status' })
+    @ReportColumn({ type: 'VARCHAR', label: 'status' })
     status: string;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Objeto' })
+    @ReportColumn({ type: 'VARCHAR', label: 'objeto' })
     objeto: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Descrição Detalhada' })
+    @ReportColumn({ type: 'VARCHAR', label: 'descricao_detalhada' })
     descricao_detalhada: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Contratante' })
+    @ReportColumn({ type: 'VARCHAR', label: 'contratante' })
     contratante: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Empresa Contratada' })
+    @ReportColumn({ type: 'VARCHAR', label: 'empresa_contratada' })
     empresa_contratada: string | null;
 
     /** Já sai mascarado pela função SQL `f_formata_cnpj` — é limpeza de dado, não locale. */
-    @ReportColumn({ type: 'VARCHAR', label: 'CNPJ da Contratada', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'cnpj_contratada', format: { excelTextGuard: true } })
     cnpj_contratada: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Prazo', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'prazo', format: { raw: true } })
     prazo: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Unidade do Prazo' })
+    @ReportColumn({ type: 'VARCHAR', label: 'unidade_prazo' })
     unidade_prazo: string | null;
 
     /** `mês/ano` montado no SQL (ex.: `6/2024`): sem guard o Excel o converteria em data. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Data Base', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'data_base', format: { excelTextGuard: true } })
     data_base: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Data de Início' })
+    @ReportColumn({ type: 'DATE', label: 'data_inicio' })
     data_inicio: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Data de Término' })
+    @ReportColumn({ type: 'DATE', label: 'data_termino' })
     data_termino: string | null;
 
     /** Maior `data_termino_atualizada` entre os aditivos do contrato. */
-    @ReportColumn({ type: 'DATE', label: 'Data de Término Atualizada' })
+    @ReportColumn({ type: 'DATE', label: 'data_termino_atualizada' })
     data_termino_atualizada: string | null;
 
-    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'Valor', format: { currency: 'R$', decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'valor', format: { currency: 'R$', decimalPlaces: 2 } })
     valor: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Observações' })
+    @ReportColumn({ type: 'VARCHAR', label: 'observacoes' })
     observacoes: string | null;
 
     @ReportColumn({
         type: 'DECIMAL(18,2)',
-        label: 'Valor do Contrato Atualizado',
+        label: 'valor_contrato_atualizado',
         format: { currency: 'R$', decimalPlaces: 2 },
     })
     valor_contrato_atualizado: string | null;
 
-    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'Total de Aditivos', format: { currency: 'R$', decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'total_aditivos', format: { currency: 'R$', decimalPlaces: 2 } })
     total_aditivos: string | null;
 
-    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'Total de Reajustes', format: { currency: 'R$', decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'total_reajustes', format: { currency: 'R$', decimalPlaces: 2 } })
     total_reajustes: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Modalidade de Contratação', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'modalidade_contratacao_id', format: { raw: true } })
     modalidade_contratacao_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Modalidade de Contratação' })
+    @ReportColumn({ type: 'VARCHAR', label: 'modalidade_contratacao_nome' })
     modalidade_contratacao_nome: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Área Gestora', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'orgao_id', format: { raw: true } })
     orgao_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Sigla da Área Gestora' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_sigla' })
     orgao_sigla: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Área Gestora' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_descricao' })
     orgao_descricao: string | null;
 
     /**
@@ -589,15 +593,15 @@ export class RelObrasContratosCsvRow {
      * para não perder precisão passando por `double`. Sem `unit: '%'` — veja a nota em
      * `RelObrasCsvRow.fonte_recurso_valor_pct`.
      */
-    @ReportColumn({ type: 'DECIMAL(18,4)', label: 'Percentual Medido', format: { decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DECIMAL(18,4)', label: 'percentual_medido', format: { decimalPlaces: 2 } })
     percentual_medido: string | null;
 
     /** Processos SEI já formatados por `format_proc_sei_sinproc`, separados por `|`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Processos SEI', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'processos_sei', format: { excelTextGuard: true } })
     processos_sei: string | null;
 
     /** Códigos SOF das fontes do contrato, separados por `|`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Fontes de Recurso', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'fontes_recurso', format: { excelTextGuard: true } })
     fontes_recurso: string | null;
 }
 
@@ -612,37 +616,37 @@ export class RelObrasContratosCsvRow {
     descricao: 'Uma linha por aditivo dos contratos vinculados às obras.',
 })
 export class RelObrasAditivosCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Aditivo', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'aditivo_id', format: { raw: true } })
     aditivo_id: number;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Contrato', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'contrato_id', format: { raw: true } })
     contrato_id: number;
 
     /** `contrato_aditivo.numero` é texto no banco; guard pelo mesmo motivo do contrato. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Número', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'numero', format: { excelTextGuard: true } })
     numero: string;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Tipo de Aditivo', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'tipo_aditivo_id', format: { raw: true } })
     tipo_aditivo_id: number;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Tipo de Aditivo' })
+    @ReportColumn({ type: 'VARCHAR', label: 'tipo_aditivo_nome' })
     tipo_aditivo_nome: string;
 
     /** `Aditivo` ou `Reajuste` — é o que separa os dois totais em `contratos.csv`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Categoria do Tipo' })
+    @ReportColumn({ type: 'VARCHAR', label: 'tipo_categoria' })
     tipo_categoria: string;
 
-    @ReportColumn({ type: 'DATE', label: 'Data' })
+    @ReportColumn({ type: 'DATE', label: 'data' })
     data: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Data de Término Atual' })
+    @ReportColumn({ type: 'DATE', label: 'data_termino_atual' })
     data_termino_atual: string | null;
 
-    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'Valor', format: { currency: 'R$', decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'valor', format: { currency: 'R$', decimalPlaces: 2 } })
     valor: string | null;
 
     /** `numeric(7,4)` na origem — veja a nota em `RelObrasContratosCsvRow.percentual_medido`. */
-    @ReportColumn({ type: 'DECIMAL(18,4)', label: 'Percentual Medido', format: { decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DECIMAL(18,4)', label: 'percentual_medido', format: { decimalPlaces: 2 } })
     percentual_medido: string | null;
 }
 
@@ -657,31 +661,31 @@ export class RelObrasAditivosCsvRow {
     descricao: 'Uma linha por origem (meta / iniciativa / atividade do PdM) vinculada à obra.',
 })
 export class RelObrasOrigensCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'obra_id', format: { raw: true } })
     obra_id: number;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Programa de Metas', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'pdm_id', format: { raw: true } })
     pdm_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Programa de Metas' })
+    @ReportColumn({ type: 'VARCHAR', label: 'pdm_titulo' })
     pdm_titulo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Meta', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'meta_id', format: { raw: true } })
     meta_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Meta' })
+    @ReportColumn({ type: 'VARCHAR', label: 'meta_titulo' })
     meta_titulo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Iniciativa', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'iniciativa_id', format: { raw: true } })
     iniciativa_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Iniciativa' })
+    @ReportColumn({ type: 'VARCHAR', label: 'iniciativa_titulo' })
     iniciativa_titulo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Atividade', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'atividade_id', format: { raw: true } })
     atividade_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Atividade' })
+    @ReportColumn({ type: 'VARCHAR', label: 'atividade_titulo' })
     atividade_titulo: string | null;
 }
 
@@ -696,29 +700,29 @@ export class RelObrasOrigensCsvRow {
     descricao: 'Uma linha por processo SEI registrado na obra.',
 })
 export class RelObrasProcessosSeiCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'obra_id', format: { raw: true } })
     obra_id: number;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Categoria' })
+    @ReportColumn({ type: 'VARCHAR', label: 'categoria' })
     categoria: string;
 
     /**
      * Já formatado por `format_proc_sei_sinproc` na consulta (limpeza de dado, não locale).
      * Guard obrigatório: `6016.2024/0000000-0` seria reinterpretado pelo Excel.
      */
-    @ReportColumn({ type: 'VARCHAR', label: 'Processo SEI', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'processo_sei', format: { excelTextGuard: true } })
     processo_sei: string;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Descrição' })
+    @ReportColumn({ type: 'VARCHAR', label: 'descricao' })
     descricao: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Link' })
+    @ReportColumn({ type: 'VARCHAR', label: 'link' })
     link: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Comentários' })
+    @ReportColumn({ type: 'VARCHAR', label: 'comentarios' })
     comentarios: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Observações' })
+    @ReportColumn({ type: 'VARCHAR', label: 'observacoes' })
     observacoes: string | null;
 }
 
@@ -815,32 +819,32 @@ export class RelObrasEnderecosCsvRow {
     descricao: 'Uma linha por documento anexado à obra.',
 })
 export class RelObrasArquivosCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Obra', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'obra_id', format: { raw: true } })
     obra_id: number;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Código da Obra', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'obra_codigo', format: { excelTextGuard: true } })
     obra_codigo: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Nome do Arquivo' })
+    @ReportColumn({ type: 'VARCHAR', label: 'nome_original' })
     nome_original: string;
 
     /** `timestamptz` do vínculo do documento com a obra (não do upload do arquivo). */
-    @ReportColumn({ type: 'TIMESTAMP', label: 'Criado em' })
+    @ReportColumn({ type: 'TIMESTAMP', label: 'criado_em' })
     criado_em: string;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Criador', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'criador_id', format: { raw: true } })
     criador_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Criador' })
+    @ReportColumn({ type: 'VARCHAR', label: 'criador_nome_exibicao' })
     criador_nome_exibicao: string | null;
 
     /** Caminho do arquivo no storage — é a chave para baixá-lo fora do SMAE. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Caminho' })
+    @ReportColumn({ type: 'VARCHAR', label: 'caminho' })
     caminho: string;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Descrição' })
+    @ReportColumn({ type: 'VARCHAR', label: 'descricao' })
     descricao: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Arquivo', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'arquivo_id', format: { raw: true } })
     arquivo_id: number;
 }

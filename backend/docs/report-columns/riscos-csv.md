@@ -13,17 +13,17 @@ Colunas do CSV bruto de `riscos.csv` (uma linha por risco do projeto).
 
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
-| `risco_id` | `BIGINT` | ID do Risco | sem formatação | — |
-| `codigo` | `INTEGER` | Código | sem formatação | — |
-| `titulo` | `VARCHAR` | Título | — | — |
-| `descricao` | `VARCHAR` | Descrição | — | — |
-| `probabilidade` | `INTEGER` | Probabilidade | sem formatação | — |
-| `probabilidade_descricao` | `VARCHAR` | Descrição da Probabilidade | — | — |
-| `impacto` | `INTEGER` | Impacto | sem formatação | — |
-| `impacto_descricao` | `VARCHAR` | Descrição do Impacto | — | — |
-| `grau` | `INTEGER` | Grau | sem formatação | — |
-| `grau_descricao` | `VARCHAR` | Descrição do Grau | — | — |
-| `status` | `VARCHAR` | Status | — | — |
+| `risco_id` | `BIGINT` | risco_id | sem formatação | — |
+| `codigo` | `INTEGER` | codigo | sem formatação | — |
+| `titulo` | `VARCHAR` | titulo | — | — |
+| `descricao` | `VARCHAR` | descricao | — | — |
+| `probabilidade` | `INTEGER` | probabilidade | sem formatação | — |
+| `probabilidade_descricao` | `VARCHAR` | probabilidade_descricao | — | — |
+| `impacto` | `INTEGER` | impacto | sem formatação | — |
+| `impacto_descricao` | `VARCHAR` | impacto_descricao | — | — |
+| `grau` | `INTEGER` | grau | sem formatação | — |
+| `grau_descricao` | `VARCHAR` | grau_descricao | — | — |
+| `status` | `VARCHAR` | status | — | — |
 
 ## `RelProjetosRiscosCsvRow`
 

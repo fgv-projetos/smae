@@ -16,16 +16,16 @@ Ordem do `SELECT` de `_queryDataAditivos()` — sem `fields` explícito.
 
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
-| `aditivo_id` | `BIGINT` | ID do Aditivo | sem formatação | — |
-| `contrato_id` | `BIGINT` | ID do Contrato | sem formatação | — |
-| `numero` | `VARCHAR` | Número | guard Excel | — |
-| `tipo_aditivo_id` | `BIGINT` | ID do Tipo de Aditivo | sem formatação | — |
-| `tipo_aditivo_nome` | `VARCHAR` | Tipo de Aditivo | — | — |
-| `tipo_categoria` | `VARCHAR` | Categoria do Tipo | — | — |
-| `data` | `DATE` | Data | — | — |
-| `data_termino_atual` | `DATE` | Data de Término Atual | — | — |
-| `valor` | `DECIMAL(18,2)` | Valor | R$, 2 casas | — |
-| `percentual_medido` | `DECIMAL(18,4)` | Percentual Medido | 2 casas | — |
+| `aditivo_id` | `BIGINT` | aditivo_id | sem formatação | — |
+| `contrato_id` | `BIGINT` | contrato_id | sem formatação | — |
+| `numero` | `VARCHAR` | numero | guard Excel | — |
+| `tipo_aditivo_id` | `BIGINT` | tipo_aditivo_id | sem formatação | — |
+| `tipo_aditivo_nome` | `VARCHAR` | tipo_aditivo_nome | — | — |
+| `tipo_categoria` | `VARCHAR` | tipo_categoria | — | — |
+| `data` | `DATE` | data | — | — |
+| `data_termino_atual` | `DATE` | data_termino_atual | — | — |
+| `valor` | `DECIMAL(18,2)` | valor | R$, 2 casas | — |
+| `percentual_medido` | `DECIMAL(18,4)` | percentual_medido | 2 casas | — |
 
 ## `RelProjetoAditivoCsvRow`
 
@@ -33,15 +33,15 @@ Colunas do CSV bruto de `aditivos.csv` da fonte `Projeto` (uma linha por aditivo
 
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
-| `aditivo_id` | `BIGINT` | ID do Aditivo | sem formatação | — |
-| `contrato_id` | `BIGINT` | ID do Contrato | sem formatação | — |
-| `tipo_categoria` | `VARCHAR` | Categoria do Tipo | — | — |
-| `tipo__id` | `BIGINT` | Tipo de Aditivo - ID | sem formatação | — |
-| `tipo__nome` | `VARCHAR` | Tipo de Aditivo | — | — |
-| `data` | `DATE` | Data | — | — |
-| `valor` | `DECIMAL(18,2)` | Valor | R$, 2 casas | — |
-| `percentual_medido` | `DECIMAL(18,4)` | Percentual Medido | 2 casas, unidade `%` | — |
-| `data_termino_atual` | `DATE` | Data de Término Atual | — | — |
+| `aditivo_id` | `BIGINT` | aditivo_id | sem formatação | — |
+| `contrato_id` | `BIGINT` | contrato_id | sem formatação | — |
+| `tipo_categoria` | `VARCHAR` | tipo_categoria | — | — |
+| `tipo__id` | `BIGINT` | tipo.id | sem formatação | — |
+| `tipo__nome` | `VARCHAR` | tipo.nome | — | — |
+| `data` | `DATE` | data | — | — |
+| `valor` | `DECIMAL(18,2)` | valor | R$, 2 casas | — |
+| `percentual_medido` | `DECIMAL(18,4)` | percentual_medido | 2 casas, unidade `%` | — |
+| `data_termino_atual` | `DATE` | data_termino_atual | — | — |
 
 ## `RelProjetosAditivosCsvRow`
 

@@ -15,8 +15,10 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
  *
  * Sobre os rótulos: este relatório **nunca** teve rótulos humanos — o `toFileOutput` não
  * passava `fields`, então o cabeçalho saía com a chave crua do DTO (`orgao_responsavel_sigla`,
- * `pontos_atencao`, ...). Como não havia rótulo entregue ao usuário, não há contrato de
- * rótulo a preservar e os labels abaixo foram escritos em PT-BR legível.
+ * `pontos_atencao`, ...). Esse cabeçalho é o contrato de quem consome o arquivo por
+ * automação, então os `label` abaixo o repetem tal e qual. Traduzi-los para PT-BR é decisão
+ * de negócio — e quem quiser rótulos legíveis pode renomear coluna por coluna num modelo de
+ * relatório, que é para isso que o `rename` do pós-processamento existe.
  *
  * Sobre o guard do Excel: nenhuma coluna recebe `excelTextGuard`. A extração atual não
  * emite `="..."` em campo nenhum, e ligar o guard mudaria os bytes do arquivo para quem
@@ -25,17 +27,17 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
  */
 export abstract class RelPPStatusCsvRowBase {
     /** Id do projeto/obra. Chave de conciliação: não pode ser removida por um modelo. */
-    @ReportColumn({ type: 'INTEGER', label: 'ID', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'id', format: { raw: true } })
     id: number;
 
     /** Chave de conciliação com o portfólio informado nos parâmetros do relatório. */
-    @ReportColumn({ type: 'INTEGER', label: 'ID do Portfólio', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'portfolio_id', format: { raw: true } })
     portfolio_id: number;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Código' })
+    @ReportColumn({ type: 'VARCHAR', label: 'codigo' })
     codigo: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Nome' })
+    @ReportColumn({ type: 'VARCHAR', label: 'nome' })
     nome: string;
 
     /**
@@ -43,27 +45,27 @@ export abstract class RelPPStatusCsvRowBase {
      * há cronograma. `Float` no Postgres (não `Decimal`), então não há precisão exata a
      * preservar — `DOUBLE` é o tipo honesto e a apresentação arredonda em 2 casas.
      */
-    @ReportColumn({ type: 'DOUBLE', label: 'Previsão de Custo', format: { currency: 'R$', decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DOUBLE', label: 'previsao_custo', format: { currency: 'R$', decimalPlaces: 2 } })
     previsao_custo: number | null;
 
     /** Idem `previsao_custo`: `Float` no Postgres. */
-    @ReportColumn({ type: 'DOUBLE', label: 'Custo Realizado', format: { currency: 'R$', decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DOUBLE', label: 'realizado_custo', format: { currency: 'R$', decimalPlaces: 2 } })
     realizado_custo: number | null;
 
     /**
      * `Paralisado` / `Atrasado` / `Em dia`, derivado do acompanhamento e do cronograma.
      * Tradução de domínio — continua sendo feita na extração, não é formatação de locale.
      */
-    @ReportColumn({ type: 'VARCHAR', label: 'Cronograma' })
+    @ReportColumn({ type: 'VARCHAR', label: 'cronograma' })
     cronograma: string;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Órgão Responsável' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_responsavel_sigla' })
     orgao_responsavel_sigla: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Detalhamento' })
+    @ReportColumn({ type: 'VARCHAR', label: 'detalhamento' })
     detalhamento: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Pontos de Atenção' })
+    @ReportColumn({ type: 'VARCHAR', label: 'pontos_atencao' })
     pontos_atencao: string | null;
 
     /**
@@ -71,7 +73,7 @@ export abstract class RelPPStatusCsvRowBase {
      * (inclusive o status `Concluída`/`Em andamento`/`Não iniciada`) é regra de domínio e
      * permanece na extração.
      */
-    @ReportColumn({ type: 'VARCHAR', label: 'Tarefas' })
+    @ReportColumn({ type: 'VARCHAR', label: 'tarefas' })
     tarefas: string | null;
 }
 

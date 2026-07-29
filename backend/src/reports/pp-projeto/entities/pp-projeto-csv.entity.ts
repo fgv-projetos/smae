@@ -8,7 +8,11 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
  * (`orgao_responsavel_descricao`, `hirearquia`, ...). O conjunto de colunas sempre foi
  * estável (o `flatten()` do json2csv **não** achata arrays por padrão, então campo array
  * vira uma célula só); ele apenas nunca tinha sido declarado. Aqui ele passa a ser, e os
- * rótulos técnicos viram rótulos PT-BR legíveis.
+ * `label` repetem esse mesmo cabeçalho técnico — inclusive o ponto do aninhamento
+ * (`meta.codigo`, `area_gestora.sigla`), que era o que o `flatten()` emitia. O cabeçalho é
+ * contrato com quem consome o arquivo por automação; traduzi-lo para PT-BR é decisão de
+ * negócio, e quem quiser rótulos legíveis pode renomear coluna por coluna num modelo de
+ * relatório — é para isso que o `rename` do pós-processamento existe.
  *
  * Duas exceções, onde `fields` já existia e os rótulos são preservados byte-a-byte:
  * `arquivos.csv` e `enderecos.csv` — inclusive as esquisitices deste último, cujos rótulos
@@ -39,166 +43,166 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
     descricao: 'Linha única com o cabeçalho/detalhes do projeto.',
 })
 export class RelProjetoDetalheCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'projeto_id', format: { raw: true } })
     projeto_id: number;
 
     /** Guard: códigos como `2024.03` seriam reinterpretados como número/data pelo Excel. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Código', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'codigo', format: { excelTextGuard: true } })
     codigo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Portfólio', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'portfolio_id', format: { raw: true } })
     portfolio_id: number;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Nome' })
+    @ReportColumn({ type: 'VARCHAR', label: 'nome' })
     nome: string;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Portfólio' })
+    @ReportColumn({ type: 'VARCHAR', label: 'portfolio_titulo' })
     portfolio_titulo: string;
 
     /** Descrições das tags de portfólio, separadas por `|`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Etiquetas' })
+    @ReportColumn({ type: 'VARCHAR', label: 'etiquetas' })
     etiquetas: string | null;
 
     /** Valor cru do enum `ProjetoStatus`. A versão humana sai em `status_traduzido`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Status' })
+    @ReportColumn({ type: 'VARCHAR', label: 'status' })
     status: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'Etapa - ID', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'projeto_etapa.id', format: { raw: true } })
     projeto_etapa__id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Etapa' })
+    @ReportColumn({ type: 'VARCHAR', label: 'projeto_etapa.descricao' })
     projeto_etapa__descricao: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Previsão de Início' })
+    @ReportColumn({ type: 'DATE', label: 'previsao_inicio' })
     previsao_inicio: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Previsão de Término' })
+    @ReportColumn({ type: 'DATE', label: 'previsao_termino' })
     previsao_termino: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Previsão de Duração (dias)', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'previsao_duracao', format: { raw: true } })
     previsao_duracao: number | null;
 
-    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'Previsão de Custo', format: { currency: 'R$', decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'previsao_custo', format: { currency: 'R$', decimalPlaces: 2 } })
     previsao_custo: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Objeto' })
+    @ReportColumn({ type: 'VARCHAR', label: 'objeto' })
     objeto: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Objetivo' })
+    @ReportColumn({ type: 'VARCHAR', label: 'objetivo' })
     objetivo: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Não Escopo' })
+    @ReportColumn({ type: 'VARCHAR', label: 'nao_escopo' })
     nao_escopo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'Órgão Responsável - ID', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'orgao_responsavel_id', format: { raw: true } })
     orgao_responsavel_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Órgão Responsável (Sigla)' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_responsavel_sigla' })
     orgao_responsavel_sigla: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Órgão Responsável' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_responsavel_descricao' })
     orgao_responsavel_descricao: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'Responsável - ID', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'responsavel_id', format: { raw: true } })
     responsavel_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Responsável' })
+    @ReportColumn({ type: 'VARCHAR', label: 'responsavel_nome_exibicao' })
     responsavel_nome_exibicao: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'Órgão Gestor - ID', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'orgao_gestor_id', format: { raw: true } })
     orgao_gestor_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Órgão Gestor (Sigla)' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_gestor_sigla' })
     orgao_gestor_sigla: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Órgão Gestor' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_gestor_descricao' })
     orgao_gestor_descricao: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Meta', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'meta_id', format: { raw: true } })
     meta_id: number | null;
 
     /** Nomes de exibição dos responsáveis no órgão gestor, separados por `|`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Responsáveis no Órgão Gestor' })
+    @ReportColumn({ type: 'VARCHAR', label: 'responsaveis_no_orgao_gestor' })
     responsaveis_no_orgao_gestor: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Tipo de Origem' })
+    @ReportColumn({ type: 'VARCHAR', label: 'origem_tipo' })
     origem_tipo: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Origem (Outro)' })
+    @ReportColumn({ type: 'VARCHAR', label: 'origem_outro' })
     origem_outro: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Secretário Responsável' })
+    @ReportColumn({ type: 'VARCHAR', label: 'secretario_responsavel' })
     secretario_responsavel: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Secretário Executivo' })
+    @ReportColumn({ type: 'VARCHAR', label: 'secretario_executivo' })
     secretario_executivo: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Coordenador da UE' })
+    @ReportColumn({ type: 'VARCHAR', label: 'coordenador_ue' })
     coordenador_ue: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Data de Aprovação' })
+    @ReportColumn({ type: 'DATE', label: 'data_aprovacao' })
     data_aprovacao: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Data de Revisão' })
+    @ReportColumn({ type: 'DATE', label: 'data_revisao' })
     data_revisao: string | null;
 
     /** Guard: versões como `1.10` viram número no Excel. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Versão', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'versao', format: { excelTextGuard: true } })
     versao: string | null;
 
-    @ReportColumn({ type: 'BOOLEAN', label: 'Arquivado' })
+    @ReportColumn({ type: 'BOOLEAN', label: 'arquivado' })
     arquivado: boolean | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Iniciativa', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'iniciativa_id', format: { raw: true } })
     iniciativa_id: number | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Atividade', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'atividade_id', format: { raw: true } })
     atividade_id: number | null;
 
     /** Guard: códigos de meta são numéricos com pontos (`1.2.3`). */
-    @ReportColumn({ type: 'VARCHAR', label: 'Código da Meta', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'meta_codigo', format: { excelTextGuard: true } })
     meta_codigo: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Resumo' })
+    @ReportColumn({ type: 'VARCHAR', label: 'resumo' })
     resumo: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Público Alvo' })
+    @ReportColumn({ type: 'VARCHAR', label: 'publico_alvo' })
     publico_alvo: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Início Realizado' })
+    @ReportColumn({ type: 'DATE', label: 'realizado_inicio' })
     realizado_inicio: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Término Realizado' })
+    @ReportColumn({ type: 'DATE', label: 'realizado_termino' })
     realizado_termino: string | null;
 
-    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'Custo Realizado', format: { currency: 'R$', decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'realizado_custo', format: { currency: 'R$', decimalPlaces: 2 } })
     realizado_custo: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Principais Etapas' })
+    @ReportColumn({ type: 'VARCHAR', label: 'principais_etapas' })
     principais_etapas: string | null;
 
-    @ReportColumn({ type: 'BOOLEAN', label: 'É Prioritário' })
+    @ReportColumn({ type: 'BOOLEAN', label: 'eh_prioritario' })
     eh_prioritario: boolean | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Atraso (dias)', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'atraso', format: { raw: true } })
     atraso: number | null;
 
-    @ReportColumn({ type: 'BOOLEAN', label: 'Em Atraso' })
+    @ReportColumn({ type: 'BOOLEAN', label: 'em_atraso' })
     em_atraso: boolean | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Tolerância de Atraso (dias)', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'tolerancia_atraso', format: { raw: true } })
     tolerancia_atraso: number | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Projeção de Término' })
+    @ReportColumn({ type: 'DATE', label: 'projecao_termino' })
     projecao_termino: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Duração Realizada (dias)', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'realizado_duracao', format: { raw: true } })
     realizado_duracao: number | null;
 
-    @ReportColumn({ type: 'DOUBLE', label: 'Percentual Concluído', format: { decimalPlaces: 2, unit: '%' } })
+    @ReportColumn({ type: 'DOUBLE', label: 'percentual_concluido', format: { decimalPlaces: 2, unit: '%' } })
     percentual_concluido: number | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Nível Máximo de Tarefa do Portfólio', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'portfolio_nivel_maximo_tarefa', format: { raw: true } })
     portfolio_nivel_maximo_tarefa: number | null;
 
     // `detail.meta` é o objeto `ProjetoMetaDetailDto`. As cinco colunas abaixo são o conjunto
@@ -206,33 +210,33 @@ export class RelProjetoDetalheCsvRow {
     // quando a meta vem direta (mas não quando vem via iniciativa/atividade), o que gerava a
     // coluna `meta.pdm.nome` só em parte dos projetos; ela não é declarada aqui porque tem
     // exatamente o mesmo valor de `meta__pdm_nome`, que existe nos dois caminhos.
-    @ReportColumn({ type: 'BIGINT', label: 'Meta - ID', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'meta.id', format: { raw: true } })
     meta__id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Meta - Código', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'meta.codigo', format: { excelTextGuard: true } })
     meta__codigo: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Meta - Título' })
+    @ReportColumn({ type: 'VARCHAR', label: 'meta.titulo' })
     meta__titulo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'Meta - ID do PdM', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'meta.pdm_id', format: { raw: true } })
     meta__pdm_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Meta - PdM' })
+    @ReportColumn({ type: 'VARCHAR', label: 'meta.pdm_nome' })
     meta__pdm_nome: string | null;
 
     /** `descrição da fonte: valor`, separados por `|`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Fontes de Recurso' })
+    @ReportColumn({ type: 'VARCHAR', label: 'fonte_recursos' })
     fonte_recursos: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Premissas' })
+    @ReportColumn({ type: 'VARCHAR', label: 'premissas' })
     premissas: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Restrições' })
+    @ReportColumn({ type: 'VARCHAR', label: 'restricoes' })
     restricoes: string | null;
 
     /** Siglas dos órgãos participantes, separadas por `|`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Órgãos Participantes' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgaos_participantes' })
     orgaos_participantes: string | null;
 
     /**
@@ -252,7 +256,8 @@ export class RelProjetoDetalheCsvRow {
  *
  * O nome `hirearquia` tem o typo de origem preservado: é o nome da propriedade no DTO
  * `RelProjetoCronogramaDto` (que também é resposta da API `POST /relatorio/projeto`) e
- * renomeá-lo mudaria o contrato daquele endpoint. O rótulo sai correto.
+ * renomeá-lo mudaria o contrato daquele endpoint. O rótulo carrega o mesmo typo porque era
+ * esse o cabeçalho emitido no CSV.
  */
 @ReportRows({
     arquivo: 'cronograma.csv',
@@ -260,23 +265,23 @@ export class RelProjetoDetalheCsvRow {
     descricao: 'Linhas do cronograma (tarefas) do projeto.',
 })
 export class RelProjetoCronogramaCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'projeto_id', format: { raw: true } })
     projeto_id: number;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Tarefa', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'tarefa_id', format: { raw: true } })
     tarefa_id: number;
 
     /** Guard: `1.2.3` seria reinterpretado como número/data pelo Excel. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Hierarquia', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'hirearquia', format: { excelTextGuard: true } })
     hirearquia: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Tarefa' })
+    @ReportColumn({ type: 'VARCHAR', label: 'tarefa' })
     tarefa: string;
 
-    @ReportColumn({ type: 'DATE', label: 'Início Planejado' })
+    @ReportColumn({ type: 'DATE', label: 'inicio_planejado' })
     inicio_planejado: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Término Planejado' })
+    @ReportColumn({ type: 'DATE', label: 'termino_planejado' })
     termino_planejado: string | null;
 
     /**
@@ -285,26 +290,26 @@ export class RelProjetoCronogramaCsvRow {
      * Sem guard justamente por isso — no caso numérico o guard transformaria um número em
      * texto no Excel, e o caso textual não corre risco de reinterpretação.
      */
-    @ReportColumn({ type: 'VARCHAR', label: 'Custo Estimado' })
+    @ReportColumn({ type: 'VARCHAR', label: 'custo_estimado' })
     custo_estimado: string | number | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Duração Planejada (dias)', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'duracao_planejado', format: { raw: true } })
     duracao_planejado: number | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Início Real' })
+    @ReportColumn({ type: 'DATE', label: 'inicio_real' })
     inicio_real: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Término Real' })
+    @ReportColumn({ type: 'DATE', label: 'termino_real' })
     termino_real: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Duração Real (dias)', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'duracao_real', format: { raw: true } })
     duracao_real: number | null;
 
-    @ReportColumn({ type: 'DOUBLE', label: 'Percentual Concluído', format: { decimalPlaces: 2, unit: '%' } })
+    @ReportColumn({ type: 'DOUBLE', label: 'percentual_concluido', format: { decimalPlaces: 2, unit: '%' } })
     percentual_concluido: number | null;
 
     /** Mesmo tratamento de `custo_estimado`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Custo Real' })
+    @ReportColumn({ type: 'VARCHAR', label: 'custo_real' })
     custo_real: string | number | null;
 }
 
@@ -315,56 +320,56 @@ export class RelProjetoCronogramaCsvRow {
     descricao: 'Acompanhamentos registrados no projeto.',
 })
 export class RelProjetoAcompanhamentoCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Acompanhamento', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'acompanhamento_id', format: { raw: true } })
     acompanhamento_id: number;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'projeto_id', format: { raw: true } })
     projeto_id: number;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Tipo de Acompanhamento' })
+    @ReportColumn({ type: 'VARCHAR', label: 'acompanhamento_tipo' })
     acompanhamento_tipo: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Número', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'numero', format: { raw: true } })
     numero: number | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Data do Registro' })
+    @ReportColumn({ type: 'DATE', label: 'data_registro' })
     data_registro: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Participantes' })
+    @ReportColumn({ type: 'VARCHAR', label: 'participantes' })
     participantes: string | null;
 
     /** HTML como veio do editor. A versão sem marcação sai em `detalhamento_texto`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Detalhamento' })
+    @ReportColumn({ type: 'VARCHAR', label: 'detalhamento' })
     detalhamento: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Observação' })
+    @ReportColumn({ type: 'VARCHAR', label: 'observacao' })
     observacao: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Detalhamento do Status' })
+    @ReportColumn({ type: 'VARCHAR', label: 'detalhamento_status' })
     detalhamento_status: string | null;
 
     /** HTML como veio do editor. Versão sem marcação em `pontos_atencao_texto`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Pontos de Atenção' })
+    @ReportColumn({ type: 'VARCHAR', label: 'pontos_atencao' })
     pontos_atencao: string | null;
 
     /** HTML como veio do editor. Versão sem marcação em `pauta_texto`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Pauta' })
+    @ReportColumn({ type: 'VARCHAR', label: 'pauta' })
     pauta: string | null;
 
-    @ReportColumn({ type: 'BOOLEAN', label: 'Cronograma Paralisado' })
+    @ReportColumn({ type: 'BOOLEAN', label: 'cronograma_paralisado' })
     cronograma_paralisado: boolean | null;
 
     /** Códigos dos riscos vinculados, separados por `|`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Riscos' })
+    @ReportColumn({ type: 'VARCHAR', label: 'riscos' })
     riscos: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Pauta (texto)' })
+    @ReportColumn({ type: 'VARCHAR', label: 'pauta_texto' })
     pauta_texto: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Detalhamento (texto)' })
+    @ReportColumn({ type: 'VARCHAR', label: 'detalhamento_texto' })
     detalhamento_texto: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Pontos de Atenção (texto)' })
+    @ReportColumn({ type: 'VARCHAR', label: 'pontos_atencao_texto' })
     pontos_atencao_texto: string | null;
 }
 
@@ -375,23 +380,23 @@ export class RelProjetoAcompanhamentoCsvRow {
     descricao: 'Encaminhamentos dos acompanhamentos do projeto.',
 })
 export class RelProjetoEncaminhamentoCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Acompanhamento', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'acompanhamento_id', format: { raw: true } })
     acompanhamento_id: number;
 
     /** Guard: identificadores como `1.2` viram número/data no Excel. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Número do Encaminhamento', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'numero_encaminhamento', format: { excelTextGuard: true } })
     numero_encaminhamento: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Encaminhamento' })
+    @ReportColumn({ type: 'VARCHAR', label: 'encaminhamento' })
     encaminhamento: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Responsável' })
+    @ReportColumn({ type: 'VARCHAR', label: 'responsavel' })
     responsavel: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Prazo do Encaminhamento' })
+    @ReportColumn({ type: 'DATE', label: 'prazo_encaminhamento' })
     prazo_encaminhamento: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Prazo Realizado' })
+    @ReportColumn({ type: 'DATE', label: 'prazo_realizado' })
     prazo_realizado: string | null;
 }
 
@@ -402,30 +407,30 @@ export class RelProjetoEncaminhamentoCsvRow {
     descricao: 'Planos de ação dos riscos do projeto.',
 })
 export class RelProjetoPlanoAcaoCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Risco', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'risco_id', format: { raw: true } })
     risco_id: number;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Código do Risco', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'codigo_risco', format: { raw: true } })
     codigo_risco: number | null;
 
     /** HTML como veio do editor. Versão sem marcação em `contramedida_texto`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Contramedida' })
+    @ReportColumn({ type: 'VARCHAR', label: 'contramedida' })
     contramedida: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Prazo da Contramedida' })
+    @ReportColumn({ type: 'DATE', label: 'prazo_contramedida' })
     prazo_contramedida: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Responsável' })
+    @ReportColumn({ type: 'VARCHAR', label: 'responsavel' })
     responsavel: string | null;
 
     /** HTML como veio do editor. Versão sem marcação em `medidas_de_contingencia_texto`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Medidas de Contingência' })
+    @ReportColumn({ type: 'VARCHAR', label: 'medidas_de_contingencia' })
     medidas_de_contingencia: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Contramedida (texto)' })
+    @ReportColumn({ type: 'VARCHAR', label: 'contramedida_texto' })
     contramedida_texto: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Medidas de Contingência (texto)' })
+    @ReportColumn({ type: 'VARCHAR', label: 'medidas_de_contingencia_texto' })
     medidas_de_contingencia_texto: string | null;
 }
 
@@ -436,38 +441,38 @@ export class RelProjetoPlanoAcaoCsvRow {
     descricao: 'Riscos registrados no projeto.',
 })
 export class RelProjetoRiscoCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Risco', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'risco_id', format: { raw: true } })
     risco_id: number;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Código', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'codigo', format: { raw: true } })
     codigo: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Título' })
+    @ReportColumn({ type: 'VARCHAR', label: 'titulo' })
     titulo: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Descrição' })
+    @ReportColumn({ type: 'VARCHAR', label: 'descricao' })
     descricao: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Probabilidade', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'probabilidade', format: { raw: true } })
     probabilidade: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Descrição da Probabilidade' })
+    @ReportColumn({ type: 'VARCHAR', label: 'probabilidade_descricao' })
     probabilidade_descricao: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Impacto', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'impacto', format: { raw: true } })
     impacto: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Descrição do Impacto' })
+    @ReportColumn({ type: 'VARCHAR', label: 'impacto_descricao' })
     impacto_descricao: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Grau', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'grau', format: { raw: true } })
     grau: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Descrição do Grau' })
+    @ReportColumn({ type: 'VARCHAR', label: 'grau_descricao' })
     grau_descricao: string | null;
 
     /** Já traduzido por `ProjetoRiscoStatus` na extração (tradução de domínio). */
-    @ReportColumn({ type: 'VARCHAR', label: 'Status' })
+    @ReportColumn({ type: 'VARCHAR', label: 'status' })
     status: string | null;
 }
 
@@ -513,51 +518,51 @@ export class RelProjetoArquivoCsvRow {
     descricao: 'Contratos vinculados ao projeto.',
 })
 export class RelProjetoContratoCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Contrato', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'contrato_id', format: { raw: true } })
     contrato_id: number;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'projeto_id', format: { raw: true } })
     projeto_id: number;
 
     /** Guard: número de contrato é código, não valor numérico. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Número do Contrato', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'numero', format: { excelTextGuard: true } })
     numero: string | null;
 
-    @ReportColumn({ type: 'BOOLEAN', label: 'Exclusivo' })
+    @ReportColumn({ type: 'BOOLEAN', label: 'exclusivo' })
     exclusivo: boolean | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Status' })
+    @ReportColumn({ type: 'VARCHAR', label: 'status' })
     status: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Objeto' })
+    @ReportColumn({ type: 'VARCHAR', label: 'objeto' })
     objeto: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Descrição Detalhada' })
+    @ReportColumn({ type: 'VARCHAR', label: 'descricao_detalhada' })
     descricao_detalhada: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Contratante' })
+    @ReportColumn({ type: 'VARCHAR', label: 'contratante' })
     contratante: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Empresa Contratada' })
+    @ReportColumn({ type: 'VARCHAR', label: 'empresa_contratada' })
     empresa_contratada: string | null;
 
-    @ReportColumn({ type: 'INTEGER', label: 'Prazo', format: { raw: true } })
+    @ReportColumn({ type: 'INTEGER', label: 'prazo', format: { raw: true } })
     prazo: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Unidade do Prazo' })
+    @ReportColumn({ type: 'VARCHAR', label: 'unidade_prazo' })
     unidade_prazo: string | null;
 
     /** `mes/ano` (ex.: `3/2024`). Guard obrigatório: o Excel leria como data. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Data Base', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'data_base', format: { excelTextGuard: true } })
     data_base: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Data de Início' })
+    @ReportColumn({ type: 'DATE', label: 'data_inicio' })
     data_inicio: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Data de Término' })
+    @ReportColumn({ type: 'DATE', label: 'data_termino' })
     data_termino: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Data de Término Atualizada' })
+    @ReportColumn({ type: 'DATE', label: 'data_termino_atualizada' })
     data_termino_atualizada: string | null;
 
     /**
@@ -565,53 +570,53 @@ export class RelProjetoContratoCsvRow {
      * o DuckDB relê como `DECIMAL(18,2)` sem passar por `double`. Vale para todos os
      * valores monetários deste arquivo.
      */
-    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'Valor', format: { currency: 'R$', decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'valor', format: { currency: 'R$', decimalPlaces: 2 } })
     valor: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Observações' })
+    @ReportColumn({ type: 'VARCHAR', label: 'observacoes' })
     observacoes: string | null;
 
     @ReportColumn({
         type: 'DECIMAL(18,2)',
-        label: 'Valor do Contrato Atualizado',
+        label: 'valor_contrato_atualizado',
         format: { currency: 'R$', decimalPlaces: 2 },
     })
     valor_contrato_atualizado: string | null;
 
-    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'Total de Aditivos', format: { currency: 'R$', decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'total_aditivos', format: { currency: 'R$', decimalPlaces: 2 } })
     total_aditivos: string | null;
 
-    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'Total de Reajustes', format: { currency: 'R$', decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'total_reajustes', format: { currency: 'R$', decimalPlaces: 2 } })
     total_reajustes: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'Modalidade de Licitação - ID', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'modalidade_licitacao.id', format: { raw: true } })
     modalidade_licitacao__id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Modalidade de Licitação' })
+    @ReportColumn({ type: 'VARCHAR', label: 'modalidade_licitacao.nome' })
     modalidade_licitacao__nome: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'Área Gestora - ID', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'area_gestora.id', format: { raw: true } })
     area_gestora__id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Área Gestora (Sigla)' })
+    @ReportColumn({ type: 'VARCHAR', label: 'area_gestora.sigla' })
     area_gestora__sigla: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Área Gestora' })
+    @ReportColumn({ type: 'VARCHAR', label: 'area_gestora.descricao' })
     area_gestora__descricao: string | null;
 
-    @ReportColumn({ type: 'DECIMAL(18,4)', label: 'Percentual Medido', format: { decimalPlaces: 2, unit: '%' } })
+    @ReportColumn({ type: 'DECIMAL(18,4)', label: 'percentual_medido', format: { decimalPlaces: 2, unit: '%' } })
     percentual_medido: string | null;
 
     /** Processos SEI já formatados, separados por `|`. Guard: são números com pontos. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Processos SEI', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'processos_sei', format: { excelTextGuard: true } })
     processos_sei: string | null;
 
     /** Códigos SOF separados por `|`. Guard: preservam zeros à esquerda. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Fontes de Recurso', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'fontes_recurso', format: { excelTextGuard: true } })
     fontes_recurso: string | null;
 
     /** Já formatado por `f_formata_cnpj` no SQL. Guard: senão vira número no Excel. */
-    @ReportColumn({ type: 'VARCHAR', label: 'CNPJ da Contratada', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'cnpj_contratada', format: { excelTextGuard: true } })
     cnpj_contratada: string | null;
 }
 
@@ -622,33 +627,33 @@ export class RelProjetoContratoCsvRow {
     descricao: 'Aditivos e reajustes dos contratos vinculados ao projeto.',
 })
 export class RelProjetoAditivoCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Aditivo', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'aditivo_id', format: { raw: true } })
     aditivo_id: number;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Contrato', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'contrato_id', format: { raw: true } })
     contrato_id: number;
 
     /** `Aditivo` ou `Reajuste`. */
-    @ReportColumn({ type: 'VARCHAR', label: 'Categoria do Tipo' })
+    @ReportColumn({ type: 'VARCHAR', label: 'tipo_categoria' })
     tipo_categoria: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'Tipo de Aditivo - ID', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'tipo.id', format: { raw: true } })
     tipo__id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Tipo de Aditivo' })
+    @ReportColumn({ type: 'VARCHAR', label: 'tipo.nome' })
     tipo__nome: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Data' })
+    @ReportColumn({ type: 'DATE', label: 'data' })
     data: string | null;
 
     /** String na extração pelo mesmo motivo de `contratos.valor`. */
-    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'Valor', format: { currency: 'R$', decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'valor', format: { currency: 'R$', decimalPlaces: 2 } })
     valor: string | null;
 
-    @ReportColumn({ type: 'DECIMAL(18,4)', label: 'Percentual Medido', format: { decimalPlaces: 2, unit: '%' } })
+    @ReportColumn({ type: 'DECIMAL(18,4)', label: 'percentual_medido', format: { decimalPlaces: 2, unit: '%' } })
     percentual_medido: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Data de Término Atual' })
+    @ReportColumn({ type: 'DATE', label: 'data_termino_atual' })
     data_termino_atual: string | null;
 }
 
@@ -659,31 +664,31 @@ export class RelProjetoAditivoCsvRow {
     descricao: 'Origens (meta/iniciativa/atividade do PdM) vinculadas ao projeto.',
 })
 export class RelProjetoOrigemCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'projeto_id', format: { raw: true } })
     projeto_id: number;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID do PdM', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'pdm_id', format: { raw: true } })
     pdm_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'PdM' })
+    @ReportColumn({ type: 'VARCHAR', label: 'pdm_titulo' })
     pdm_titulo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Meta', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'meta_id', format: { raw: true } })
     meta_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Meta' })
+    @ReportColumn({ type: 'VARCHAR', label: 'meta_titulo' })
     meta_titulo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Iniciativa', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'iniciativa_id', format: { raw: true } })
     iniciativa_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Iniciativa' })
+    @ReportColumn({ type: 'VARCHAR', label: 'iniciativa_titulo' })
     iniciativa_titulo: string | null;
 
-    @ReportColumn({ type: 'BIGINT', label: 'ID da Atividade', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'atividade_id', format: { raw: true } })
     atividade_id: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Atividade' })
+    @ReportColumn({ type: 'VARCHAR', label: 'atividade_titulo' })
     atividade_titulo: string | null;
 }
 
@@ -694,62 +699,62 @@ export class RelProjetoOrigemCsvRow {
     descricao: 'Última versão do termo de encerramento do projeto.',
 })
 export class RelProjetoTermoEncerramentoCsvRow {
-    @ReportColumn({ type: 'BIGINT', label: 'ID do Projeto', format: { raw: true } })
+    @ReportColumn({ type: 'BIGINT', label: 'projeto_id', format: { raw: true } })
     projeto_id: number;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Código do Projeto', format: { excelTextGuard: true } })
+    @ReportColumn({ type: 'VARCHAR', label: 'projeto_codigo', format: { excelTextGuard: true } })
     projeto_codigo: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Nome do Projeto' })
+    @ReportColumn({ type: 'VARCHAR', label: 'nome_projeto' })
     nome_projeto: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Órgão Responsável' })
+    @ReportColumn({ type: 'VARCHAR', label: 'orgao_responsavel_nome' })
     orgao_responsavel_nome: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Portfólios' })
+    @ReportColumn({ type: 'VARCHAR', label: 'portfolios_nomes' })
     portfolios_nomes: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Objeto' })
+    @ReportColumn({ type: 'VARCHAR', label: 'objeto' })
     objeto: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Previsão de Início' })
+    @ReportColumn({ type: 'DATE', label: 'previsao_inicio' })
     previsao_inicio: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Previsão de Término' })
+    @ReportColumn({ type: 'DATE', label: 'previsao_termino' })
     previsao_termino: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Data de Início Real' })
+    @ReportColumn({ type: 'DATE', label: 'data_inicio_real' })
     data_inicio_real: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Data de Término Real' })
+    @ReportColumn({ type: 'DATE', label: 'data_termino_real' })
     data_termino_real: string | null;
 
-    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'Previsão de Custo', format: { currency: 'R$', decimalPlaces: 2 } })
+    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'previsao_custo', format: { currency: 'R$', decimalPlaces: 2 } })
     previsao_custo: number | null;
 
     @ReportColumn({
         type: 'DECIMAL(18,2)',
-        label: 'Valor Executado Total',
+        label: 'valor_executado_total',
         format: { currency: 'R$', decimalPlaces: 2 },
     })
     valor_executado_total: number | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Status Final' })
+    @ReportColumn({ type: 'VARCHAR', label: 'status_final' })
     status_final: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Etapa' })
+    @ReportColumn({ type: 'VARCHAR', label: 'etapa_nome' })
     etapa_nome: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Justificativa' })
+    @ReportColumn({ type: 'VARCHAR', label: 'justificativa' })
     justificativa: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Complemento da Justificativa' })
+    @ReportColumn({ type: 'VARCHAR', label: 'justificativa_complemento' })
     justificativa_complemento: string | null;
 
-    @ReportColumn({ type: 'VARCHAR', label: 'Responsável pelo Encerramento' })
+    @ReportColumn({ type: 'VARCHAR', label: 'responsavel_encerramento_nome' })
     responsavel_encerramento_nome: string | null;
 
-    @ReportColumn({ type: 'DATE', label: 'Data de Encerramento' })
+    @ReportColumn({ type: 'DATE', label: 'data_encerramento' })
     data_encerramento: string | null;
 }
 

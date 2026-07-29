@@ -15,16 +15,16 @@ base: `getReportRowSchema` percorre a cadeia de protótipos e herda as colunas d
 
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
-| `id` | `INTEGER` | ID | sem formatação | — |
-| `portfolio_id` | `INTEGER` | ID do Portfólio | sem formatação | — |
-| `codigo` | `VARCHAR` | Código | — | — |
-| `nome` | `VARCHAR` | Nome | — | — |
-| `previsao_custo` | `DOUBLE` | Previsão de Custo | R$, 2 casas | — |
-| `realizado_custo` | `DOUBLE` | Custo Realizado | R$, 2 casas | — |
-| `cronograma` | `VARCHAR` | Cronograma | — | — |
-| `orgao_responsavel_sigla` | `VARCHAR` | Órgão Responsável | — | — |
-| `detalhamento` | `VARCHAR` | Detalhamento | — | — |
-| `pontos_atencao` | `VARCHAR` | Pontos de Atenção | — | — |
-| `tarefas` | `VARCHAR` | Tarefas | — | — |
+| `id` | `INTEGER` | id | sem formatação | — |
+| `portfolio_id` | `INTEGER` | portfolio_id | sem formatação | — |
+| `codigo` | `VARCHAR` | codigo | — | — |
+| `nome` | `VARCHAR` | nome | — | — |
+| `previsao_custo` | `DOUBLE` | previsao_custo | R$, 2 casas | — |
+| `realizado_custo` | `DOUBLE` | realizado_custo | R$, 2 casas | — |
+| `cronograma` | `VARCHAR` | cronograma | — | — |
+| `orgao_responsavel_sigla` | `VARCHAR` | orgao_responsavel_sigla | — | — |
+| `detalhamento` | `VARCHAR` | detalhamento | — | — |
+| `pontos_atencao` | `VARCHAR` | pontos_atencao | — | — |
+| `tarefas` | `VARCHAR` | tarefas | — | — |
 
 [← todos os arquivos](../report-columns.md)

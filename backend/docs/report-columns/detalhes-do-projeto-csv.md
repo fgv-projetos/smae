@@ -18,67 +18,67 @@ Dois campos do `detail` são objetos e, portanto, achatados: `projeto_etapa` (`I
 
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
-| `projeto_id` | `BIGINT` | ID do Projeto | sem formatação | — |
-| `codigo` | `VARCHAR` | Código | guard Excel | — |
-| `portfolio_id` | `BIGINT` | ID do Portfólio | sem formatação | — |
-| `nome` | `VARCHAR` | Nome | — | — |
-| `portfolio_titulo` | `VARCHAR` | Portfólio | — | — |
-| `etiquetas` | `VARCHAR` | Etiquetas | — | — |
-| `status` | `VARCHAR` | Status | — | — |
-| `projeto_etapa__id` | `BIGINT` | Etapa - ID | sem formatação | — |
-| `projeto_etapa__descricao` | `VARCHAR` | Etapa | — | — |
-| `previsao_inicio` | `DATE` | Previsão de Início | — | — |
-| `previsao_termino` | `DATE` | Previsão de Término | — | — |
-| `previsao_duracao` | `INTEGER` | Previsão de Duração (dias) | sem formatação | — |
-| `previsao_custo` | `DECIMAL(18,2)` | Previsão de Custo | R$, 2 casas | — |
-| `objeto` | `VARCHAR` | Objeto | — | — |
-| `objetivo` | `VARCHAR` | Objetivo | — | — |
-| `nao_escopo` | `VARCHAR` | Não Escopo | — | — |
-| `orgao_responsavel_id` | `BIGINT` | Órgão Responsável - ID | sem formatação | — |
-| `orgao_responsavel_sigla` | `VARCHAR` | Órgão Responsável (Sigla) | — | — |
-| `orgao_responsavel_descricao` | `VARCHAR` | Órgão Responsável | — | — |
-| `responsavel_id` | `BIGINT` | Responsável - ID | sem formatação | — |
-| `responsavel_nome_exibicao` | `VARCHAR` | Responsável | — | — |
-| `orgao_gestor_id` | `BIGINT` | Órgão Gestor - ID | sem formatação | — |
-| `orgao_gestor_sigla` | `VARCHAR` | Órgão Gestor (Sigla) | — | — |
-| `orgao_gestor_descricao` | `VARCHAR` | Órgão Gestor | — | — |
-| `meta_id` | `BIGINT` | ID da Meta | sem formatação | — |
-| `responsaveis_no_orgao_gestor` | `VARCHAR` | Responsáveis no Órgão Gestor | — | — |
-| `origem_tipo` | `VARCHAR` | Tipo de Origem | — | — |
-| `origem_outro` | `VARCHAR` | Origem (Outro) | — | — |
-| `secretario_responsavel` | `VARCHAR` | Secretário Responsável | — | — |
-| `secretario_executivo` | `VARCHAR` | Secretário Executivo | — | — |
-| `coordenador_ue` | `VARCHAR` | Coordenador da UE | — | — |
-| `data_aprovacao` | `DATE` | Data de Aprovação | — | — |
-| `data_revisao` | `DATE` | Data de Revisão | — | — |
-| `versao` | `VARCHAR` | Versão | guard Excel | — |
-| `arquivado` | `BOOLEAN` | Arquivado | — | — |
-| `iniciativa_id` | `BIGINT` | ID da Iniciativa | sem formatação | — |
-| `atividade_id` | `BIGINT` | ID da Atividade | sem formatação | — |
-| `meta_codigo` | `VARCHAR` | Código da Meta | guard Excel | — |
-| `resumo` | `VARCHAR` | Resumo | — | — |
-| `publico_alvo` | `VARCHAR` | Público Alvo | — | — |
-| `realizado_inicio` | `DATE` | Início Realizado | — | — |
-| `realizado_termino` | `DATE` | Término Realizado | — | — |
-| `realizado_custo` | `DECIMAL(18,2)` | Custo Realizado | R$, 2 casas | — |
-| `principais_etapas` | `VARCHAR` | Principais Etapas | — | — |
-| `eh_prioritario` | `BOOLEAN` | É Prioritário | — | — |
-| `atraso` | `INTEGER` | Atraso (dias) | sem formatação | — |
-| `em_atraso` | `BOOLEAN` | Em Atraso | — | — |
-| `tolerancia_atraso` | `INTEGER` | Tolerância de Atraso (dias) | sem formatação | — |
-| `projecao_termino` | `DATE` | Projeção de Término | — | — |
-| `realizado_duracao` | `INTEGER` | Duração Realizada (dias) | sem formatação | — |
-| `percentual_concluido` | `DOUBLE` | Percentual Concluído | 2 casas, unidade `%` | — |
-| `portfolio_nivel_maximo_tarefa` | `INTEGER` | Nível Máximo de Tarefa do Portfólio | sem formatação | — |
-| `meta__id` | `BIGINT` | Meta - ID | sem formatação | — |
-| `meta__codigo` | `VARCHAR` | Meta - Código | guard Excel | — |
-| `meta__titulo` | `VARCHAR` | Meta - Título | — | — |
-| `meta__pdm_id` | `BIGINT` | Meta - ID do PdM | sem formatação | — |
-| `meta__pdm_nome` | `VARCHAR` | Meta - PdM | — | — |
-| `fonte_recursos` | `VARCHAR` | Fontes de Recurso | — | — |
-| `premissas` | `VARCHAR` | Premissas | — | — |
-| `restricoes` | `VARCHAR` | Restrições | — | — |
-| `orgaos_participantes` | `VARCHAR` | Órgãos Participantes | — | — |
+| `projeto_id` | `BIGINT` | projeto_id | sem formatação | — |
+| `codigo` | `VARCHAR` | codigo | guard Excel | — |
+| `portfolio_id` | `BIGINT` | portfolio_id | sem formatação | — |
+| `nome` | `VARCHAR` | nome | — | — |
+| `portfolio_titulo` | `VARCHAR` | portfolio_titulo | — | — |
+| `etiquetas` | `VARCHAR` | etiquetas | — | — |
+| `status` | `VARCHAR` | status | — | — |
+| `projeto_etapa__id` | `BIGINT` | projeto_etapa.id | sem formatação | — |
+| `projeto_etapa__descricao` | `VARCHAR` | projeto_etapa.descricao | — | — |
+| `previsao_inicio` | `DATE` | previsao_inicio | — | — |
+| `previsao_termino` | `DATE` | previsao_termino | — | — |
+| `previsao_duracao` | `INTEGER` | previsao_duracao | sem formatação | — |
+| `previsao_custo` | `DECIMAL(18,2)` | previsao_custo | R$, 2 casas | — |
+| `objeto` | `VARCHAR` | objeto | — | — |
+| `objetivo` | `VARCHAR` | objetivo | — | — |
+| `nao_escopo` | `VARCHAR` | nao_escopo | — | — |
+| `orgao_responsavel_id` | `BIGINT` | orgao_responsavel_id | sem formatação | — |
+| `orgao_responsavel_sigla` | `VARCHAR` | orgao_responsavel_sigla | — | — |
+| `orgao_responsavel_descricao` | `VARCHAR` | orgao_responsavel_descricao | — | — |
+| `responsavel_id` | `BIGINT` | responsavel_id | sem formatação | — |
+| `responsavel_nome_exibicao` | `VARCHAR` | responsavel_nome_exibicao | — | — |
+| `orgao_gestor_id` | `BIGINT` | orgao_gestor_id | sem formatação | — |
+| `orgao_gestor_sigla` | `VARCHAR` | orgao_gestor_sigla | — | — |
+| `orgao_gestor_descricao` | `VARCHAR` | orgao_gestor_descricao | — | — |
+| `meta_id` | `BIGINT` | meta_id | sem formatação | — |
+| `responsaveis_no_orgao_gestor` | `VARCHAR` | responsaveis_no_orgao_gestor | — | — |
+| `origem_tipo` | `VARCHAR` | origem_tipo | — | — |
+| `origem_outro` | `VARCHAR` | origem_outro | — | — |
+| `secretario_responsavel` | `VARCHAR` | secretario_responsavel | — | — |
+| `secretario_executivo` | `VARCHAR` | secretario_executivo | — | — |
+| `coordenador_ue` | `VARCHAR` | coordenador_ue | — | — |
+| `data_aprovacao` | `DATE` | data_aprovacao | — | — |
+| `data_revisao` | `DATE` | data_revisao | — | — |
+| `versao` | `VARCHAR` | versao | guard Excel | — |
+| `arquivado` | `BOOLEAN` | arquivado | — | — |
+| `iniciativa_id` | `BIGINT` | iniciativa_id | sem formatação | — |
+| `atividade_id` | `BIGINT` | atividade_id | sem formatação | — |
+| `meta_codigo` | `VARCHAR` | meta_codigo | guard Excel | — |
+| `resumo` | `VARCHAR` | resumo | — | — |
+| `publico_alvo` | `VARCHAR` | publico_alvo | — | — |
+| `realizado_inicio` | `DATE` | realizado_inicio | — | — |
+| `realizado_termino` | `DATE` | realizado_termino | — | — |
+| `realizado_custo` | `DECIMAL(18,2)` | realizado_custo | R$, 2 casas | — |
+| `principais_etapas` | `VARCHAR` | principais_etapas | — | — |
+| `eh_prioritario` | `BOOLEAN` | eh_prioritario | — | — |
+| `atraso` | `INTEGER` | atraso | sem formatação | — |
+| `em_atraso` | `BOOLEAN` | em_atraso | — | — |
+| `tolerancia_atraso` | `INTEGER` | tolerancia_atraso | sem formatação | — |
+| `projecao_termino` | `DATE` | projecao_termino | — | — |
+| `realizado_duracao` | `INTEGER` | realizado_duracao | sem formatação | — |
+| `percentual_concluido` | `DOUBLE` | percentual_concluido | 2 casas, unidade `%` | — |
+| `portfolio_nivel_maximo_tarefa` | `INTEGER` | portfolio_nivel_maximo_tarefa | sem formatação | — |
+| `meta__id` | `BIGINT` | meta.id | sem formatação | — |
+| `meta__codigo` | `VARCHAR` | meta.codigo | guard Excel | — |
+| `meta__titulo` | `VARCHAR` | meta.titulo | — | — |
+| `meta__pdm_id` | `BIGINT` | meta.pdm_id | sem formatação | — |
+| `meta__pdm_nome` | `VARCHAR` | meta.pdm_nome | — | — |
+| `fonte_recursos` | `VARCHAR` | fonte_recursos | — | — |
+| `premissas` | `VARCHAR` | premissas | — | — |
+| `restricoes` | `VARCHAR` | restricoes | — | — |
+| `orgaos_participantes` | `VARCHAR` | orgaos_participantes | — | — |
 | `status_traduzido` | `VARCHAR` | status-traduzido | — | — |
 
 [← todos os arquivos](../report-columns.md)

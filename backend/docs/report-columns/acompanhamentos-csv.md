@@ -16,24 +16,24 @@ A ordem reproduz exatamente o antigo array `acompanhamentosFields`.
 
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
-| `obra_id` | `BIGINT` | ID da Obra | sem formatação | — |
-| `obra_codigo` | `VARCHAR` | Código da Obra | guard Excel | — |
-| `data_registro` | `DATE` | Data do Registro | — | — |
-| `participantes` | `VARCHAR` | Participantes | — | — |
-| `cronograma_paralizado` | `BOOLEAN` | Cronograma Paralisado | — | — |
-| `prazo_encaminhamento` | `DATE` | Prazo do Encaminhamento | — | — |
-| `pauta` | `VARCHAR` | Pauta | — | — |
-| `pauta_texto` | `VARCHAR` | Pauta (texto) | — | — |
-| `prazo_realizado` | `DATE` | Prazo Realizado | — | — |
-| `detalhamento` | `VARCHAR` | Detalhamento | — | — |
-| `detalhamento_texto` | `VARCHAR` | Detalhamento (texto) | — | — |
-| `encaminhamento` | `VARCHAR` | Encaminhamento | — | — |
-| `responsavel` | `VARCHAR` | Responsável | — | — |
-| `observacao` | `VARCHAR` | Observação | — | — |
-| `detalhamento_status` | `VARCHAR` | Detalhamento do Status | — | — |
-| `pontos_atencao` | `VARCHAR` | Pontos de Atenção | — | — |
-| `pontos_atencao_texto` | `VARCHAR` | Pontos de Atenção (texto) | — | — |
-| `riscos` | `VARCHAR` | Riscos | — | — |
+| `obra_id` | `BIGINT` | obra_id | sem formatação | — |
+| `obra_codigo` | `VARCHAR` | obra_codigo | guard Excel | — |
+| `data_registro` | `DATE` | data_registro | — | — |
+| `participantes` | `VARCHAR` | participantes | — | — |
+| `cronograma_paralizado` | `BOOLEAN` | cronograma_paralizado | — | — |
+| `prazo_encaminhamento` | `DATE` | prazo_encaminhamento | — | — |
+| `pauta` | `VARCHAR` | pauta | — | — |
+| `pauta_texto` | `VARCHAR` | pauta_texto | — | — |
+| `prazo_realizado` | `DATE` | prazo_realizado | — | — |
+| `detalhamento` | `VARCHAR` | detalhamento | — | — |
+| `detalhamento_texto` | `VARCHAR` | detalhamento_texto | — | — |
+| `encaminhamento` | `VARCHAR` | encaminhamento | — | — |
+| `responsavel` | `VARCHAR` | responsavel | — | — |
+| `observacao` | `VARCHAR` | observacao | — | — |
+| `detalhamento_status` | `VARCHAR` | detalhamento_status | — | — |
+| `pontos_atencao` | `VARCHAR` | pontos_atencao | — | — |
+| `pontos_atencao_texto` | `VARCHAR` | pontos_atencao_texto | — | — |
+| `riscos` | `VARCHAR` | riscos | — | — |
 
 ## `RelProjetoAcompanhamentoCsvRow`
 
@@ -41,22 +41,22 @@ Colunas do CSV bruto de `acompanhamentos.csv` (uma linha por acompanhamento do p
 
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
-| `acompanhamento_id` | `BIGINT` | ID do Acompanhamento | sem formatação | — |
-| `projeto_id` | `BIGINT` | ID do Projeto | sem formatação | — |
-| `acompanhamento_tipo` | `VARCHAR` | Tipo de Acompanhamento | — | — |
-| `numero` | `INTEGER` | Número | sem formatação | — |
-| `data_registro` | `DATE` | Data do Registro | — | — |
-| `participantes` | `VARCHAR` | Participantes | — | — |
-| `detalhamento` | `VARCHAR` | Detalhamento | — | — |
-| `observacao` | `VARCHAR` | Observação | — | — |
-| `detalhamento_status` | `VARCHAR` | Detalhamento do Status | — | — |
-| `pontos_atencao` | `VARCHAR` | Pontos de Atenção | — | — |
-| `pauta` | `VARCHAR` | Pauta | — | — |
-| `cronograma_paralisado` | `BOOLEAN` | Cronograma Paralisado | — | — |
-| `riscos` | `VARCHAR` | Riscos | — | — |
-| `pauta_texto` | `VARCHAR` | Pauta (texto) | — | — |
-| `detalhamento_texto` | `VARCHAR` | Detalhamento (texto) | — | — |
-| `pontos_atencao_texto` | `VARCHAR` | Pontos de Atenção (texto) | — | — |
+| `acompanhamento_id` | `BIGINT` | acompanhamento_id | sem formatação | — |
+| `projeto_id` | `BIGINT` | projeto_id | sem formatação | — |
+| `acompanhamento_tipo` | `VARCHAR` | acompanhamento_tipo | — | — |
+| `numero` | `INTEGER` | numero | sem formatação | — |
+| `data_registro` | `DATE` | data_registro | — | — |
+| `participantes` | `VARCHAR` | participantes | — | — |
+| `detalhamento` | `VARCHAR` | detalhamento | — | — |
+| `observacao` | `VARCHAR` | observacao | — | — |
+| `detalhamento_status` | `VARCHAR` | detalhamento_status | — | — |
+| `pontos_atencao` | `VARCHAR` | pontos_atencao | — | — |
+| `pauta` | `VARCHAR` | pauta | — | — |
+| `cronograma_paralisado` | `BOOLEAN` | cronograma_paralisado | — | — |
+| `riscos` | `VARCHAR` | riscos | — | — |
+| `pauta_texto` | `VARCHAR` | pauta_texto | — | — |
+| `detalhamento_texto` | `VARCHAR` | detalhamento_texto | — | — |
+| `pontos_atencao_texto` | `VARCHAR` | pontos_atencao_texto | — | — |
 
 ## `RelProjetosAcompanhamentosCsvRow`
 

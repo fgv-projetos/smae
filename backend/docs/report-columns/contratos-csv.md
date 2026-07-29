@@ -16,35 +16,35 @@ A ordem reproduz exatamente o antigo array `contratosFields`.
 
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
-| `contrato_id` | `BIGINT` | ID do Contrato | sem formatação | — |
-| `obra_id` | `BIGINT` | ID da Obra | sem formatação | — |
-| `numero` | `VARCHAR` | Número | guard Excel | — |
-| `exclusivo` | `BOOLEAN` | Exclusivo | — | — |
-| `status` | `VARCHAR` | Status | — | — |
-| `objeto` | `VARCHAR` | Objeto | — | — |
-| `descricao_detalhada` | `VARCHAR` | Descrição Detalhada | — | — |
-| `contratante` | `VARCHAR` | Contratante | — | — |
-| `empresa_contratada` | `VARCHAR` | Empresa Contratada | — | — |
-| `cnpj_contratada` | `VARCHAR` | CNPJ da Contratada | guard Excel | — |
-| `prazo` | `INTEGER` | Prazo | sem formatação | — |
-| `unidade_prazo` | `VARCHAR` | Unidade do Prazo | — | — |
-| `data_base` | `VARCHAR` | Data Base | guard Excel | — |
-| `data_inicio` | `DATE` | Data de Início | — | — |
-| `data_termino` | `DATE` | Data de Término | — | — |
-| `data_termino_atualizada` | `DATE` | Data de Término Atualizada | — | — |
-| `valor` | `DECIMAL(18,2)` | Valor | R$, 2 casas | — |
-| `observacoes` | `VARCHAR` | Observações | — | — |
-| `valor_contrato_atualizado` | `DECIMAL(18,2)` | Valor do Contrato Atualizado | R$, 2 casas | — |
-| `total_aditivos` | `DECIMAL(18,2)` | Total de Aditivos | R$, 2 casas | — |
-| `total_reajustes` | `DECIMAL(18,2)` | Total de Reajustes | R$, 2 casas | — |
-| `modalidade_contratacao_id` | `BIGINT` | ID da Modalidade de Contratação | sem formatação | — |
-| `modalidade_contratacao_nome` | `VARCHAR` | Modalidade de Contratação | — | — |
-| `orgao_id` | `BIGINT` | ID da Área Gestora | sem formatação | — |
-| `orgao_sigla` | `VARCHAR` | Sigla da Área Gestora | — | — |
-| `orgao_descricao` | `VARCHAR` | Área Gestora | — | — |
-| `percentual_medido` | `DECIMAL(18,4)` | Percentual Medido | 2 casas | — |
-| `processos_sei` | `VARCHAR` | Processos SEI | guard Excel | — |
-| `fontes_recurso` | `VARCHAR` | Fontes de Recurso | guard Excel | — |
+| `contrato_id` | `BIGINT` | contrato_id | sem formatação | — |
+| `obra_id` | `BIGINT` | obra_id | sem formatação | — |
+| `numero` | `VARCHAR` | numero | guard Excel | — |
+| `exclusivo` | `BOOLEAN` | exclusivo | — | — |
+| `status` | `VARCHAR` | status | — | — |
+| `objeto` | `VARCHAR` | objeto | — | — |
+| `descricao_detalhada` | `VARCHAR` | descricao_detalhada | — | — |
+| `contratante` | `VARCHAR` | contratante | — | — |
+| `empresa_contratada` | `VARCHAR` | empresa_contratada | — | — |
+| `cnpj_contratada` | `VARCHAR` | cnpj_contratada | guard Excel | — |
+| `prazo` | `INTEGER` | prazo | sem formatação | — |
+| `unidade_prazo` | `VARCHAR` | unidade_prazo | — | — |
+| `data_base` | `VARCHAR` | data_base | guard Excel | — |
+| `data_inicio` | `DATE` | data_inicio | — | — |
+| `data_termino` | `DATE` | data_termino | — | — |
+| `data_termino_atualizada` | `DATE` | data_termino_atualizada | — | — |
+| `valor` | `DECIMAL(18,2)` | valor | R$, 2 casas | — |
+| `observacoes` | `VARCHAR` | observacoes | — | — |
+| `valor_contrato_atualizado` | `DECIMAL(18,2)` | valor_contrato_atualizado | R$, 2 casas | — |
+| `total_aditivos` | `DECIMAL(18,2)` | total_aditivos | R$, 2 casas | — |
+| `total_reajustes` | `DECIMAL(18,2)` | total_reajustes | R$, 2 casas | — |
+| `modalidade_contratacao_id` | `BIGINT` | modalidade_contratacao_id | sem formatação | — |
+| `modalidade_contratacao_nome` | `VARCHAR` | modalidade_contratacao_nome | — | — |
+| `orgao_id` | `BIGINT` | orgao_id | sem formatação | — |
+| `orgao_sigla` | `VARCHAR` | orgao_sigla | — | — |
+| `orgao_descricao` | `VARCHAR` | orgao_descricao | — | — |
+| `percentual_medido` | `DECIMAL(18,4)` | percentual_medido | 2 casas | — |
+| `processos_sei` | `VARCHAR` | processos_sei | guard Excel | — |
+| `fontes_recurso` | `VARCHAR` | fontes_recurso | guard Excel | — |
 
 ## `RelProjetoContratoCsvRow`
 
@@ -52,35 +52,35 @@ Colunas do CSV bruto de `contratos.csv` da fonte `Projeto` (uma linha por contra
 
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
-| `contrato_id` | `BIGINT` | ID do Contrato | sem formatação | — |
-| `projeto_id` | `BIGINT` | ID do Projeto | sem formatação | — |
-| `numero` | `VARCHAR` | Número do Contrato | guard Excel | — |
-| `exclusivo` | `BOOLEAN` | Exclusivo | — | — |
-| `status` | `VARCHAR` | Status | — | — |
-| `objeto` | `VARCHAR` | Objeto | — | — |
-| `descricao_detalhada` | `VARCHAR` | Descrição Detalhada | — | — |
-| `contratante` | `VARCHAR` | Contratante | — | — |
-| `empresa_contratada` | `VARCHAR` | Empresa Contratada | — | — |
-| `prazo` | `INTEGER` | Prazo | sem formatação | — |
-| `unidade_prazo` | `VARCHAR` | Unidade do Prazo | — | — |
-| `data_base` | `VARCHAR` | Data Base | guard Excel | — |
-| `data_inicio` | `DATE` | Data de Início | — | — |
-| `data_termino` | `DATE` | Data de Término | — | — |
-| `data_termino_atualizada` | `DATE` | Data de Término Atualizada | — | — |
-| `valor` | `DECIMAL(18,2)` | Valor | R$, 2 casas | — |
-| `observacoes` | `VARCHAR` | Observações | — | — |
-| `valor_contrato_atualizado` | `DECIMAL(18,2)` | Valor do Contrato Atualizado | R$, 2 casas | — |
-| `total_aditivos` | `DECIMAL(18,2)` | Total de Aditivos | R$, 2 casas | — |
-| `total_reajustes` | `DECIMAL(18,2)` | Total de Reajustes | R$, 2 casas | — |
-| `modalidade_licitacao__id` | `BIGINT` | Modalidade de Licitação - ID | sem formatação | — |
-| `modalidade_licitacao__nome` | `VARCHAR` | Modalidade de Licitação | — | — |
-| `area_gestora__id` | `BIGINT` | Área Gestora - ID | sem formatação | — |
-| `area_gestora__sigla` | `VARCHAR` | Área Gestora (Sigla) | — | — |
-| `area_gestora__descricao` | `VARCHAR` | Área Gestora | — | — |
-| `percentual_medido` | `DECIMAL(18,4)` | Percentual Medido | 2 casas, unidade `%` | — |
-| `processos_sei` | `VARCHAR` | Processos SEI | guard Excel | — |
-| `fontes_recurso` | `VARCHAR` | Fontes de Recurso | guard Excel | — |
-| `cnpj_contratada` | `VARCHAR` | CNPJ da Contratada | guard Excel | — |
+| `contrato_id` | `BIGINT` | contrato_id | sem formatação | — |
+| `projeto_id` | `BIGINT` | projeto_id | sem formatação | — |
+| `numero` | `VARCHAR` | numero | guard Excel | — |
+| `exclusivo` | `BOOLEAN` | exclusivo | — | — |
+| `status` | `VARCHAR` | status | — | — |
+| `objeto` | `VARCHAR` | objeto | — | — |
+| `descricao_detalhada` | `VARCHAR` | descricao_detalhada | — | — |
+| `contratante` | `VARCHAR` | contratante | — | — |
+| `empresa_contratada` | `VARCHAR` | empresa_contratada | — | — |
+| `prazo` | `INTEGER` | prazo | sem formatação | — |
+| `unidade_prazo` | `VARCHAR` | unidade_prazo | — | — |
+| `data_base` | `VARCHAR` | data_base | guard Excel | — |
+| `data_inicio` | `DATE` | data_inicio | — | — |
+| `data_termino` | `DATE` | data_termino | — | — |
+| `data_termino_atualizada` | `DATE` | data_termino_atualizada | — | — |
+| `valor` | `DECIMAL(18,2)` | valor | R$, 2 casas | — |
+| `observacoes` | `VARCHAR` | observacoes | — | — |
+| `valor_contrato_atualizado` | `DECIMAL(18,2)` | valor_contrato_atualizado | R$, 2 casas | — |
+| `total_aditivos` | `DECIMAL(18,2)` | total_aditivos | R$, 2 casas | — |
+| `total_reajustes` | `DECIMAL(18,2)` | total_reajustes | R$, 2 casas | — |
+| `modalidade_licitacao__id` | `BIGINT` | modalidade_licitacao.id | sem formatação | — |
+| `modalidade_licitacao__nome` | `VARCHAR` | modalidade_licitacao.nome | — | — |
+| `area_gestora__id` | `BIGINT` | area_gestora.id | sem formatação | — |
+| `area_gestora__sigla` | `VARCHAR` | area_gestora.sigla | — | — |
+| `area_gestora__descricao` | `VARCHAR` | area_gestora.descricao | — | — |
+| `percentual_medido` | `DECIMAL(18,4)` | percentual_medido | 2 casas, unidade `%` | — |
+| `processos_sei` | `VARCHAR` | processos_sei | guard Excel | — |
+| `fontes_recurso` | `VARCHAR` | fontes_recurso | guard Excel | — |
+| `cnpj_contratada` | `VARCHAR` | cnpj_contratada | guard Excel | — |
 
 ## `RelProjetosContratosCsvRow`
 

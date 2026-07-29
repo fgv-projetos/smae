@@ -21,25 +21,25 @@ A ordem reproduz exatamente o antigo array `cronogramaFields`.
 
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
-| `obra_id` | `BIGINT` | ID da Obra | sem formatação | — |
-| `obra_codigo` | `VARCHAR` | Código da Obra | guard Excel | — |
-| `tarefa_id` | `BIGINT` | ID da Tarefa | sem formatação | — |
-| `hierarquia` | `VARCHAR` | Hierarquia | guard Excel | — |
-| `numero` | `INTEGER` | Número | sem formatação | — |
-| `nivel` | `INTEGER` | Nível | sem formatação | — |
-| `tarefa` | `VARCHAR` | Tarefa | — | — |
-| `inicio_planejado` | `DATE` | Início Planejado | — | — |
-| `termino_planejado` | `DATE` | Término Planejado | — | — |
-| `custo_estimado` | `VARCHAR` | Custo Estimado | — | — |
-| `inicio_real` | `DATE` | Início Real | — | — |
-| `termino_real` | `DATE` | Término Real | — | — |
-| `duracao_real` | `INTEGER` | Duração Real | sem formatação | — |
-| `percentual_concluido` | `DOUBLE` | Percentual Concluído | 2 casas | — |
-| `custo_real` | `VARCHAR` | Custo Real | — | — |
-| `dependencias` | `VARCHAR` | Dependências | — | — |
-| `atraso` | `INTEGER` | Atraso (dias) | sem formatação | — |
-| `responsavel_id` | `BIGINT` | ID do Responsável | sem formatação | — |
-| `responsavel_nome_exibicao` | `VARCHAR` | Responsável | — | — |
+| `obra_id` | `BIGINT` | obra_id | sem formatação | — |
+| `obra_codigo` | `VARCHAR` | obra_codigo | guard Excel | — |
+| `tarefa_id` | `BIGINT` | tarefa_id | sem formatação | — |
+| `hierarquia` | `VARCHAR` | hierarquia | guard Excel | — |
+| `numero` | `INTEGER` | numero | sem formatação | — |
+| `nivel` | `INTEGER` | nivel | sem formatação | — |
+| `tarefa` | `VARCHAR` | tarefa | — | — |
+| `inicio_planejado` | `DATE` | inicio_planejado | — | — |
+| `termino_planejado` | `DATE` | termino_planejado | — | — |
+| `custo_estimado` | `VARCHAR` | custo_estimado | — | — |
+| `inicio_real` | `DATE` | inicio_real | — | — |
+| `termino_real` | `DATE` | termino_real | — | — |
+| `duracao_real` | `INTEGER` | duracao_real | sem formatação | — |
+| `percentual_concluido` | `DOUBLE` | percentual_concluido | 2 casas | — |
+| `custo_real` | `VARCHAR` | custo_real | — | — |
+| `dependencias` | `VARCHAR` | dependencias | — | — |
+| `atraso` | `INTEGER` | atraso | sem formatação | — |
+| `responsavel_id` | `BIGINT` | responsavel_id | sem formatação | — |
+| `responsavel_nome_exibicao` | `VARCHAR` | responsavel_nome_exibicao | — | — |
 
 ## `RelProjetoCronogramaCsvRow`
 
@@ -47,23 +47,24 @@ Colunas do CSV bruto de `cronograma.csv` da fonte `Projeto` (uma linha por taref
 
 O nome `hirearquia` tem o typo de origem preservado: é o nome da propriedade no DTO
 `RelProjetoCronogramaDto` (que também é resposta da API `POST /relatorio/projeto`) e
-renomeá-lo mudaria o contrato daquele endpoint. O rótulo sai correto.
+renomeá-lo mudaria o contrato daquele endpoint. O rótulo carrega o mesmo typo porque era
+esse o cabeçalho emitido no CSV.
 
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
-| `projeto_id` | `BIGINT` | ID do Projeto | sem formatação | — |
-| `tarefa_id` | `BIGINT` | ID da Tarefa | sem formatação | — |
-| `hirearquia` | `VARCHAR` | Hierarquia | guard Excel | — |
-| `tarefa` | `VARCHAR` | Tarefa | — | — |
-| `inicio_planejado` | `DATE` | Início Planejado | — | — |
-| `termino_planejado` | `DATE` | Término Planejado | — | — |
-| `custo_estimado` | `VARCHAR` | Custo Estimado | — | — |
-| `duracao_planejado` | `INTEGER` | Duração Planejada (dias) | sem formatação | — |
-| `inicio_real` | `DATE` | Início Real | — | — |
-| `termino_real` | `DATE` | Término Real | — | — |
-| `duracao_real` | `INTEGER` | Duração Real (dias) | sem formatação | — |
-| `percentual_concluido` | `DOUBLE` | Percentual Concluído | 2 casas, unidade `%` | — |
-| `custo_real` | `VARCHAR` | Custo Real | — | — |
+| `projeto_id` | `BIGINT` | projeto_id | sem formatação | — |
+| `tarefa_id` | `BIGINT` | tarefa_id | sem formatação | — |
+| `hirearquia` | `VARCHAR` | hirearquia | guard Excel | — |
+| `tarefa` | `VARCHAR` | tarefa | — | — |
+| `inicio_planejado` | `DATE` | inicio_planejado | — | — |
+| `termino_planejado` | `DATE` | termino_planejado | — | — |
+| `custo_estimado` | `VARCHAR` | custo_estimado | — | — |
+| `duracao_planejado` | `INTEGER` | duracao_planejado | sem formatação | — |
+| `inicio_real` | `DATE` | inicio_real | — | — |
+| `termino_real` | `DATE` | termino_real | — | — |
+| `duracao_real` | `INTEGER` | duracao_real | sem formatação | — |
+| `percentual_concluido` | `DOUBLE` | percentual_concluido | 2 casas, unidade `%` | — |
+| `custo_real` | `VARCHAR` | custo_real | — | — |
 
 ## `RelProjetosCronogramaCsvRow`
 

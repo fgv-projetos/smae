@@ -16,15 +16,15 @@ Ordem do `SELECT` de `_queryDataArquivos()` — sem `fields` explícito.
 
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
-| `obra_id` | `BIGINT` | ID da Obra | sem formatação | — |
-| `obra_codigo` | `VARCHAR` | Código da Obra | guard Excel | — |
-| `nome_original` | `VARCHAR` | Nome do Arquivo | — | — |
-| `criado_em` | `TIMESTAMP` | Criado em | — | — |
-| `criador_id` | `BIGINT` | ID do Criador | sem formatação | — |
-| `criador_nome_exibicao` | `VARCHAR` | Criador | — | — |
-| `caminho` | `VARCHAR` | Caminho | — | — |
-| `descricao` | `VARCHAR` | Descrição | — | — |
-| `arquivo_id` | `BIGINT` | ID do Arquivo | sem formatação | — |
+| `obra_id` | `BIGINT` | obra_id | sem formatação | — |
+| `obra_codigo` | `VARCHAR` | obra_codigo | guard Excel | — |
+| `nome_original` | `VARCHAR` | nome_original | — | — |
+| `criado_em` | `TIMESTAMP` | criado_em | — | — |
+| `criador_id` | `BIGINT` | criador_id | sem formatação | — |
+| `criador_nome_exibicao` | `VARCHAR` | criador_nome_exibicao | — | — |
+| `caminho` | `VARCHAR` | caminho | — | — |
+| `descricao` | `VARCHAR` | descricao | — | — |
+| `arquivo_id` | `BIGINT` | arquivo_id | sem formatação | — |
 
 ## `RelProjetoArquivoCsvRow`
 

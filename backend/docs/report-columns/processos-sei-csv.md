@@ -14,12 +14,12 @@ Ordem do `SELECT` de `_queryDataObrasSei()` — sem `fields` explícito.
 
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
-| `obra_id` | `BIGINT` | ID da Obra | sem formatação | — |
-| `categoria` | `VARCHAR` | Categoria | — | — |
-| `processo_sei` | `VARCHAR` | Processo SEI | guard Excel | — |
-| `descricao` | `VARCHAR` | Descrição | — | — |
-| `link` | `VARCHAR` | Link | — | — |
-| `comentarios` | `VARCHAR` | Comentários | — | — |
-| `observacoes` | `VARCHAR` | Observações | — | — |
+| `obra_id` | `BIGINT` | obra_id | sem formatação | — |
+| `categoria` | `VARCHAR` | categoria | — | — |
+| `processo_sei` | `VARCHAR` | processo_sei | guard Excel | — |
+| `descricao` | `VARCHAR` | descricao | — | — |
+| `link` | `VARCHAR` | link | — | — |
+| `comentarios` | `VARCHAR` | comentarios | — | — |
+| `observacoes` | `VARCHAR` | observacoes | — | — |
 
 [← todos os arquivos](../report-columns.md)

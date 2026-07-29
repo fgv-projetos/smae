@@ -18,79 +18,79 @@ Uma obra pode aparecer em mais de uma linha: a consulta faz `LEFT JOIN` com
 
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
-| `obra_id` | `BIGINT` | ID da Obra | sem formatação | — |
-| `codigo` | `VARCHAR` | Código | guard Excel | — |
-| `portfolio_id` | `BIGINT` | ID do Portfólio | sem formatação | — |
-| `nome` | `VARCHAR` | Nome | — | — |
-| `portfolio_titulo` | `VARCHAR` | Portfólio | — | — |
-| `etiquetas` | `VARCHAR` | Etiquetas | — | — |
-| `status` | `VARCHAR` | Status | — | — |
-| `projeto_etapa` | `VARCHAR` | Etapa | — | — |
-| `inicio_planejado` | `DATE` | Início Planejado | — | — |
-| `termino_planejado` | `DATE` | Término Planejado | — | — |
-| `previsao_inicio` | `DATE` | Previsão de Início | — | — |
-| `previsao_termino` | `DATE` | Previsão de Término | — | — |
-| `previsao_duracao` | `INTEGER` | Previsão de Duração | sem formatação | — |
-| `previsao_custo` | `DECIMAL(18,2)` | Previsão de Custo | R$, 2 casas | — |
-| `custo_planejado` | `DECIMAL(18,2)` | Custo Planejado | R$, 2 casas | — |
-| `objeto` | `VARCHAR` | Objeto | — | — |
-| `objetivo` | `VARCHAR` | Objetivo | — | — |
-| `escopo` | `VARCHAR` | Escopo | — | — |
-| `nao_escopo` | `VARCHAR` | Não Escopo | — | — |
-| `grupo_tematico_id` | `BIGINT` | ID do Grupo Temático | sem formatação | — |
-| `grupo_tematico_nome` | `VARCHAR` | Grupo Temático | — | — |
-| `tipo_intervencao_id` | `BIGINT` | ID do Tipo de Intervenção | sem formatação | — |
-| `tipo_intervencao_nome` | `VARCHAR` | Tipo de Intervenção | — | — |
-| `tipo_intervencao_conceito` | `VARCHAR` | Conceito do Tipo de Intervenção | — | — |
-| `equipamento_id` | `BIGINT` | ID do Equipamento | sem formatação | — |
-| `equipamento_nome` | `VARCHAR` | Equipamento | — | — |
-| `orgao_responsavel_id` | `BIGINT` | ID do Órgão Responsável | sem formatação | — |
-| `orgao_responsavel_sigla` | `VARCHAR` | Sigla do Órgão Responsável | — | — |
-| `orgao_responsavel_descricao` | `VARCHAR` | Órgão Responsável | — | — |
-| `responsavel_id` | `BIGINT` | ID do Responsável | sem formatação | — |
-| `responsavel_nome_exibicao` | `VARCHAR` | Responsável | — | — |
-| `orgao_gestor_id` | `BIGINT` | ID do Órgão Gestor | sem formatação | — |
-| `orgao_gestor_sigla` | `VARCHAR` | Sigla do Órgão Gestor | — | — |
-| `orgao_gestor_descricao` | `VARCHAR` | Órgão Gestor | — | — |
-| `orgao_id` | `BIGINT` | ID do Órgão Participante | sem formatação | — |
-| `orgao_sigla` | `VARCHAR` | Sigla do Órgão Participante | — | — |
-| `orgao_descricao` | `VARCHAR` | Órgão Participante | — | — |
-| `orgao_executor_id` | `BIGINT` | ID do Órgão Executor | sem formatação | — |
-| `orgao_executor_sigla` | `VARCHAR` | Sigla do Órgão Executor | — | — |
-| `orgao_executor_descricao` | `VARCHAR` | Órgão Executor | — | — |
-| `orgao_origem_id` | `BIGINT` | ID do Órgão de Origem | sem formatação | — |
-| `orgao_origem_sigla` | `VARCHAR` | Sigla do Órgão de Origem | — | — |
-| `orgao_origem_descricao` | `VARCHAR` | Órgão de Origem | — | — |
-| `orgao_colaborador_id` | `BIGINT` | ID do Órgão Colaborador | sem formatação | — |
-| `orgao_colaborador_sigla` | `VARCHAR` | Sigla do Órgão Colaborador | — | — |
-| `orgao_colaborador_descricao` | `VARCHAR` | Órgão Colaborador | — | — |
-| `meta_id` | `BIGINT` | ID da Meta | sem formatação | — |
-| `meta_nome` | `VARCHAR` | Meta | — | — |
-| `pdm_id` | `BIGINT` | ID do Programa de Metas | sem formatação | — |
-| `pdm_nome` | `VARCHAR` | Programa de Metas | — | — |
-| `assessores` | `VARCHAR` | Assessores | — | — |
-| `pontos_focais_colaboradores` | `VARCHAR` | Pontos Focais Colaboradores | — | — |
-| `fonte_recurso_valor_pct` | `DOUBLE` | Fonte de Recurso - Percentual | 2 casas | — |
-| `fonte_recurso_valor_nominal` | `DECIMAL(18,2)` | Fonte de Recurso - Valor Nominal | R$, 2 casas | — |
-| `detalhamento` | `VARCHAR` | Detalhamento | — | — |
-| `origem_tipo` | `VARCHAR` | Tipo de Origem | — | — |
-| `descricao` | `VARCHAR` | Descrição da Origem | — | — |
-| `secretario_colaborador` | `VARCHAR` | Secretário Colaborador | — | — |
-| `data_inauguracao_planejada` | `DATE` | Data de Inauguração Planejada | — | — |
-| `subprefeituras` | `VARCHAR` | Subprefeituras | — | — |
-| `programa_habitacional` | `VARCHAR` | Programa Habitacional | — | — |
-| `empreendimento_id` | `BIGINT` | ID do Empreendimento | sem formatação | — |
-| `empreendimento_identificador` | `VARCHAR` | Identificador do Empreendimento | guard Excel | — |
-| `mdo_observacoes` | `VARCHAR` | Observações | — | — |
-| `portfolios_compartilhados_titulos` | `VARCHAR` | Portfólios Compartilhados | — | — |
-| `secretario_responsavel` | `VARCHAR` | Secretário Responsável | — | — |
-| `secretario_executivo` | `VARCHAR` | Secretário Executivo | — | — |
-| `coordenador_ue` | `VARCHAR` | Coordenador da Unidade Executora | — | — |
-| `data_aprovacao` | `DATE` | Data de Aprovação | — | — |
-| `data_revisao` | `DATE` | Data de Revisão | — | — |
-| `versao` | `VARCHAR` | Versão | guard Excel | — |
-| `n_unidades_habitacionais` | `INTEGER` | Nº de Unidades Habitacionais | sem formatação | — |
-| `n_familias_beneficiadas` | `INTEGER` | Nº de Famílias Beneficiadas | sem formatação | — |
-| `n_unidades_atendidas` | `INTEGER` | Nº de Unidades Atendidas | sem formatação | — |
+| `obra_id` | `BIGINT` | obra_id | sem formatação | — |
+| `codigo` | `VARCHAR` | codigo | guard Excel | — |
+| `portfolio_id` | `BIGINT` | portfolio_id | sem formatação | — |
+| `nome` | `VARCHAR` | nome | — | — |
+| `portfolio_titulo` | `VARCHAR` | portfolio_titulo | — | — |
+| `etiquetas` | `VARCHAR` | etiquetas | — | — |
+| `status` | `VARCHAR` | status | — | — |
+| `projeto_etapa` | `VARCHAR` | projeto_etapa | — | — |
+| `inicio_planejado` | `DATE` | inicio_planejado | — | — |
+| `termino_planejado` | `DATE` | termino_planejado | — | — |
+| `previsao_inicio` | `DATE` | previsao_inicio | — | — |
+| `previsao_termino` | `DATE` | previsao_termino | — | — |
+| `previsao_duracao` | `INTEGER` | previsao_duracao | sem formatação | — |
+| `previsao_custo` | `DECIMAL(18,2)` | previsao_custo | R$, 2 casas | — |
+| `custo_planejado` | `DECIMAL(18,2)` | custo_planejado | R$, 2 casas | — |
+| `objeto` | `VARCHAR` | objeto | — | — |
+| `objetivo` | `VARCHAR` | objetivo | — | — |
+| `escopo` | `VARCHAR` | escopo | — | — |
+| `nao_escopo` | `VARCHAR` | nao_escopo | — | — |
+| `grupo_tematico_id` | `BIGINT` | grupo_tematico_id | sem formatação | — |
+| `grupo_tematico_nome` | `VARCHAR` | grupo_tematico_nome | — | — |
+| `tipo_intervencao_id` | `BIGINT` | tipo_intervencao_id | sem formatação | — |
+| `tipo_intervencao_nome` | `VARCHAR` | tipo_intervencao_nome | — | — |
+| `tipo_intervencao_conceito` | `VARCHAR` | tipo_intervencao_conceito | — | — |
+| `equipamento_id` | `BIGINT` | equipamento_id | sem formatação | — |
+| `equipamento_nome` | `VARCHAR` | equipamento_nome | — | — |
+| `orgao_responsavel_id` | `BIGINT` | orgao_responsavel_id | sem formatação | — |
+| `orgao_responsavel_sigla` | `VARCHAR` | orgao_responsavel_sigla | — | — |
+| `orgao_responsavel_descricao` | `VARCHAR` | orgao_responsavel_descricao | — | — |
+| `responsavel_id` | `BIGINT` | responsavel_id | sem formatação | — |
+| `responsavel_nome_exibicao` | `VARCHAR` | responsavel_nome_exibicao | — | — |
+| `orgao_gestor_id` | `BIGINT` | orgao_gestor_id | sem formatação | — |
+| `orgao_gestor_sigla` | `VARCHAR` | orgao_gestor_sigla | — | — |
+| `orgao_gestor_descricao` | `VARCHAR` | orgao_gestor_descricao | — | — |
+| `orgao_id` | `BIGINT` | orgao_id | sem formatação | — |
+| `orgao_sigla` | `VARCHAR` | orgao_sigla | — | — |
+| `orgao_descricao` | `VARCHAR` | orgao_descricao | — | — |
+| `orgao_executor_id` | `BIGINT` | orgao_executor_id | sem formatação | — |
+| `orgao_executor_sigla` | `VARCHAR` | orgao_executor_sigla | — | — |
+| `orgao_executor_descricao` | `VARCHAR` | orgao_executor_descricao | — | — |
+| `orgao_origem_id` | `BIGINT` | orgao_origem_id | sem formatação | — |
+| `orgao_origem_sigla` | `VARCHAR` | orgao_origem_sigla | — | — |
+| `orgao_origem_descricao` | `VARCHAR` | orgao_origem_descricao | — | — |
+| `orgao_colaborador_id` | `BIGINT` | orgao_colaborador_id | sem formatação | — |
+| `orgao_colaborador_sigla` | `VARCHAR` | orgao_colaborador_sigla | — | — |
+| `orgao_colaborador_descricao` | `VARCHAR` | orgao_colaborador_descricao | — | — |
+| `meta_id` | `BIGINT` | meta_id | sem formatação | — |
+| `meta_nome` | `VARCHAR` | meta_nome | — | — |
+| `pdm_id` | `BIGINT` | pdm_id | sem formatação | — |
+| `pdm_nome` | `VARCHAR` | pdm_nome | — | — |
+| `assessores` | `VARCHAR` | assessores | — | — |
+| `pontos_focais_colaboradores` | `VARCHAR` | pontos_focais_colaboradores | — | — |
+| `fonte_recurso_valor_pct` | `DOUBLE` | fonte_recurso_valor_pct | 2 casas | — |
+| `fonte_recurso_valor_nominal` | `DECIMAL(18,2)` | fonte_recurso_valor_nominal | R$, 2 casas | — |
+| `detalhamento` | `VARCHAR` | detalhamento | — | — |
+| `origem_tipo` | `VARCHAR` | origem_tipo | — | — |
+| `descricao` | `VARCHAR` | descricao | — | — |
+| `secretario_colaborador` | `VARCHAR` | secretario_colaborador | — | — |
+| `data_inauguracao_planejada` | `DATE` | data_inauguracao_planejada | — | — |
+| `subprefeituras` | `VARCHAR` | subprefeituras | — | — |
+| `programa_habitacional` | `VARCHAR` | programa_habitacional | — | — |
+| `empreendimento_id` | `BIGINT` | empreendimento_id | sem formatação | — |
+| `empreendimento_identificador` | `VARCHAR` | empreendimento_identificador | guard Excel | — |
+| `mdo_observacoes` | `VARCHAR` | mdo_observacoes | — | — |
+| `portfolios_compartilhados_titulos` | `VARCHAR` | portfolios_compartilhados_titulos | — | — |
+| `secretario_responsavel` | `VARCHAR` | secretario_responsavel | — | — |
+| `secretario_executivo` | `VARCHAR` | secretario_executivo | — | — |
+| `coordenador_ue` | `VARCHAR` | coordenador_ue | — | — |
+| `data_aprovacao` | `DATE` | data_aprovacao | — | — |
+| `data_revisao` | `DATE` | data_revisao | — | — |
+| `versao` | `VARCHAR` | versao | guard Excel | — |
+| `n_unidades_habitacionais` | `INTEGER` | n_unidades_habitacionais | sem formatação | — |
+| `n_familias_beneficiadas` | `INTEGER` | n_familias_beneficiadas | sem formatação | — |
+| `n_unidades_atendidas` | `INTEGER` | n_unidades_atendidas | sem formatação | — |
 
 [← todos os arquivos](../report-columns.md)

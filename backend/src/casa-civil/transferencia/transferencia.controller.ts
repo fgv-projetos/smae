@@ -74,7 +74,7 @@ export class TransferenciaController {
         return await this.transferenciaService.completeTransferencia(+params.id, dto, user);
     }
 
-    @Patch(':id/limpar-workflow')
+    @Post(':id/limpar-workflow')
     @ApiBearerAuth('access-token')
     @Roles(['CadastroTransferencia.editar'])
     async limparWorkflow(@Param() params: FindOneParams, @CurrentUser() user: PessoaFromJwt) {

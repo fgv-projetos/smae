@@ -626,8 +626,18 @@ export class WorkflowAndamentoService {
                 },
             });
 
-            if (!configProxEtapa)
-                throw new HttpException('Não foi possível encontrar configuração da próxima Etapa', 400);
+            // Se não existe fluxo configurado partindo da próxima etapa, significa que ela é
+            // terminal (ex: "Finalizada") e não há mais fases a iniciar. Nesse caso o workflow
+            // é encerrado com sucesso, ao invés de lançar erro.
+            if (!configProxEtapa) {
+                await prismaTxn.transferencia.update({
+                    where: { id: dto.transferencia_id },
+                    data: {
+                        workflow_finalizado: true,
+                    },
+                });
+                return;
+            }
 
             // Caso a próx. Etapa não possua fases.
             // É o fim do workflow

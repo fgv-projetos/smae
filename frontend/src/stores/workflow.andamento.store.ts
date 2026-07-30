@@ -120,7 +120,7 @@ export const useWorkflowAndamentoStore = defineStore('workflowAndamento', {
     async deletarWorkflow(transferênciaId?: number): Promise<boolean> {
       const id = transferênciaId || Number(this.route.params.transferenciaId);
       try {
-        const resposta = await this.requestS.patch(`${baseUrl}/transferencia/${id}/limpar-workflow`, {
+        const resposta = await this.requestS.post(`${baseUrl}/transferencia/${id}/limpar-workflow`, {
           id,
         });
         this.erro = null;

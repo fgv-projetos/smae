@@ -1381,10 +1381,6 @@ p {
     background: @amarelo;
   }
 
-  &:focus-visible {
-    .focado();
-  }
-
   svg {
     display: block;
     height: 1em;
@@ -2829,9 +2825,17 @@ kbd {
   white-space: nowrap;
 }
 
-button:disabled {
-  cursor: not-allowed;
-  opacity: .5;
+button {
+  .br();
+
+  &:focus-visible {
+    .focado();
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: .5;
+  }
 }
 
 .like-a__link,

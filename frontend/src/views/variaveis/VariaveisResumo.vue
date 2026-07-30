@@ -222,7 +222,10 @@ const assuntosComCategoriasMapeados = computed<CategoriaComAssuntoMapeado>(() =>
       remover-divisoria
     />
 
-    <article class="mt2 sessao sessao--assunto">
+    <article
+      v-if="Object.keys(assuntosComCategoriasMapeados).length"
+      class="mt2 sessao sessao--assunto"
+    >
       <div class="flex center g4 sessao__divider">
         <h2 class="sessao__divider-titulo">
           Assuntos

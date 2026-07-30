@@ -1142,10 +1142,12 @@ p {
 }
 
 .addlink {
-  display: inline-block;
+  display: inline-flex;
+  gap: .5em;
   cursor: pointer;
   border: none;
   background-color: transparent;
+  align-items: center;
 
   .t12;
   .w900;
@@ -1162,7 +1164,6 @@ p {
   svg {
     display: inline-block;
     vertical-align: middle;
-    margin-right: .5em;
   }
 
   &:focus,

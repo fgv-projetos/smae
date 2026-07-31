@@ -21,9 +21,14 @@ withDefaults(defineProps<Props>(), {
   texto: undefined,
 });
 
+const ALTURA_MINIMA_TOPO_PX = 150;
+const ESPACO_ABAIXO_PX = 8;
+
 const elemento = ref<HTMLElement>();
 const elementoConteudo = ref<HTMLElement>();
 const posicaoTooltip = ref<'left' | 'right' | 'center'>('center');
+const posicaoTooltipVertical = ref<'top' | 'bottom'>('top');
+const topoConteudo = ref<string>('');
 const manterExibido = ref<boolean>(false);
 
 const descricaoConteudo = computed<string>(() => elementoConteudo.value?.textContent || '');
@@ -63,15 +68,63 @@ function obterPosicaoAlinhamento() {
   return 'right';
 }
 
+function obterPosicaoVertical() {
+  if (!elemento.value) {
+    return null;
+  }
+
+  let posicaoElemento = 0;
+
+  try {
+    posicaoElemento = elemento.value.getBoundingClientRect().top;
+  } catch (error) {
+    console.warn('Error getting element position:', error);
+    return null;
+  }
+
+  return posicaoElemento < ALTURA_MINIMA_TOPO_PX ? 'bottom' : 'top';
+}
+
+// Calcula o topo em pixels de forma explícita (em vez de depender da posição
+// estática do elemento fixed, que varia conforme o contexto de layout do
+// gatilho e pode deixar o painel muito distante do ícone).
+function calcularTopoAbaixoDoGatilho() {
+  if (!elemento.value) {
+    return null;
+  }
+
+  try {
+    const posicaoElemento = elemento.value.getBoundingClientRect();
+    return `${posicaoElemento.bottom + ESPACO_ABAIXO_PX}px`;
+  } catch (error) {
+    console.warn('Error getting element position:', error);
+    return null;
+  }
+}
+
+function atualizarPosicionamento() {
+  const posicaoHorizontal = obterPosicaoAlinhamento();
+
+  if (posicaoHorizontal) {
+    posicaoTooltip.value = posicaoHorizontal;
+  }
+
+  const posicaoVertical = obterPosicaoVertical();
+
+  if (posicaoVertical) {
+    posicaoTooltipVertical.value = posicaoVertical;
+  }
+
+  const topo = calcularTopoAbaixoDoGatilho();
+
+  if (topo) {
+    topoConteudo.value = topo;
+  }
+}
+
 useResizeObserver(
   document.documentElement,
-  debounce(() => {
-    const posicao = obterPosicaoAlinhamento();
-
-    if (posicao) {
-      posicaoTooltip.value = posicao;
-    }
-  }, 400),
+  debounce(atualizarPosicionamento, 400),
 );
 </script>
 
@@ -84,6 +137,8 @@ useResizeObserver(
     :class="{ 'smae-tooltip-component--fixado': manterExibido }"
     tabindex="0"
     @click="alternarAbertura"
+    @mouseenter="atualizarPosicionamento"
+    @focus="atualizarPosicionamento"
   >
     <slot name="botao">
       <svg
@@ -95,7 +150,10 @@ useResizeObserver(
     <div
       ref="elementoConteudo"
       class="smae-tooltip-component__content"
-      :class="`smae-tooltip-component__content--${posicaoTooltip}`"
+      :class="[
+        `smae-tooltip-component__content--${posicaoTooltip}`,
+        { 'smae-tooltip-component__content--bottom': posicaoTooltipVertical === 'bottom' },
+      ]"
       role="tooltip"
     >
       <slot>{{ $props.texto }}</slot>
@@ -150,7 +208,9 @@ useResizeObserver(
   position: fixed;
   z-index: 999;
   animation: fadeIn .5s;
-  transform: translate(calc(-50% + 10px), calc(-100% - 24px - 0.5rem));
+  --smae-tooltip-tx: calc(-50% + 10px);
+  --smae-tooltip-ty: calc(-100% - 24px - 0.5rem);
+  transform: translate(var(--smae-tooltip-tx), var(--smae-tooltip-ty));
 
   &::before {
     content: "";
@@ -171,7 +231,7 @@ useResizeObserver(
 }
 
 .smae-tooltip-component__content--left {
-  transform: translate(calc(-100% + 43px), calc(-100% - 24px - 0.5rem));
+  --smae-tooltip-tx: calc(-100% + 43px);
 
   &::before {
     left: calc(100% - 40px);
@@ -179,10 +239,24 @@ useResizeObserver(
 }
 
 .smae-tooltip-component__content--right {
-  transform: translate(calc(-10% + 6px), calc(-100% - 24px - 0.5rem));
+  --smae-tooltip-tx: calc(-10% + 6px);
 
   &::before {
     left: v-bind(tamanhoIcone);
+  }
+}
+
+.smae-tooltip-component__content--bottom {
+  top: v-bind(topoConteudo);
+  --smae-tooltip-ty: 0px;
+
+  &::before {
+    top: 1px;
+    bottom: auto;
+    margin: -0.5rem 0 0 0;
+    transform: rotate(45deg);
+    border-bottom-color: transparent;
+    border-top-color: @primary;
   }
 }
 

@@ -89,12 +89,20 @@ const propriedadesManipuladas = computed(() => {
   </a>
   <router-link
     v-else
-    v-slot="{ href, navigate, route }"
+    v-slot="{ href, navigate, route, isActive, isExactActive }"
     v-bind="propriedadesManipuladas"
     custom
   >
+    <slot
+      v-if="$props.custom"
+      :href="href"
+      :navigate="navigate"
+      :route="route"
+      :is-active="isActive"
+      :is-exact-active="isExactActive"
+    />
     <a
-      v-if="
+      v-else-if="
         !$props.desabilitar
           && (
             !route.meta?.limitarÀsPermissões

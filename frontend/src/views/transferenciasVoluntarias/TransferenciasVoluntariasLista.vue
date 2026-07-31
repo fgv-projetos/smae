@@ -1,10 +1,12 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { ref, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { watch } from 'vue';
+import { useRoute } from 'vue-router';
 
+import FiltroParaPagina from '@/components/FiltroParaPagina.vue';
 import SmaeTable from '@/components/SmaeTable/SmaeTable.vue';
 import esferasDeTransferencia from '@/consts/esferasDeTransferencia';
+import schema from '@/consts/formSchemas/transferenciasVoluntariasFiltro';
 import combinadorDeListas from '@/helpers/combinadorDeListas';
 import dinheiro from '@/helpers/dinheiro';
 import truncate from '@/helpers/texto/truncate';
@@ -14,7 +16,6 @@ import { useTransferenciasVoluntariasStore } from '@/stores/transferenciasVolunt
 
 const transferenciasVoluntarias = useTransferenciasVoluntariasStore();
 const route = useRoute();
-const router = useRouter();
 const alertStore = useAlertStore();
 const authStore = useAuthStore();
 const { temPermissãoPara } = authStore;
@@ -32,24 +33,27 @@ async function excluirTransferencia(id) {
   }, 'Remover');
 }
 
-const ano = ref(route.query.ano);
-const esfera = ref(route.query.esfera
-  ? Object.keys(esferasDeTransferencia)
-    .find((x) => x.toLowerCase() === route.query.esfera.toLocaleLowerCase())
-  : undefined);
-const palavraChave = ref(route.query.palavra_chave);
-const apenasPreenchimentoCompleto = ref(!!route.query.preenchimento_completo);
-
-function atualizarUrl() {
-  router.push({
-    query: {
-      ...route.query,
-      ano: ano.value || undefined,
-      esfera: esfera.value || undefined,
-      palavra_chave: palavraChave.value || undefined,
-      preenchimento_completo: !!apenasPreenchimentoCompleto.value || undefined,
+const camposDeFiltro = [{
+  campos: {
+    ano: { tipo: 'numeric', atributos: { min: 2003, max: 9999 } },
+    esfera: {
+      tipo: 'select',
+      opcoes: Object.values(esferasDeTransferencia).map((e) => ({ id: e.valor, label: e.nome })),
     },
-  });
+    cancelada: {
+      tipo: 'select',
+      opcoes: [{ id: 'true', label: 'Sim' }, { id: 'false', label: 'Não' }],
+    },
+    preenchimento_completo: {
+      tipo: 'select',
+      opcoes: [{ id: 'true', label: 'Sim' }, { id: 'false', label: 'Não' }],
+    },
+    palavra_chave: { tipo: 'text' },
+  },
+}];
+
+function paraValorEscalar(valor) {
+  return Array.isArray(valor) ? valor[0] : valor;
 }
 
 watch([
@@ -57,8 +61,12 @@ watch([
   () => route.query.esfera,
   () => route.query.palavra_chave,
   () => route.query.preenchimento_completo,
+  () => route.query.cancelada,
 ], () => {
-  let { ano: anoParaBusca, palavra_chave: palavraChaveParaBusca } = route.query;
+  const esfera = paraValorEscalar(route.query.esfera);
+
+  let anoParaBusca = paraValorEscalar(route.query.ano);
+  let palavraChaveParaBusca = paraValorEscalar(route.query.palavra_chave);
   if (typeof anoParaBusca === 'string') {
     anoParaBusca = anoParaBusca.trim();
   }
@@ -68,12 +76,13 @@ watch([
   transferenciasVoluntarias.$reset();
   transferenciasVoluntarias.buscarTudo({
     ano: anoParaBusca,
-    esfera: route.query.esfera
+    esfera: esfera
       ? Object.keys(esferasDeTransferencia)
-        .find((x) => x.toLowerCase() === route.query.esfera.toLocaleLowerCase())
+        .find((x) => x.toLowerCase() === esfera.toLocaleLowerCase())
       : undefined,
     palavra_chave: palavraChaveParaBusca,
-    preenchimento_completo: !!route.query.preenchimento_completo || undefined,
+    preenchimento_completo: paraValorEscalar(route.query.preenchimento_completo) || undefined,
+    cancelada: paraValorEscalar(route.query.cancelada) || undefined,
   });
 }, { immediate: true });
 
@@ -94,84 +103,12 @@ watch([
     </router-link>
   </div>
 
-  <form
-    class="flex flexwrap bottom mb2 g1"
-    @submit.prevent="atualizarUrl"
-  >
-    <div class="f0">
-      <label
-        for="ano"
-        class="label tc300"
-      >Ano</label>
-      <input
-        id="ano"
-        v-model.number="ano"
-        inputmode="numeric"
-        class="inputtext mb1"
-        name="ano"
-        type="number"
-        min="2003"
-        max="9999"
-      >
-    </div>
-
-    <div class="f0">
-      <label
-        for="esfera"
-        class="label tc300"
-      >Esfera</label>
-      <select
-        id="esfera"
-        v-model.trim="esfera"
-        class="inputtext mb1"
-        name="esfera"
-      >
-        <option value="" />
-        <option
-          v-for="item in Object.values(esferasDeTransferencia)"
-          :key="item.valor"
-          :value="item.valor"
-        >
-          {{ item.nome }}
-        </option>
-      </select>
-    </div>
-
-    <div class="f0">
-      <label
-        for="palavra_chave"
-        class="label tc300"
-      >Palavra-chave</label>
-      <input
-        id="palavra_chave"
-        v-model.trim="palavraChave"
-        class="inputtext"
-        name="palavra_chave"
-        type="text"
-      >
-    </div>
-
-    <div class="flex f0 center g1 mb1">
-      <label
-        class="label tc300 mt2 mb0"
-        for="preenchimento_completo"
-      >
-        apenas completas
-      </label>
-      <input
-        id="preenchimento_completo"
-        v-model="apenasPreenchimentoCompleto"
-        name="preenchimento_completo"
-        type="checkbox"
-        :value="true"
-        class="mt2"
-      >
-    </div>
-
-    <button class="btn outline bgnone tcprimary mtauto mb1">
-      Pesquisar
-    </button>
-  </form>
+  <FiltroParaPagina
+    class="mb2"
+    :formulario="camposDeFiltro"
+    :schema="schema"
+    :carregando="chamadasPendentes.lista"
+  />
 
   <SmaeTable
     class="mb1"

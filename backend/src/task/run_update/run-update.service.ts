@@ -215,7 +215,7 @@ export class RunUpdateTaskService implements TaskableService {
                             if (indiceRegistro >= 0) {
                                 resultadosEstendidos.registrosProcessados[indiceRegistro].status = 'Erro';
                                 resultadosEstendidos.registrosProcessados[indiceRegistro].mensagemErro =
-                                    error instanceof HttpException ? error.getResponse().toString() : 'Erro interno';
+                                    this.extrairMensagemErro(error);
                                 await context.stashData<LogResultadosEstendido>(resultadosEstendidos);
                             }
                         }
@@ -492,9 +492,30 @@ export class RunUpdateTaskService implements TaskableService {
         }
     }
 
+    // Extrai uma mensagem legível de um erro, evitando "[object Object]" quando o
+    // response da HttpException é um objeto (ex.: BadRequestException/ValidationPipe).
+    private extrairMensagemErro(error: any): string {
+        if (error instanceof HttpException) {
+            const response = error.getResponse();
+
+            if (typeof response === 'string') return response;
+
+            if (response && typeof response === 'object') {
+                const mensagem = (response as any).message;
+                if (Array.isArray(mensagem)) return mensagem.join('; ');
+                if (typeof mensagem === 'string') return mensagem;
+                return JSON.stringify(response);
+            }
+
+            return error.message;
+        }
+
+        return error?.message ?? 'Erro interno';
+    }
+
     private adicionarLogErro(error: any, id: number, nome: string, results_log: LogResultadosEstendido) {
         if (error instanceof HttpException) {
-            const errorResponse = error.getResponse().toString();
+            const errorResponse = this.extrairMensagemErro(error);
 
             // Tentando extrair a coluna do erro.
             const col = errorResponse.split('|')[0] ?? '';
@@ -597,7 +618,7 @@ export class RunUpdateTaskService implements TaskableService {
         }
 
         const dto =
-            typeof value === 'object' && Array.isArray(value) === false && value.tarefa
+            typeof value === 'object' && value !== null && Array.isArray(value) === false && value.tarefa
                 ? ({
                       ...value,
                   } as CreateTarefaDto) // TODO: Isso aqui provavelmente não ficará assim, pois teremos mais casos.

@@ -84,8 +84,6 @@ Colunas do CSV bruto de `contratos.csv` da fonte `Projeto` (uma linha por contra
 
 ## `RelProjetosContratosCsvRow`
 
-Códigos dos riscos associados ao acompanhamento, concatenados com `|`.
-
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
 | `contrato_id` | `INTEGER` | contrato_id | sem formatação | — |

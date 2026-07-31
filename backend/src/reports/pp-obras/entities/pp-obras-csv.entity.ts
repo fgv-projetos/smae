@@ -412,12 +412,12 @@ export class RelObrasAcompanhamentosCsvRow {
     participantes: string;
 
     /**
-     * Nome mantido com `z` (a coluna do banco é `cronograma_paralisado`, com `s`).
+     * @deprecated Use `cronograma_paralisado`, no fim deste arquivo.
      *
-     * A divergência era um bug: a consulta expunha o alias `cronograma_paralisado` e o
-     * `fields` pedia `cronograma_paralizado`, então a coluna saía **sempre vazia**. A
-     * consulta passou a apelidar a coluna como `cronograma_paralizado`; o nome e a posição
-     * foram preservados para não quebrar quem já consome o arquivo.
+     * O `z` é typo de origem (a coluna do banco sempre foi `cronograma_paralisado`). Nome e
+     * posição continuam aqui porque quem consome o arquivo por automação depende dos dois:
+     * remover a coluna quebraria quem lê pelo cabeçalho, e movê-la quebraria quem lê por
+     * posição. Segue preenchida com o mesmo valor da coluna correta.
      */
     @ReportColumn({ type: 'BOOLEAN', label: 'cronograma_paralizado' })
     cronograma_paralizado: boolean | null;
@@ -464,6 +464,16 @@ export class RelObrasAcompanhamentosCsvRow {
     /** Códigos dos riscos vinculados ao acompanhamento, separados por `|`. */
     @ReportColumn({ type: 'VARCHAR', label: 'riscos' })
     riscos: string | null;
+
+    /**
+     * Grafia corrente de `cronograma_paralizado` — é esta que se deve consumir.
+     *
+     * Entra no fim do arquivo, e não ao lado da coluna que substitui, porque inserir no meio
+     * deslocaria todas as colunas seguintes e quebraria quem lê o CSV por posição. Acrescentar
+     * no fim não move nenhuma coluna existente. Mesmo valor da depreciada.
+     */
+    @ReportColumn({ type: 'BOOLEAN', label: 'cronograma_paralisado' })
+    cronograma_paralisado: boolean | null;
 }
 
 /**

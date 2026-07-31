@@ -229,7 +229,7 @@ class RetornoDbAcompanhamentos {
     obra_codigo: string;
     data_registro: Date;
     participantes: string;
-    cronograma_paralizado: boolean;
+    cronograma_paralisado: boolean;
     prazo_encaminhamento: Date | null;
     pauta: string | null;
     prazo_realizado: Date | null;
@@ -1222,9 +1222,10 @@ export class PPObrasService implements ReportableService, SchemaAwareReportableS
                 projeto.codigo AS obra_codigo,
                 projeto_acompanhamento.data_registro,
                 projeto_acompanhamento.participantes,
-                -- Apelidado com 'z': tanto o CSV quanto o DTO (RelObrasAcompanhamentosDto)
-                -- sempre pediram 'cronograma_paralizado', enquanto a coluna do banco é
-                -- 'cronograma_paralisado'. Sem o alias, a coluna saía vazia em ambos.
+                -- Sai duas vezes de propósito: 'cronograma_paralisado' é o nome corrente
+                -- (igual à coluna do banco) e 'cronograma_paralizado' é o alias com o typo
+                -- de origem, depreciado mas ainda emitido para não quebrar quem consome.
+                projeto_acompanhamento.cronograma_paralisado,
                 projeto_acompanhamento.cronograma_paralisado AS cronograma_paralizado,
                 projeto_acompanhamento_item.prazo_encaminhamento,
                 projeto_acompanhamento.pauta,
@@ -1268,7 +1269,9 @@ export class PPObrasService implements ReportableService, SchemaAwareReportableS
                 obra_codigo: db.obra_codigo,
                 data_registro: Date2YMD.toString(db.data_registro),
                 participantes: db.participantes,
-                cronograma_paralizado: db.cronograma_paralizado,
+                // `cronograma_paralizado` é o nome depreciado; ambos carregam o mesmo valor.
+                cronograma_paralizado: db.cronograma_paralisado,
+                cronograma_paralisado: db.cronograma_paralisado,
                 pauta: db.pauta,
                 prazo_encaminhamento: db.prazo_encaminhamento ? Date2YMD.toString(db.prazo_encaminhamento) : null,
                 prazo_realizado: db.prazo_realizado ? Date2YMD.toString(db.prazo_realizado) : null,

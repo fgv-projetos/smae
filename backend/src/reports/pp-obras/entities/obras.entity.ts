@@ -102,7 +102,14 @@ export class RelObrasAcompanhamentosDto {
     obra_codigo: string;
     data_registro: string;
     participantes: string;
+    /**
+     * @deprecated Nome com typo de origem. Use `cronograma_paralisado` — este campo
+     * continua sendo preenchido com o mesmo valor apenas para não quebrar clientes antigos.
+     */
+    @ApiProperty({ deprecated: true, description: 'Use `cronograma_paralisado`. Mantido para clientes antigos.' })
     cronograma_paralizado: boolean;
+    /** Cronograma paralisado no momento do acompanhamento. */
+    cronograma_paralisado: boolean;
     prazo_encaminhamento: string | null;
     prazo_realizado: string | null;
     pauta: string | null;

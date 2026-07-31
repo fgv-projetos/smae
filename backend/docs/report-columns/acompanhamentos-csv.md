@@ -34,6 +34,7 @@ A ordem reproduz exatamente o antigo array `acompanhamentosFields`.
 | `pontos_atencao` | `VARCHAR` | pontos_atencao | — | — |
 | `pontos_atencao_texto` | `VARCHAR` | pontos_atencao_texto | — | — |
 | `riscos` | `VARCHAR` | riscos | — | — |
+| `cronograma_paralisado` | `BOOLEAN` | cronograma_paralisado | — | — |
 
 ## `RelProjetoAcompanhamentoCsvRow`
 
@@ -82,5 +83,6 @@ Custo em relação ao projeto todo. O rótulo já traz o `%`, então não há `u
 | `pontos_atencao` | `VARCHAR` | Pontos de Atenção | — | — |
 | `pontos_atencao_texto` | `VARCHAR` | Pontos de Atenção Texto | — | — |
 | `riscos` | `VARCHAR` | Códigos dos Riscos | — | — |
+| `cronograma_paralisado` | `BOOLEAN` | Cronograma Paralisado (corrente) | — | — |
 
 [← todos os arquivos](../report-columns.md)

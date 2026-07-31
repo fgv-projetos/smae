@@ -526,7 +526,7 @@ if (!Array.isArray(organs.value) || !organs.value.length) {
         </template>
 
         <template #descricao--tags="{ item }">
-          <ul class="listaComoTexto">
+          <ul class="lista-como-texto">
             <li v-if="!item.valor?.length">
               -
             </li>

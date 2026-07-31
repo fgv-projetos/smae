@@ -180,11 +180,11 @@ ParlamentaresStore.buscarTudo({ ipp: 500, possui_mandatos: true });
       </div>
     </div> <!-- Primeira linha da tela - Fim -->
 
-    <div class="flex flexwrap g2 mb2">
+    <div class="flex flexwrap g2 mb1">
       <!-- Segunda linha da tela - Início -->
 
       <!-- GESTOR MUNICIPAL -->
-      <div class="f1 mb2">
+      <div class="f1 mb1">
         <LabelFromYup
           name="orgao_gestor_id"
           :schema="schema.fields.parametros"

@@ -73,7 +73,7 @@ type VariavelDetalhe = {
     variavel_formula_composta: IdTituloDto[];
 };
 
-type SerieseTotais = {
+type SeriesETotais = {
     totais: VariavelQtdeDto;
     variaveis: VariavelComSeries[];
 };
@@ -229,7 +229,7 @@ export class MetasService {
         seriesPorVariavel: Record<number, MfSeriesAgrupadas[]>,
         fieldName: 'meta_id' | 'iniciativa_id' | 'atividade_id',
         fieldMatch: number
-    ): SerieseTotais {
+    ): SeriesETotais {
         const seriesDaX: VariavelComSeries[] = [];
         let aguarda_complementacao = 0;
         let aguarda_cp = 0;

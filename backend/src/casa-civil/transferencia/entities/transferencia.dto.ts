@@ -9,7 +9,7 @@ import {
 import { Decimal } from 'decimal.js';
 import { IdNomeDto } from 'src/common/dto/IdNome.dto';
 import { IdSigla, IdSiglaDescricao } from 'src/common/dto/IdSigla.dto';
-import { ParlamnetarIdNomes } from 'src/parlamentar/entities/parlamentar.entity';
+import { ParlamentarIdNomes } from 'src/parlamentar/entities/parlamentar.entity';
 import { ArquivoBaseDto } from '../../../upload/dto/create-upload.dto';
 import { ClassificacaoDto } from '../../../transferencias-voluntarias/classificacao/entities/classificacao.dto';
 import { IdNomeExibicaoDto } from 'src/common/dto/IdNomeExibicao.dto';
@@ -23,7 +23,7 @@ export class TransferenciaDto {
     emenda: string | null;
     valor: Decimal | null;
     partido: IdSigla[] | null;
-    parlamentar: ParlamnetarIdNomes[] | null;
+    parlamentar: ParlamentarIdNomes[] | null;
     tipo: IdNomeDto | null;
     objeto: string;
     detalhamento: string | null;
@@ -130,7 +130,7 @@ export class TransferenciaDetailDto {
 export class ParlamentarTransferenciaDto {
     id: number;
     parlamentar_id: number;
-    parlamentar: ParlamnetarIdNomes;
+    parlamentar: ParlamentarIdNomes;
     partido_id: number | null;
     partido: IdSigla | null;
     @ApiProperty({ enum: ParlamentarCargo, enumName: 'ParlamentarCargo' })

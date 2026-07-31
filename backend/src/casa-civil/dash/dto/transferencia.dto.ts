@@ -9,7 +9,7 @@ import { IdSigla, IdSiglaDescricao } from 'src/common/dto/IdSigla.dto';
 import { IsDateYMD } from '../../../auth/decorators/date.decorator';
 import { IdNomeDto } from 'src/common/dto/IdNome.dto';
 import { PartidoDto } from 'src/partido/entities/partido.entity';
-import { ParlamnetarIdNomes } from 'src/parlamentar/entities/parlamentar.entity';
+import { ParlamentarIdNomes } from 'src/parlamentar/entities/parlamentar.entity';
 import { NumberTransform } from 'src/auth/transforms/number.transform';
 import { OptionalBooleanTransform } from 'src/auth/transforms/boolean.transform';
 
@@ -170,7 +170,7 @@ export class FilterDashTransferenciasWorkflowDto extends FilterDashTransferencia
     token_paginacao?: string;
 }
 
-export class DashAnaliseTranferenciasDto {
+export class DashAnaliseTransferenciasDto {
     valor_total: number;
 
     numero_por_esfera: DashNumeroTransferenciasPorEsferaDto;
@@ -221,7 +221,7 @@ export class DashParlamentarDto {
     foto: string | null;
 }
 
-export class DashAnaliseTranferenciasChartsDto {
+export class DashAnaliseTransferenciasChartsDto {
     valor_total: number;
 
     numero_por_esfera: DashTransferenciaBasicChartDto;
@@ -238,7 +238,7 @@ export class DashTransferenciasPainelEstrategicoDto {
     esfera: TransferenciaTipoEsfera;
     tipo: IdNomeDto;
     partido: PartidoDto[];
-    parlamentar: ParlamnetarIdNomes[];
+    parlamentar: ParlamentarIdNomes[];
     orgao_gestor: IdSiglaDescricao;
     objeto: string;
     repasse: number;

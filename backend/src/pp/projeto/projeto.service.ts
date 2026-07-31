@@ -115,7 +115,7 @@ export type HtmlProjetoUe = {
     orgaosEnvolvidos: string[];
 };
 
-type ProjetoResumoPermisao = {
+type ProjetoResumoPermissao = {
     arquivado: boolean;
     status: ProjetoStatus;
     portfolio: {
@@ -2157,7 +2157,7 @@ export class ProjetoService {
     }
 
     private async calcPermissions(
-        projeto: ProjetoResumoPermisao,
+        projeto: ProjetoResumoPermissao,
         user: PessoaFromJwt | undefined,
         readonly: ProjetoReadOnlyBooleanType
     ): Promise<ProjetoPermissoesDto> {
@@ -2397,7 +2397,7 @@ export class ProjetoService {
     private calcPessoaPodeEscrever(
         user: PessoaFromJwt,
         pessoaPodeEscrever: boolean,
-        projeto: ProjetoResumoPermisao,
+        projeto: ProjetoResumoPermissao,
         permissoes: ProjetoPermissoesDto
     ): boolean {
         if (projeto.tipo == 'PP') return this.calcPessoaPodeEscreverPP(user, pessoaPodeEscrever, projeto, permissoes);
@@ -2411,7 +2411,7 @@ export class ProjetoService {
     private calcPessoaPodeEscreverMDO(
         user: PessoaFromJwt,
         pessoaPodeEscrever: boolean,
-        projeto: ProjetoResumoPermisao,
+        projeto: ProjetoResumoPermissao,
         permissoes: ProjetoPermissoesDto
     ): boolean {
         const anyPerm = user.hasSomeRoles([
@@ -2478,7 +2478,7 @@ export class ProjetoService {
     private calcPessoaPodeEscreverPP(
         user: PessoaFromJwt,
         pessoaPodeEscrever: boolean,
-        projeto: ProjetoResumoPermisao,
+        projeto: ProjetoResumoPermissao,
         permissoes: ProjetoPermissoesDto
     ): boolean {
         const anyPerm = user.hasSomeRoles([

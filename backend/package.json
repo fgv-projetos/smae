@@ -42,7 +42,8 @@
     "test:e2e:cov": "jest --config ./test/jest-e2e.json --coverage --forceExit",
     "test:e2e:ci": "jest --config ./test/jest-e2e.json --coverage --forceExit --ci --reporters=default --reporters=jest-junit",
     "check:modules": "ts-node tools/check-module-imports.ts",
-    "docs:report-columns": "ts-node -T -r tsconfig-paths/register bin/report-columns-gen.ts"
+    "docs:report-columns": "ts-node -T -r tsconfig-paths/register bin/report-columns-gen.ts",
+    "spellcheck:ptbr": "ts-node -T bin/spellcheck-ptbr.ts"
   },
   "dependencies": {
     "@dagrejs/graphlib": "^2.2.4",

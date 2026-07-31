@@ -1,0 +1,71 @@
+# Palavras que a triagem de bin/spellcheck-ptbr.ts deve ignorar.
+#
+# Uma por linha, sem acento e em minúsculas (é assim que o extrator normaliza).
+# `#` inicia comentário. Sempre que o relatório trouxer um falso positivo que vai
+# se repetir — sigla do domínio, nome de biblioteca, abreviação consagrada —
+# acrescente aqui em vez de reclassificar a cada rodada.
+
+# --- termos do domínio que o modelo já classificou errado ---
+anualizado      # custo anualizado (por ano) — o Haiku sugeriu "atualizado"
+anualizados
+anualizada
+anualizadas
+
+# --- siglas e sistemas do domínio ---
+pdm     # Programa de Metas
+sof     # Sistema de Orçamento e Finanças
+sei     # Sistema Eletrônico de Informações
+mdo     # Módulo de Obras
+smae    # o próprio sistema
+sisconv
+dotacao
+sisconsulta
+
+# --- termos técnicos / bibliotecas que a quebra de identificador expõe ---
+prisma
+nestjs
+dto
+dtos
+enum
+uuid
+jwt
+csv
+xlsx
+json
+sql
+pgsql
+crud
+api
+http
+https
+url
+uri
+cron
+mime
+utf
+ascii
+regex
+geojson
+duckdb
+minio
+bcrypt
+multer
+passport
+ejs
+mjml
+sharp
+sentry
+
+# --- abreviações que aparecem em nome de campo ---
+qtde
+qtd
+num
+desc
+obs
+img
+tmp
+idx
+ref
+prev
+calc
+aux

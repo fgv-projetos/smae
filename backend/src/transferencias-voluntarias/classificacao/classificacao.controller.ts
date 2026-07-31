@@ -12,26 +12,26 @@ import { FindOneParams } from '../../common/decorators/find-params';
 @ApiTags('Classificação')
 @Controller('classificacao')
 export class ClassificacaoController {
-    constructor(private readonly classficacaoService: ClassificacaoService) {}
+    constructor(private readonly classificacaoService: ClassificacaoService) {}
     @Post('')
     @ApiBearerAuth('access-token')
     @Roles(['CadastroClassificacao.inserir'])
     async create(@Body() dto: CreateClassificacaoDto, @CurrentUser() user: PessoaFromJwt): Promise<RecordWithId> {
-        return await this.classficacaoService.create(dto, user);
+        return await this.classificacaoService.create(dto, user);
     }
 
     @ApiBearerAuth('access-token')
     @Get()
     @Roles(['CadastroClassificacao.listar'])
     async findAll(): Promise<ListClassificacaoDto> {
-        return { linhas: await this.classficacaoService.findAll() };
+        return { linhas: await this.classificacaoService.findAll() };
     }
 
     @ApiBearerAuth('access-token')
     @Get(':id')
     @Roles(['CadastroClassificacao.listar'])
     async findById(@Param() params: FindOneParams): Promise<ClassificacaoDto> {
-        return await this.classficacaoService.findOne(+params.id);
+        return await this.classificacaoService.findOne(+params.id);
     }
 
     @Patch(':id')
@@ -42,7 +42,7 @@ export class ClassificacaoController {
         @Body() dto: UpdateClassificacaoDto,
         @CurrentUser() user: PessoaFromJwt
     ): Promise<RecordWithId> {
-        return await this.classficacaoService.update(+params.id, dto, user);
+        return await this.classificacaoService.update(+params.id, dto, user);
     }
 
     @Delete(':id')
@@ -51,7 +51,7 @@ export class ClassificacaoController {
     @ApiNoContentResponse()
     @HttpCode(HttpStatus.ACCEPTED)
     async remove(@Param() params: FindOneParams, @CurrentUser() user: PessoaFromJwt) {
-        await this.classficacaoService.remove(+params.id, user);
+        await this.classificacaoService.remove(+params.id, user);
         return '';
     }
 }

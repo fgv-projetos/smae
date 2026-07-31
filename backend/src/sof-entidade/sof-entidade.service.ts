@@ -52,7 +52,7 @@ export class SofEntidadeService {
                 `Cache expirado ou inexistente para detalhamento fonte ${numeroFonte} do ano ${ano}, buscando no SOF`
             );
             // Busca no SOF e atualiza o cache
-            const apiResponse = await this.sof.doDetailhamentoFonteRequest(ano, numeroFonte);
+            const apiResponse = await this.sof.doDetalhamentoFonteRequest(ano, numeroFonte);
 
             dados = await this.prisma.sofDetalhamentoFonte.upsert({
                 where: {

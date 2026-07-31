@@ -422,19 +422,19 @@ export class UploadService {
 
     private async checkOrcamentoFile(file: Express.Multer.File) {
         try {
-            const planilia = read(file.buffer, {
+            const planilha = read(file.buffer, {
                 type: 'buffer',
                 sheetRows: 2,
             });
 
-            if (planilia.SheetNames.length !== 1)
+            if (planilha.SheetNames.length !== 1)
                 throw new BadRequestException(
                     `Deve haver apenas uma página (planilha). Foram recebidas ${
-                        planilia.SheetNames.length
-                    }: ${planilia.SheetNames.join(', ')}`
+                        planilha.SheetNames.length
+                    }: ${planilha.SheetNames.join(', ')}`
                 );
 
-            const folha = planilia.Sheets[planilia.SheetNames[0]];
+            const folha = planilha.Sheets[planilha.SheetNames[0]];
             if (!folha['!ref']) throw new BadRequestException('primeira folha não definida');
 
             const colunasIdx = OrcamentoImportacaoHelpers.createColumnHeaderIndex(folha, [...ColunasNecessarias]);

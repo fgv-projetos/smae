@@ -151,7 +151,7 @@ export class AeNotaTaskService implements TaskableService {
     }
 
     private async resolveNota(inputParams: CreateNotaJobDto) {
-        const loookup = await this.prisma.nota.findFirstOrThrow({
+        const lookup = await this.prisma.nota.findFirstOrThrow({
             where: { id: inputParams.nota_id },
             select: {
                 nota: true,
@@ -174,7 +174,7 @@ export class AeNotaTaskService implements TaskableService {
             },
         });
 
-        return loookup;
+        return lookup;
     }
 
     outputToJson(executeOutput: any, _inputParams: any, _taskId: string): JSON {

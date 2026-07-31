@@ -251,7 +251,7 @@ export class WorkflowAndamentoFaseService {
         if (dto.tarefas != undefined) {
             for (const tarefa of dto.tarefas) {
                 // Verificando se esta tarefa está de fato na configuração do Workflow.
-                const tarefaWorkfloConfig = await prismaTxn.fluxoTarefa.findFirst({
+                const tarefaWorkflowConfig = await prismaTxn.fluxoTarefa.findFirst({
                     where: {
                         removido_em: null,
                         workflow_tarefa_id: tarefa.id,
@@ -274,16 +274,16 @@ export class WorkflowAndamentoFaseService {
                         },
                     },
                 });
-                if (!tarefaWorkfloConfig) throw new Error('Tarefa não existe na configuração do Workflow.');
+                if (!tarefaWorkflowConfig) throw new Error('Tarefa não existe na configuração do Workflow.');
 
                 // Verificando necessidade de preencher órgão responsável.
                 if (
-                    tarefaWorkfloConfig.responsabilidade == WorkflowResponsabilidade.Propria &&
+                    tarefaWorkflowConfig.responsabilidade == WorkflowResponsabilidade.Propria &&
                     tarefa.orgao_responsavel_id != undefined &&
                     tarefa.orgao_responsavel_id != orgaoCasaCivil.id
                 )
                     throw new HttpException(
-                        `Órgão não deve ser enviado para tarefa ${tarefaWorkfloConfig.workflow_tarefa.tarefa_fluxo}, pois é de responsabilidade própria.`,
+                        `Órgão não deve ser enviado para tarefa ${tarefaWorkflowConfig.workflow_tarefa.tarefa_fluxo}, pois é de responsabilidade própria.`,
                         400
                     );
 
@@ -312,12 +312,12 @@ export class WorkflowAndamentoFaseService {
                     );
 
                 if (
-                    tarefaWorkfloConfig.responsabilidade == WorkflowResponsabilidade.OutroOrgao &&
+                    tarefaWorkflowConfig.responsabilidade == WorkflowResponsabilidade.OutroOrgao &&
                     !tarefa.orgao_responsavel_id &&
                     !transferenciaAndamentoTarefaRow.orgao_responsavel_id
                 )
                     throw new HttpException(
-                        `Órgão deve ser enviado para tarefa "${tarefaWorkfloConfig.workflow_tarefa.tarefa_fluxo}", pois é de responsabilidade de outro órgão.`,
+                        `Órgão deve ser enviado para tarefa "${tarefaWorkflowConfig.workflow_tarefa.tarefa_fluxo}", pois é de responsabilidade de outro órgão.`,
                         400
                     );
 

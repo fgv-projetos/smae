@@ -536,7 +536,7 @@ export class TarefaService {
             tarefas_por_id[tarefa.id] = tarefa;
         }
 
-        let max_term_planjeado: Date | undefined = undefined;
+        let max_term_planejado: Date | undefined = undefined;
         let max_term_proj: DateTime | undefined = undefined;
 
         // Função recursiva para calcular as projeções de início e término das tarefas
@@ -559,8 +559,8 @@ export class TarefaService {
             // Para tarefas de nível 1 (raiz), mantém o controle da data de término planejado máxima
             // Isso será usado posteriormente para calcular o atraso geral do projeto
             if (tarefa.nivel == 1) {
-                if (!max_term_planjeado || (max_term_planjeado && tarefa.termino_planejado > max_term_planjeado))
-                    max_term_planjeado = tarefa.termino_planejado;
+                if (!max_term_planejado || (max_term_planejado && tarefa.termino_planejado > max_term_planejado))
+                    max_term_planejado = tarefa.termino_planejado;
             }
 
             // CASO 1: Tarefa já finalizada (tem data de término real)
@@ -929,7 +929,7 @@ export class TarefaService {
             await Promise.all(updates);
         }
 
-        await this.recalcCronogramaStatus(tarefaCronograma, max_term_planjeado, max_term_proj, tarefaCronoId);
+        await this.recalcCronogramaStatus(tarefaCronograma, max_term_planejado, max_term_proj, tarefaCronoId);
 
         ret.linhas = tarefas;
 
@@ -938,7 +938,7 @@ export class TarefaService {
 
     private async recalcCronogramaStatus(
         tarefaCronograma: TarefaCronograma,
-        max_term_planjeado: Date | undefined,
+        max_term_planejado: Date | undefined,
         max_term_proj: DateTime | undefined,
         tarefaCronoId: number
     ) {
@@ -969,14 +969,14 @@ export class TarefaService {
             }
         }
 
-        if (max_term_planjeado && max_term_proj) {
+        if (max_term_planejado && max_term_proj) {
             const d = Math.ceil(
-                max_term_proj.diff(DateTime.fromJSDate(max_term_planjeado, { zone: 'UTC' })).as('days')
+                max_term_proj.diff(DateTime.fromJSDate(max_term_planejado, { zone: 'UTC' })).as('days')
             );
             this.logger.debug(
                 `projeto max projecao_termino: ${Date2YMD.toEasyString(
                     max_term_proj
-                )}, max termino_planejado: ${Date2YMD.toEasyString(max_term_planjeado)} => ${d} dias de atraso`
+                )}, max termino_planejado: ${Date2YMD.toEasyString(max_term_planejado)} => ${d} dias de atraso`
             );
 
             if (d > 0) atraso_projeto = d;
@@ -2043,7 +2043,7 @@ export class TarefaService {
 
         const amanha = DateTime.local({ zone: SYSTEM_TIMEZONE }).startOf('day').plus({ day: 1 });
         for (const item of projetosOuTransf) {
-            this.logger.debug(`Recalculando atraso e projeções das tarefas crongorama ${JSON.stringify(item)}`);
+            this.logger.debug(`Recalculando atraso e projeções das tarefas cronograma ${JSON.stringify(item)}`);
 
             await this.buscaLinhasRecalcProjecao(item.id, null);
             await this.prisma.tarefaCronograma.update({

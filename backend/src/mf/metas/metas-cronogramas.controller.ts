@@ -8,7 +8,7 @@ import { CronogramaEtapaService } from '../../cronograma-etapas/cronograma-etapa
 import { FilterCronogramaEtapaDto } from '../../cronograma-etapas/dto/filter-cronograma-etapa.dto';
 import { ListCronogramaEtapaDto } from '../../cronograma-etapas/dto/list-cronograma-etapa.dto';
 import { CronogramaService } from '../../cronograma/cronograma.service';
-import { FilterCronogramaDto } from '../../cronograma/dto/fillter-cronograma.dto';
+import { FilterCronogramaDto } from '../../cronograma/dto/filter-cronograma.dto';
 import { ListCronogramaDto } from '../../cronograma/dto/list-cronograma.dto';
 import { EtapaService } from '../../etapa/etapa.service';
 import { MfService } from '../mf.service';

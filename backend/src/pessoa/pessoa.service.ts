@@ -30,7 +30,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreatePessoaDto } from './dto/create-pessoa.dto';
 import { DetalhePessoaDto } from './dto/detalhe-pessoa.dto';
 import { FilterPermsPessoa2Priv, FilterPessoaDto } from './dto/filter-pessoa.dto';
-import { PerfilAcessoPrivilegios } from './dto/perifl-acesso-privilegios.dto';
+import { PerfilAcessoPrivilegios } from './dto/perfil-acesso-privilegios.dto';
 import {
     BuscaResponsabilidades,
     DetalheResponsabilidadeDto,

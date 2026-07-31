@@ -10,7 +10,7 @@ import { CTPConfigDto } from './entities/ctp-config.entity';
 @Controller('cronograma-termino-planejado-config')
 export class CTPConfigController {
     constructor(
-        private readonly configSerivce: CTPConfigService,
+        private readonly configService: CTPConfigService,
         private readonly prisma: PrismaService
     ) {}
 
@@ -36,7 +36,7 @@ export class CTPConfigController {
     @ApiBearerAuth('access-token')
     @Roles(['SMAE.superadmin'])
     async patchCTPConfig(@Body() dto: UpdateCTPConfigDto): Promise<string> {
-        await this.configSerivce.update(dto);
+        await this.configService.update(dto);
         return '';
     }
 }

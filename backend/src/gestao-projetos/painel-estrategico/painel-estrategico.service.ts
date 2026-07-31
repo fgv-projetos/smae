@@ -816,7 +816,7 @@ export class PainelEstrategicoService {
 
     private async encodeNextPageTokenListaExecucaoOrcamentaria(
         whereFilter: string,
-        portifolio_filter: string,
+        portfolio_filter: string,
         portifolio_filter2: string,
         issued_at: Date,
         filter: PainelEstrategicoListaFilterDto,
@@ -835,7 +835,7 @@ export class PainelEstrategicoService {
             where pr.removido_em is null
               and pr.arquivado = false
               and pr.tipo = 'PP'
-              ${portifolio_filter}
+              ${portfolio_filter}
             union
             select
                 p.id,

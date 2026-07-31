@@ -114,7 +114,7 @@ export class SuplentesDto {
     };
 }
 
-export class ParlamnetarIdNomes {
+export class ParlamentarIdNomes {
     id: number;
     nome: string;
     nome_popular: string | null;

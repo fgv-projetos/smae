@@ -4998,8 +4998,10 @@ model ProjetoAcompanhamento {
     projeto_id Int
     projeto    Projeto @relation(fields: [projeto_id], references: [id])
 
-    acompanhanmento_tipo_id Int? // TODO fixo typo
-    acompanhamento_tipo     AcompanhamentoTipo? @relation(fields: [acompanhanmento_tipo_id], references: [id], onDelete: SetNull)
+    // O campo do client é `acompanhamento_tipo_id`; a coluna no banco segue
+    // `acompanhanmento_tipo_id` (typo de origem) via @map, então não há migration.
+    acompanhamento_tipo_id Int?                @map("acompanhanmento_tipo_id")
+    acompanhamento_tipo    AcompanhamentoTipo? @relation(fields: [acompanhamento_tipo_id], references: [id], onDelete: SetNull)
 
     ordem Int @db.SmallInt
 

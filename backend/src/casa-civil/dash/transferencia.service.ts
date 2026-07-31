@@ -12,7 +12,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { TransferenciaService } from '../transferencia/transferencia.service';
 import { FilterDashNotasDto, MfDashNotasDto } from './dto/notas.dto';
 import {
-    DashAnaliseTranferenciasChartsDto,
+    DashAnaliseTransferenciasChartsDto,
     DashTransferenciaBasicChartDto,
     DashTransferenciasPainelEstrategicoDto,
     FilterDashTransferenciasAnaliseDto,
@@ -211,7 +211,7 @@ export class DashTransferenciaService {
     async analiseTransferenciasFormattedCharts(
         filter: FilterDashTransferenciasAnaliseDto,
         user: PessoaFromJwt
-    ): Promise<DashAnaliseTranferenciasChartsDto> {
+    ): Promise<DashAnaliseTransferenciasChartsDto> {
         const rows = await this.prisma.viewTransferenciaAnalise.findMany({
             where: {
                 parlamentar_id: filter.parlamentar_ids ? { hasSome: filter.parlamentar_ids } : undefined,

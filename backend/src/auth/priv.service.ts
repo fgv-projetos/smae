@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PerfilAcessoPrivilegios } from '../pessoa/dto/perifl-acesso-privilegios.dto';
+import { PerfilAcessoPrivilegios } from '../pessoa/dto/perfil-acesso-privilegios.dto';
 import { PessoaService } from '../pessoa/pessoa.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { PessoaFromJwt } from './models/PessoaFromJwt';

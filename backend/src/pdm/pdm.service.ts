@@ -265,7 +265,7 @@ export class PdmService {
         }
 
         await this.verificaOrgaoAdmin(dto, this.prisma, user);
-        await this.verificaPdmAnterioes(dto, this.prisma);
+        await this.verificaPdmAnteriores(dto, this.prisma);
 
         this.verificaRotulos(dto);
 
@@ -920,7 +920,7 @@ export class PdmService {
         }
 
         await this.verificaOrgaoAdmin(dto, prismaTx, user);
-        await this.verificaPdmAnterioes(dto, prismaTx);
+        await this.verificaPdmAnteriores(dto, prismaTx);
         this.verificaRotulos(dto);
 
         if (dto.nome) {
@@ -1153,7 +1153,7 @@ export class PdmService {
         }
     }
 
-    private async verificaPdmAnterioes(dto: UpdatePdmDto, prismaTx: Prisma.TransactionClient) {
+    private async verificaPdmAnteriores(dto: UpdatePdmDto, prismaTx: Prisma.TransactionClient) {
         if (Array.isArray(dto.pdm_anteriores)) {
             const qtde = await prismaTx.pdm.count({
                 where: { id: { in: dto.pdm_anteriores }, tipo: 'PS', removido_em: null },

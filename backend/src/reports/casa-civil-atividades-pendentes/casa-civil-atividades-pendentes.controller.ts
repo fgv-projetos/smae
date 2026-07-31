@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { CasaCivilAtividadesPendentesService } from './casa-civil-atividades-pendentes.service';
 import { CreateCasaCivilAtividadesPendentesFilterDto } from './dto/create-casa-civil-atv-pend-filter.dto';
-import { RelCasaCivilAtividadesPendentes } from './entities/casa-civil-atividaes-pendentes.entity';
+import { RelCasaCivilAtividadesPendentes } from './entities/casa-civil-atividades-pendentes.entity';
 
 @ApiTags('Relatórios - API')
 @Controller('relatorio/casa-civil-atividades-pendentes')

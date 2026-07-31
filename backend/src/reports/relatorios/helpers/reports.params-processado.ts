@@ -5,7 +5,7 @@ import { RelatorioParamDto } from '../entities/report.entity';
 import { FonteRelatorio, ParlamentarCargo, TipoRelatorio } from '@prisma/client';
 import { EnumHumano } from 'src/reports/utils/utils.service';
 import { InternalServerErrorException } from '@nestjs/common';
-type RelatorioProcesado = Record<string, string | Array<string>>;
+type RelatorioProcessado = Record<string, string | Array<string>>;
 
 // Mapeamento de enums por valor
 const enumMap: Record<string, typeof ParlamentarCargo | typeof TipoRelatorio> = {
@@ -107,7 +107,7 @@ export const BuildParametrosProcessados = async (
     reportId?: number
 ): Promise<InputJsonValue | undefined> => {
     let parametros;
-    const parametros_processados: RelatorioProcesado = {};
+    const parametros_processados: RelatorioProcessado = {};
 
     let relatorioFonte: FonteRelatorio | undefined;
 

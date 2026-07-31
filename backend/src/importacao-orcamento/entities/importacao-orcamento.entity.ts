@@ -53,7 +53,7 @@ export class LinhaCsvInputDto extends IntersectionType(
     ])
 ) {
     @IsOptional()
-    @IsInt({ message: 'ID do projeot precisa ser um número' })
+    @IsInt({ message: 'ID do projeto precisa ser um número' })
     projeto_id?: number;
 
     @IsOptional()
@@ -72,7 +72,7 @@ export class LinhaCsvInputDto extends IntersectionType(
     iniciativa_codigo?: string;
 
     @IsOptional()
-    @IsString({ message: 'código do atividiade precisa ser um texto' })
+    @IsString({ message: 'código do atividade precisa ser um texto' })
     @Type(() => String) // XLSX fica maluco e manda number se for digitado só um digito
     atividade_codigo?: string;
 }

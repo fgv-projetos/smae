@@ -390,7 +390,7 @@ export class SofApiService {
         }
     }
 
-    async doDetailhamentoFonteRequest(ano: number, numeroFonte: number): Promise<DetalhamentoFonteReturn> {
+    async doDetalhamentoFonteRequest(ano: number, numeroFonte: number): Promise<DetalhamentoFonteReturn> {
         const endpoint =
             'v1/itens_dotacao/detalhamentos_fonte?ano=' +
             encodeURIComponent(ano) +

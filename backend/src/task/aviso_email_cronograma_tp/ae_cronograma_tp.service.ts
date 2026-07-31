@@ -272,11 +272,11 @@ export class AeCronogramaTpTaskService implements TaskableService {
         let tarefa_cronograma_id: number | undefined = undefined;
 
         if (inputParams.tarefa_id) {
-            const loookup = await this.prisma.tarefa.findFirstOrThrow({
+            const lookup = await this.prisma.tarefa.findFirstOrThrow({
                 where: { id: inputParams.tarefa_id },
                 select: { tarefa_cronograma_id: true },
             });
-            tarefa_cronograma_id = loookup.tarefa_cronograma_id;
+            tarefa_cronograma_id = lookup.tarefa_cronograma_id;
         } else if (inputParams.tarefa_cronograma_id) {
             tarefa_cronograma_id = inputParams.tarefa_cronograma_id;
         }

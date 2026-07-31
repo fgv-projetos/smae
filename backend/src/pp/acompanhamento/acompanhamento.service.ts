@@ -66,7 +66,7 @@ export class AcompanhamentoService {
                 const acompanhamento = await prismaTx.projetoAcompanhamento.create({
                     data: {
                         projeto_id: projeto_id,
-                        acompanhanmento_tipo_id: dto.acompanhamento_tipo_id,
+                        acompanhamento_tipo_id: dto.acompanhamento_tipo_id,
                         ordem: ordemAcompanhamento,
                         pauta: dto.pauta,
                         data_registro: dto.data_registro,
@@ -495,7 +495,7 @@ export class AcompanhamentoService {
                         pontos_atencao: dto.pontos_atencao,
                         cronograma_paralisado: dto.cronograma_paralisado,
                         apresentar_no_relatorio: dto.apresentar_no_relatorio,
-                        acompanhanmento_tipo_id: dto.acompanhamento_tipo_id,
+                        acompanhamento_tipo_id: dto.acompanhamento_tipo_id,
 
                         atualizado_em: now,
                         atualizado_por: user.id,

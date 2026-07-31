@@ -13,7 +13,7 @@ import {
 } from '../utils/utils.service';
 import { CreateCasaCivilAtividadesPendentesFilterDto } from './dto/create-casa-civil-atv-pend-filter.dto';
 import { RelCasaCivilAtividadesPendentesCsvRow } from './entities/casa-civil-atividades-pendentes-csv.entity';
-import { RelCasaCivilAtividadesPendentes } from './entities/casa-civil-atividaes-pendentes.entity';
+import { RelCasaCivilAtividadesPendentes } from './entities/casa-civil-atividades-pendentes.entity';
 import { Prisma } from '@prisma/client';
 import { CsvWriterOptions, WriteCsvToFile } from 'src/common/helpers/CsvWriter';
 

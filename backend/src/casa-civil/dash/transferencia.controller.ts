@@ -7,7 +7,7 @@ import { PaginatedDto, PaginatedWithPagesDto } from '../../common/dto/paginated.
 import { RequestInfoDto } from '../../mf/metas/dto/mf-meta.dto';
 import { FilterDashNotasDto, MfDashNotasDto } from './dto/notas.dto';
 import {
-    DashAnaliseTranferenciasChartsDto,
+    DashAnaliseTransferenciasChartsDto,
     DashTransferenciasPainelEstrategicoDto,
     FilterDashTransferenciasAnaliseDto,
     FilterDashTransferenciasDto,
@@ -56,10 +56,10 @@ export class DashTransferenciaController {
     @Get('analise-transferencias')
     @ApiBearerAuth('access-token')
     @Roles(['CadastroTransferencia.dashboard'])
-    async analiseTranferencias(
+    async analiseTransferencias(
         @Query() params: FilterDashTransferenciasAnaliseDto,
         @CurrentUser() user: PessoaFromJwt
-    ): Promise<DashAnaliseTranferenciasChartsDto & RequestInfoDto> {
+    ): Promise<DashAnaliseTransferenciasChartsDto & RequestInfoDto> {
         const start = Date.now();
 
         const analiseTransferencias = await this.metasDashService.analiseTransferenciasFormattedCharts(params, user);

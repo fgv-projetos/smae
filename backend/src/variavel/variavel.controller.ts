@@ -12,7 +12,7 @@ import { BatchRecordWithId, RecordWithId } from '../common/dto/record-with-id.dt
 import { MetaController, MetaSetorialController } from '../meta/meta.controller';
 import { BatchSerieUpsert } from './dto/batch-serie-upsert.dto';
 import {
-    CreateGeradorVariaveBaselDto,
+    CreateGeradorVariavelBaseDto,
     CreateGeradorVariavelPDMDto,
     CreateVariavelBaseDto,
     CreateVariavelPDMDto,
@@ -275,7 +275,7 @@ export class VariavelGlobalController {
     @ApiBearerAuth('access-token')
     @Roles(VariavelGlobalController.WritePerm)
     async create_generated(
-        @Body() dto: CreateGeradorVariaveBaselDto,
+        @Body() dto: CreateGeradorVariavelBaseDto,
         @CurrentUser() user: PessoaFromJwt
     ): Promise<BatchRecordWithId> {
         return { ids: await this.variavelService.create_region_generated(this.tipo, dto, user) };

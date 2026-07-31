@@ -105,7 +105,7 @@ class RetornoDbProjeto {
     fonte_recurso_detalhamento_cod: string | null;
     fonte_recurso_detalhamento_descricao: string | null;
 
-    premisa_id: number;
+    premissa_id: number;
     premissa: string;
 
     restricao_id: number;
@@ -834,7 +834,7 @@ export class PPProjetosService implements ReportableService, SchemaAwareReportab
             r.valor_nominal AS fonte_recurso_valor_nominal,
             r.fonte_recurso_detalhamento_cod AS fonte_recurso_detalhamento_cod,
             r.fonte_recurso_detalhamento_descricao AS fonte_recurso_detalhamento_descricao,
-            pp.id AS premisa_id,
+            pp.id AS premissa_id,
             pp.premissa,
             pr.id AS restricao_id,
             pr.restricao,
@@ -923,9 +923,9 @@ export class PPProjetosService implements ReportableService, SchemaAwareReportab
                       }
                     : null,
 
-                premissa: db.premisa_id
+                premissa: db.premissa_id
                     ? {
-                          id: db.premisa_id,
+                          id: db.premissa_id,
                           premissa: db.premissa,
                       }
                     : null,

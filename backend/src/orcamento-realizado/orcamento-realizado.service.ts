@@ -869,7 +869,7 @@ export class OrcamentoRealizadoService {
         let concluidoAdmin: OrcamentoRealizadoStatusConcluidoAdminDto[] | null = null;
 
         if (concluidoStatus == null) {
-            const [orgaoes, status] = await Promise.all([
+            const [orgaos, status] = await Promise.all([
                 this.prisma.metaOrgao.findMany({
                     where: {
                         meta_id: filters.meta_id,
@@ -895,7 +895,7 @@ export class OrcamentoRealizadoService {
             ]);
 
             concluidoAdmin = [];
-            for (const o of orgaoes) {
+            for (const o of orgaos) {
                 const lookup = status.find((r) => r.orgao_id == o.orgao_id);
 
                 if (lookup && lookup.execucao_concluida) {

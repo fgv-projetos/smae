@@ -4,7 +4,7 @@ import { PessoaFromJwt } from '../../auth/models/PessoaFromJwt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateTipoAcompanhamentoDto } from './dto/create-acompanhamento-tipo.dto';
 import { UpdateAcompanhamentoTipoDto } from './dto/update-acompanhamento-tipo.dto';
-import { AcompanhamentoTipo } from './entities/acompanhament-tipo.entities.dto';
+import { AcompanhamentoTipo } from './entities/acompanhamento-tipo.entities.dto';
 import { TipoProjeto } from '@prisma/client';
 
 @Injectable()
@@ -65,7 +65,7 @@ export class AcompanhamentoTipoService {
         await this.prisma.$transaction(async (prismaTx) => {
             // Se o tipo de acompanhamento estiver associado a algum projeto, não pode ser removido
             const tipoAcompanhamentoAssociado = await prismaTx.projetoAcompanhamento.count({
-                where: { acompanhanmento_tipo_id: id, removido_em: null },
+                where: { acompanhamento_tipo_id: id, removido_em: null },
             });
             if (tipoAcompanhamentoAssociado) {
                 throw new HttpException('Tipo de acompanhamento associado à um projeto, não pode ser removido.', 400);

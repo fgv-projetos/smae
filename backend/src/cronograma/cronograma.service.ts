@@ -7,7 +7,7 @@ import { RecordWithId } from '../common/dto/record-with-id.dto';
 import { MetaService } from '../meta/meta.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCronogramaDto } from './dto/create-cronograma.dto';
-import { FilterCronogramaDto } from './dto/fillter-cronograma.dto';
+import { FilterCronogramaDto } from './dto/filter-cronograma.dto';
 import { UpdateCronogramaDto } from './dto/update-cronograma.dto';
 import { CronogramaDto } from './entities/cronograma.entity';
 import { Date2YMD } from '../common/date2ymd';

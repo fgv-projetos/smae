@@ -9,7 +9,7 @@ import { RecordWithId } from '../../common/dto/record-with-id.dto';
 import { AcompanhamentoTipoService } from './acompanhamento-tipo.service';
 import { CreateTipoAcompanhamentoDto } from './dto/create-acompanhamento-tipo.dto';
 import { UpdateAcompanhamentoTipoDto } from './dto/update-acompanhamento-tipo.dto';
-import { ListAcompanhamentoTipoDto } from './entities/acompanhament-tipo.entities.dto';
+import { ListAcompanhamentoTipoDto } from './entities/acompanhamento-tipo.entities.dto';
 import { PROJETO_READONLY_ROLES, PROJETO_READONLY_ROLES_MDO } from '../projeto/projeto.controller';
 
 // provavelmente não é pra PROJETO_READONLY_ROLES criar esse tipo de objeto, conferir com o Lucas/FGV

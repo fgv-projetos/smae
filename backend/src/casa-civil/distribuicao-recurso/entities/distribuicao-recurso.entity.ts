@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { DistribuicaoStatusTipo, ParlamentarCargo } from '@prisma/client';
 import { Decimal } from 'decimal.js';
 import { IdSigla, IdSiglaDescricao } from 'src/common/dto/IdSigla.dto';
-import { ParlamnetarIdNomes } from 'src/parlamentar/entities/parlamentar.entity';
+import { ParlamentarIdNomes } from 'src/parlamentar/entities/parlamentar.entity';
 import { SeiIntegracaoDto } from '../../../sei-integracao/entities/sei-entidade.entity';
 import { IsBoolean, IsString, MaxLength } from 'class-validator';
 import { IsDateYMD } from '../../../auth/decorators/date.decorator';
@@ -72,7 +72,7 @@ export class DistribuicaoRecursoTransferenciaDto {
 export class ParlamentarDistribuicaoDto {
     id?: number;
     parlamentar_id: number;
-    parlamentar: ParlamnetarIdNomes;
+    parlamentar: ParlamentarIdNomes;
     partido_id: number | null;
     partido: IdSigla | null;
     @ApiProperty({ enum: ParlamentarCargo, enumName: 'ParlamentarCargo' })

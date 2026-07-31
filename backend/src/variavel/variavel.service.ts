@@ -39,7 +39,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { VariavelCategoricaService } from '../variavel-categorica/variavel-categorica.service';
 import { NonExistingSerieJwt, SerieUpsert, ValidatedUpsert } from './dto/batch-serie-upsert.dto';
 import {
-    CreateGeradorVariaveBaselDto,
+    CreateGeradorVariavelBaseDto,
     CreateGeradorVariavelPDMDto,
     CreatePeloIndicadorDto,
     CreateVariavelBaseDto,
@@ -470,7 +470,7 @@ export class VariavelService {
 
     async create_region_generated(
         tipo: TipoVariavel,
-        dto: CreateGeradorVariaveBaselDto | CreateGeradorVariavelPDMDto,
+        dto: CreateGeradorVariavelBaseDto | CreateGeradorVariavelPDMDto,
         user: PessoaFromJwt
     ): Promise<RecordWithId[]> {
         const logger = LoggerWithLog('Geração de variáveis regionais');
@@ -890,7 +890,7 @@ export class VariavelService {
     }
 
     private async fixIndicadorInicioFim(
-        createVariavelDto: CreateVariavelBaseDto | CreateGeradorVariaveBaselDto,
+        createVariavelDto: CreateVariavelBaseDto | CreateGeradorVariavelBaseDto,
         indicador: IndicadorInfo
     ) {
         if (createVariavelDto.atraso_meses === undefined) createVariavelDto.atraso_meses = 1;

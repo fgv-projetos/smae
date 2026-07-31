@@ -267,7 +267,7 @@ export class CreatePeloIndicadorDto extends PickType(CreateVariavelBaseDto, ['ti
     indicador_id: number;
 }
 
-export class CreateGeradorVariaveBaselDto extends CreateVariavelBaseDto {
+export class CreateGeradorVariavelBaseDto extends CreateVariavelBaseDto {
     @IsArray({ message: 'Região precisa ser uma array.' })
     @ArrayMinSize(1, { message: 'Região precisa ter pelo menos um item' })
     @ArrayMaxSize(1000, { message: 'Região precisa ter no máximo 1000 items' })
@@ -279,7 +279,7 @@ export class CreateGeradorVariaveBaselDto extends CreateVariavelBaseDto {
     criar_formula_composta?: boolean;
 }
 
-export class CreateGeradorVariavelPDMDto extends IntersectionType(CreateGeradorVariaveBaselDto, CreateVariavelPDMDto) {
+export class CreateGeradorVariavelPDMDto extends IntersectionType(CreateGeradorVariavelBaseDto, CreateVariavelPDMDto) {
     /**
      * prefixo que será adicionado em vários
      */

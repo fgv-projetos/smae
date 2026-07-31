@@ -11,7 +11,7 @@ import { EtapaService } from '../etapa/etapa.service';
 import { MetaController, MetaSetorialController } from '../meta/meta.controller';
 import { CronogramaService } from './cronograma.service';
 import { CreateCronogramaDto } from './dto/create-cronograma.dto';
-import { FilterCronogramaDto } from './dto/fillter-cronograma.dto';
+import { FilterCronogramaDto } from './dto/filter-cronograma.dto';
 import { ListCronogramaDto } from './dto/list-cronograma.dto';
 import { UpdateCronogramaDto } from './dto/update-cronograma.dto';
 

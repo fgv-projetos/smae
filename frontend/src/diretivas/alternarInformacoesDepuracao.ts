@@ -1,34 +1,34 @@
 import type { Directive, DirectiveBinding } from 'vue';
 
 const alternarExibicao = (el: HTMLElement, binding: DirectiveBinding) => {
-  const primária = 'Control';
-  const secundária = 'CapsLock';
+  const primaria = 'Control';
+  const secundaria = 'CapsLock';
 
   el.classList.add('debug');
   el.setAttribute('hidden', '');
-  let secundáriaPressionada = false;
+  let secundariaPressionada = false;
 
   if (binding.value) {
     el.setAttribute('data-debug', binding.value);
   }
   window.addEventListener('keydown', (event) => {
-    if (event.getModifierState && event.getModifierState(primária)) {
-      if (event.key === secundária) {
-        if (secundáriaPressionada) {
+    if (event.getModifierState && event.getModifierState(primaria)) {
+      if (event.key === secundaria) {
+        if (secundariaPressionada) {
           if (el.hasAttribute('hidden')) {
             el.removeAttribute('hidden');
           } else {
             el.setAttribute('hidden', '');
           }
-          secundáriaPressionada = false;
+          secundariaPressionada = false;
         } else {
-          secundáriaPressionada = true;
+          secundariaPressionada = true;
           setTimeout(() => {
-            secundáriaPressionada = false;
+            secundariaPressionada = false;
           }, 300);
         }
-      } else if (secundáriaPressionada) {
-        secundáriaPressionada = false;
+      } else if (secundariaPressionada) {
+        secundariaPressionada = false;
       }
     }
   });

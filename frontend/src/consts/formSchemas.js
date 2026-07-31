@@ -3181,29 +3181,6 @@ export const relatórioDePrevisãoDeCustoPortfolioObras = relatorioValidacaoBase
   }),
 );
 
-export const relatórioAtividadesPendentes = relatorioValidacaoBase.concat(object({
-  parametros: object({
-    esfera: mixed()
-      .label('Esfera')
-      .oneOf(Object.keys(esferasDeTransferencia)),
-    tipo_id: array()
-      .label('Tipos')
-      .nullable(),
-    orgao_id: array()
-      .label('Órgãos')
-      .nullable(),
-    data_inicio: date()
-      .nullable()
-      .label('Data de início')
-      .transform((v) => (v === '' ? null : v)),
-    data_termino: date()
-      .nullable()
-      .min(ref('data_inicio'), 'Data de término deve ser posterior à data de início')
-      .label('Data de término previsto')
-      .transform((v) => (v === '' ? null : v)),
-  }),
-}));
-
 export const relatórioDeDemandas = relatorioValidacaoBase.concat(object({
   parametros: object({
     status: array()

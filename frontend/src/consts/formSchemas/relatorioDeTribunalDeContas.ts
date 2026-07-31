@@ -1,5 +1,6 @@
 import esferasDeTransferencia from '@/consts/esferasDeTransferencia';
 import {
+  boolean,
   mixed,
   number,
   object,
@@ -20,6 +21,10 @@ export default relatorioValidacaoBase.concat(object({
       .label('Ano Fim')
       .min(2003, 'A partir de 2003')
       .required(),
+    cancelada: boolean()
+      .label('Considera canceladas')
+      .nullable()
+      .default(false),
     esfera: mixed()
       .label('Esfera')
       .required()

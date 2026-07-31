@@ -8,7 +8,7 @@ import { useRoute, useRouter } from 'vue-router';
 
 import AutocompleteField from '@/components/AutocompleteField2.vue';
 import esferasDeTransferencia from '@/consts/esferasDeTransferencia';
-import { relatórioAtividadesPendentes as schema } from '@/consts/formSchemas';
+import schema from '@/consts/formSchemas/relatorioDeAtividadesPendentes';
 import { useAlertStore } from '@/stores/alert.store';
 import { useOrgansStore } from '@/stores/organs.store';
 import { useRelatoriosStore } from '@/stores/relatorios.store.ts';
@@ -31,6 +31,7 @@ const valoresIniciais = {
     data_inicio: null,
     data_termino: null,
     orgao_id: [],
+    cancelada: false,
   },
   eh_publico: null,
 };
@@ -178,6 +179,34 @@ const onSubmit = handleSubmit.withControlled(async (valoresControlados) => {
           class="error-msg"
         >
           {{ errors['eh_publico'] }}
+        </div>
+      </div>
+
+      <!-- CONSIDERA CANCELADAS -->
+      <div class="f1">
+        <LabelFromYup
+          name="parametros.cancelada"
+          :schema="schema.fields.parametros"
+        />
+        <Field
+          name="parametros.cancelada"
+          as="select"
+          class="inputtext light mb1"
+          :class="{ 'error': errors['parametros.cancelada'] }"
+          @change="!$event.target.value ? setFieldValue('parametros.cancelada',null) : null"
+        >
+          <option value="">
+            Selecionar
+          </option>
+          <option :value="true">
+            Sim
+          </option>
+          <option :value="false">
+            Não
+          </option>
+        </Field>
+        <div class="error-msg">
+          {{ errors['parametros.cancelada'] }}
         </div>
       </div>
     </div>

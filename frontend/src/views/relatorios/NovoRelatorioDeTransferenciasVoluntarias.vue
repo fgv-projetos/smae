@@ -40,6 +40,7 @@ const valoresIniciais = {
     tipo: 'Geral',
     orgao_gestor_id: null,
     parlamentar_id: null,
+    cancelada: false,
   },
   eh_publico: null,
 };
@@ -287,9 +288,37 @@ ParlamentaresStore.buscarTudo({ ipp: 500, possui_mandatos: true });
           class="error-msg"
         />
       </div>
+
+      <!-- CONSIDERA CANCELADAS -->
+      <div class="f1">
+        <LabelFromYup
+          name="cancelada"
+          :schema="schema.fields.parametros"
+        />
+        <Field
+          name="parametros.cancelada"
+          as="select"
+          class="inputtext light mb1"
+          :class="{ 'error': errors['parametros.cancelada'] }"
+          @change="!$event.target.value ? setFieldValue('parametros.cancelada',null) : null"
+        >
+          <option value="">
+            Selecionar
+          </option>
+          <option :value="true">
+            Sim
+          </option>
+          <option :value="false">
+            Não
+          </option>
+        </Field>
+        <div class="error-msg">
+          {{ errors['parametros.cancelada'] }}
+        </div>
+      </div>
     </div> <!-- Segunda linha da tela - Fim -->
 
-    <div class="flex flexwrap g2 mb2">
+    <div class="flex flexwrap g2 mb1">
       <!-- Terceira linha da tela - Início -->
 
       <!-- ÓRGÃO CONCEDENTE -->

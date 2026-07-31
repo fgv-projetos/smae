@@ -5,7 +5,7 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
  *
  * Contexto: antes desta migração quase nenhum arquivo deste relatório declarava `fields` —
  * o cabeçalho nascia do `flatten()` do json2csv sobre o DTO, ou seja, era a chave técnica
- * (`orgao_responsavel_descricao`, `hirearquia`, ...). O conjunto de colunas sempre foi
+ * (`orgao_responsavel_descricao`, `duracao_planejado`, ...). O conjunto de colunas sempre foi
  * estável (o `flatten()` do json2csv **não** achata arrays por padrão, então campo array
  * vira uma célula só); ele apenas nunca tinha sido declarado. Aqui ele passa a ser, e os
  * `label` repetem esse mesmo cabeçalho técnico — inclusive o ponto do aninhamento
@@ -25,7 +25,7 @@ import { ReportColumn, ReportRows } from '../../post-process/report-column.decor
  * ponto nenhum do pipeline. Moeda, separador decimal e `dd/mm/aaaa` são aplicados no
  * pós-processamento.
  *
- * Várias colunas abaixo (`codigo`, `versao`, `hirearquia`, `data_base`, `processos_sei`,
+ * Várias colunas abaixo (`codigo`, `versao`, `hierarquia`, `data_base`, `processos_sei`,
  * CEP…) o Excel reinterpreta ao abrir o CSV direto; o caminho para quem trabalha no Excel é
  * o `.xlsx`, que sai ao lado do CSV e já nasce com a célula tipada. As notas por coluna
  * registram onde o risco existe.
@@ -260,10 +260,12 @@ export class RelProjetoDetalheCsvRow {
 /**
  * Colunas do CSV bruto de `cronograma.csv` da fonte `Projeto` (uma linha por tarefa).
  *
- * O nome `hirearquia` tem o typo de origem preservado: é o nome da propriedade no DTO
- * `RelProjetoCronogramaDto` (que também é resposta da API `POST /relatorio/projeto`) e
- * renomeá-lo mudaria o contrato daquele endpoint. O rótulo carrega o mesmo typo porque era
- * esse o cabeçalho emitido no CSV.
+ * A coluna de numeração hierárquica saía como `hirearquia` — typo herdado do nome da
+ * propriedade no DTO `RelProjetoCronogramaDto`. No CSV o nome foi corrigido para
+ * `hierarquia`, que é como o mesmo arquivo já sai nas fontes `Obras`, `Projetos` e
+ * `Transferencias`; o cabeçalho antigo não é mais emitido. No DTO da API
+ * (`POST /relatorio/projeto`) o campo com typo continua existindo, marcado como deprecado
+ * e ao lado do `hierarquia` correto, porque ali remover quebraria o contrato.
  */
 @ReportRows({
     arquivo: 'cronograma.csv',
@@ -278,8 +280,8 @@ export class RelProjetoCronogramaCsvRow {
     tarefa_id: number;
 
     /** `1.2.3` o Excel reinterpreta como número/data ao abrir o CSV direto. */
-    @ReportColumn({ type: 'VARCHAR', label: 'hirearquia' })
-    hirearquia: string | null;
+    @ReportColumn({ type: 'VARCHAR', label: 'hierarquia' })
+    hierarquia: string | null;
 
     @ReportColumn({ type: 'VARCHAR', label: 'tarefa' })
     tarefa: string;

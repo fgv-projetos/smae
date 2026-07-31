@@ -347,7 +347,9 @@ export class PPProjetoService implements ReportableService, SchemaAwareReportabl
             return {
                 projeto_id: projetoRow.id,
                 tarefa_id: e.id,
+                // `hirearquia` é o nome com typo, deprecado; ambos carregam o mesmo valor.
                 hirearquia: tarefasHierarquia[e.id],
+                hierarquia: tarefasHierarquia[e.id],
                 tarefa: e.tarefa,
                 // Ausência de data é `null`, nunca `''`: o CSV bruto é relido com tipo DATE
                 // no pós-processamento, e string vazia entre aspas não é NULL em toda

@@ -994,7 +994,9 @@ export class PPObrasService implements ReportableService, SchemaAwareReportableS
                 obra_id: db.obra_id,
                 obra_codigo: db.obra_codigo,
                 tarefa_id: db.tarefa_id,
+                // `hirearquia` é o nome com typo, deprecado; ambos carregam o mesmo valor.
                 hirearquia: tarefasHierarquia[db.tarefa_id],
+                hierarquia: tarefasHierarquia[db.tarefa_id],
                 numero: db.numero,
                 nivel: db.nivel,
                 tarefa: db.tarefa,

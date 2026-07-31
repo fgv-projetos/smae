@@ -1,4 +1,5 @@
 import { PartialType, OmitType } from '@nestjs/mapped-types';
+import { ApiProperty } from '@nestjs/swagger';
 import { ProjetoDetailDto } from '../../../pp/projeto/entities/projeto.entity';
 import { RelProjetosAditivosDto, RelProjetosContratosDto, RelProjetosTermoEncerramentoDto } from 'src/reports/pp-projetos/entities/projetos.entity';
 
@@ -56,7 +57,14 @@ export class RelProjetoRelatorioDto extends PartialType(
 export class RelProjetoCronogramaDto {
     projeto_id: number;
     tarefa_id: number;
+    /**
+     * @deprecated Nome com typo de origem. Use `hierarquia` — este campo continua sendo
+     * preenchido com o mesmo valor apenas para não quebrar clientes antigos.
+     */
+    @ApiProperty({ deprecated: true, description: 'Use `hierarquia`. Mantido apenas para clientes antigos.' })
     hirearquia: string;
+    /** Numeração hierárquica da tarefa (`1.2.3`). */
+    hierarquia: string;
     tarefa: string;
     inicio_planejado: string | null;
     termino_planejado: string | null;

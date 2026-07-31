@@ -15,7 +15,7 @@
 | `arquivos.csv` | `Obras`, `Projeto`, `Projetos` | 16 | [detalhes](./report-columns/arquivos-csv.md) |
 | `atividades-pendentes.csv` | `AtvPendentes` | 9 | [detalhes](./report-columns/atividades-pendentes-csv.md) |
 | `contratos.csv` | `Obras`, `Projeto`, `Projetos` | 35 | [detalhes](./report-columns/contratos-csv.md) |
-| `cronograma.csv` | `Obras`, `Projeto`, `Projetos`, `Transferencias` | 26 | [detalhes](./report-columns/cronograma-csv.md) |
+| `cronograma.csv` | `Obras`, `Projeto`, `Projetos`, `Transferencias` | 25 | [detalhes](./report-columns/cronograma-csv.md) |
 | `demandas.csv` | `Demandas` | 18 | [detalhes](./report-columns/demandas-csv.md) |
 | `detalhes-do-projeto.csv` | `Projeto` | 62 | [detalhes](./report-columns/detalhes-do-projeto-csv.md) |
 | `encaminhamentos.csv` | `Projeto` | 6 | [detalhes](./report-columns/encaminhamentos-csv.md) |

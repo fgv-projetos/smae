@@ -7,7 +7,7 @@ Linhas do cronograma (tarefas) das transferências filtradas.
 
 Fontes que produzem este arquivo: `Obras`, `Projeto`, `Projetos`, `Transferencias`
 
-26 colunas.
+25 colunas.
 
 ## `RelObrasCronogramaCsvRow`
 
@@ -45,16 +45,18 @@ A ordem reproduz exatamente o antigo array `cronogramaFields`.
 
 Colunas do CSV bruto de `cronograma.csv` da fonte `Projeto` (uma linha por tarefa).
 
-O nome `hirearquia` tem o typo de origem preservado: é o nome da propriedade no DTO
-`RelProjetoCronogramaDto` (que também é resposta da API `POST /relatorio/projeto`) e
-renomeá-lo mudaria o contrato daquele endpoint. O rótulo carrega o mesmo typo porque era
-esse o cabeçalho emitido no CSV.
+A coluna de numeração hierárquica saía como `hirearquia` — typo herdado do nome da
+propriedade no DTO `RelProjetoCronogramaDto`. No CSV o nome foi corrigido para
+`hierarquia`, que é como o mesmo arquivo já sai nas fontes `Obras`, `Projetos` e
+`Transferencias`; o cabeçalho antigo não é mais emitido. No DTO da API
+(`POST /relatorio/projeto`) o campo com typo continua existindo, marcado como deprecado
+e ao lado do `hierarquia` correto, porque ali remover quebraria o contrato.
 
 | Coluna | Tipo | Rótulo | Formatação | Descrição |
 | --- | --- | --- | --- | --- |
 | `projeto_id` | `BIGINT` | projeto_id | sem formatação | — |
 | `tarefa_id` | `BIGINT` | tarefa_id | sem formatação | — |
-| `hirearquia` | `VARCHAR` | hirearquia | — | — |
+| `hierarquia` | `VARCHAR` | hierarquia | — | — |
 | `tarefa` | `VARCHAR` | tarefa | — | — |
 | `inicio_planejado` | `DATE` | inicio_planejado | — | — |
 | `termino_planejado` | `DATE` | termino_planejado | — | — |

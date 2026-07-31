@@ -72,7 +72,14 @@ export class RelObrasCronogramaDto {
     obra_id: number;
     obra_codigo: string;
     tarefa_id: number;
+    /**
+     * @deprecated Nome com typo de origem. Use `hierarquia` — este campo continua sendo
+     * preenchido com o mesmo valor apenas para não quebrar clientes antigos.
+     */
+    @ApiProperty({ deprecated: true, description: 'Use `hierarquia`. Mantido apenas para clientes antigos.' })
     hirearquia: string;
+    /** Numeração hierárquica da tarefa (`1.2.3`). */
+    hierarquia: string;
     numero: number;
     nivel: number;
     tarefa: string;

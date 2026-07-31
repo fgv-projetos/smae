@@ -50,9 +50,9 @@ const {
 } = storeToRefs(parlamentarStore);
 
 const {
-  lista: listaTiposDeTransferencia,
   chamadasPendentes: chamadasPendentesTiposDeTransferencia,
   tiposDeTransferenciaPorId,
+  tiposDeTransferenciaPorEsfera,
 } = storeToRefs(tipoDeTransferenciaStore);
 
 const route = useRoute();
@@ -114,6 +114,18 @@ const filtrosEscolhidos = ref({
 const carregandoTransferencias = ref(false);
 const transferencias = ref([]);
 const paginacaoTransferencias = ref({});
+
+const listaTiposDeTransferenciaPorEsferaEscolhida = computed(() => filtrosEscolhidos.value.esfera
+  .flatMap((esfera) => tiposDeTransferenciaPorEsfera.value[esfera] || [])
+  .map((tipo) => ({ ...tipo, nome: `${tipo.esfera}: ${tipo.nome}` })));
+
+watch(() => filtrosEscolhidos.value.esfera.length, () => {
+  const idsValidos = new Set(
+    listaTiposDeTransferenciaPorEsferaEscolhida.value.map((tipo) => tipo.id),
+  );
+  filtrosEscolhidos.value.tipo_ids = filtrosEscolhidos.value.tipo_ids
+    .filter((id) => idsValidos.has(id));
+});
 
 const numeroCompactado = ref({
   porPartidos: true,
@@ -470,7 +482,7 @@ watch(
       <div class="f1">
         <label class="tc300">Tipo</label>
         <AutocompleteField
-          :disabled="!listaTiposDeTransferencia.length"
+          :disabled="!listaTiposDeTransferenciaPorEsferaEscolhida.length"
           :controlador="{
             busca: '',
             participantes: filtrosEscolhidos.tipo_ids || [],
@@ -478,7 +490,7 @@ watch(
           :class="{
             loading: chamadasPendentesTiposDeTransferencia.lista,
           }"
-          :grupo="listaTiposDeTransferencia"
+          :grupo="listaTiposDeTransferenciaPorEsferaEscolhida"
           label="nome"
         />
       </div>

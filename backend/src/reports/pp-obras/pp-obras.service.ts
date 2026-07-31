@@ -1222,11 +1222,10 @@ export class PPObrasService implements ReportableService, SchemaAwareReportableS
                 projeto.codigo AS obra_codigo,
                 projeto_acompanhamento.data_registro,
                 projeto_acompanhamento.participantes,
-                -- Sai duas vezes de propósito: 'cronograma_paralisado' é o nome corrente
-                -- (igual à coluna do banco) e 'cronograma_paralizado' é o alias com o typo
-                -- de origem, depreciado mas ainda emitido para não quebrar quem consome.
+                -- Sem alias: a coluna do banco, o CSV e o campo corrente do DTO usam todos
+                -- 'cronograma_paralisado'. O 'cronograma_paralizado' do DTO é depreciado e
+                -- sai do mesmo valor, montado no convertRows abaixo.
                 projeto_acompanhamento.cronograma_paralisado,
-                projeto_acompanhamento.cronograma_paralisado AS cronograma_paralizado,
                 projeto_acompanhamento_item.prazo_encaminhamento,
                 projeto_acompanhamento.pauta,
                 projeto_acompanhamento_item.prazo_realizado,

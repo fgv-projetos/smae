@@ -488,15 +488,15 @@ export class RelProjetosAcompanhamentosCsvRow {
     participantes: string;
 
     /**
-     * @deprecated Use `cronograma_paralisado`, no fim deste arquivo.
+     * Corrigida no lugar: o nome de máquina saía como `cronograma_paralizado`.
      *
-     * O `z` é typo de origem e vive só no nome de máquina — o rótulo entregue no arquivo
-     * sempre foi `Cronograma Paralisado`, correto. O nome importa porque é o identificador
-     * usado para filtrar e ordenar num modelo de relatório; mantido, com o mesmo valor da
-     * coluna correta, para não quebrar modelos já salvos.
+     * O rótulo entregue no arquivo sempre foi `Cronograma Paralisado`, correto — quem só lê o
+     * CSV/XLSX não vê diferença nenhuma. O nome importa para modelo de relatório, onde é o
+     * identificador de filtro e ordenação: modelo salvo que referencie o nome antigo precisa
+     * apontar para `cronograma_paralisado`.
      */
     @ReportColumn({ type: 'BOOLEAN', label: 'Cronograma Paralisado' })
-    cronograma_paralizado: boolean;
+    cronograma_paralisado: boolean;
 
     @ReportColumn({ type: 'DATE', label: 'Prazo de Encaminhamento' })
     prazo_encaminhamento: string | null;
@@ -538,18 +538,6 @@ export class RelProjetosAcompanhamentosCsvRow {
     /** Códigos dos riscos associados ao acompanhamento, concatenados com `|`. */
     @ReportColumn({ type: 'VARCHAR', label: 'Códigos dos Riscos' })
     riscos: string | null;
-
-    // Grafia corrente de `cronograma_paralizado` — é este o nome a usar em modelo de relatório.
-    //
-    // Entra no fim, e não ao lado da coluna que substitui, para não deslocar as colunas
-    // seguintes e quebrar quem lê o CSV por posição. Mesmo valor da depreciada; o rótulo
-    // precisa diferir (`describeSchema` não aceita dois rótulos iguais no mesmo arquivo).
-    //
-    // Comentário de linha, e não bloco JSDoc, de propósito: `classComment()` do
-    // bin/report-columns-gen.ts pega o último bloco /** */ antes da classe, e a classe
-    // seguinte não tem doc própria — um bloco aqui viraria a descrição dela na doc gerada.
-    @ReportColumn({ type: 'BOOLEAN', label: 'Cronograma Paralisado (corrente)' })
-    cronograma_paralisado: boolean;
 }
 
 @ReportRows({

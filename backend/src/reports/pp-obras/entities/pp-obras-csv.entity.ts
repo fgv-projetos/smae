@@ -412,15 +412,14 @@ export class RelObrasAcompanhamentosCsvRow {
     participantes: string;
 
     /**
-     * @deprecated Use `cronograma_paralisado`, no fim deste arquivo.
+     * Corrigida no lugar: saía como `cronograma_paralizado`, com o typo de origem.
      *
-     * O `z` é typo de origem (a coluna do banco sempre foi `cronograma_paralisado`). Nome e
-     * posição continuam aqui porque quem consome o arquivo por automação depende dos dois:
-     * remover a coluna quebraria quem lê pelo cabeçalho, e movê-la quebraria quem lê por
-     * posição. Segue preenchida com o mesmo valor da coluna correta.
+     * A posição é a mesma, então quem lê o arquivo por índice não sente. Quem lê pelo
+     * cabeçalho precisa passar a usar `cronograma_paralisado` — que é como a coluna do banco
+     * sempre se chamou, e como a fonte `Projeto` já emitia.
      */
-    @ReportColumn({ type: 'BOOLEAN', label: 'cronograma_paralizado' })
-    cronograma_paralizado: boolean | null;
+    @ReportColumn({ type: 'BOOLEAN', label: 'cronograma_paralisado' })
+    cronograma_paralisado: boolean | null;
 
     @ReportColumn({ type: 'DATE', label: 'prazo_encaminhamento' })
     prazo_encaminhamento: string | null;
@@ -464,16 +463,6 @@ export class RelObrasAcompanhamentosCsvRow {
     /** Códigos dos riscos vinculados ao acompanhamento, separados por `|`. */
     @ReportColumn({ type: 'VARCHAR', label: 'riscos' })
     riscos: string | null;
-
-    /**
-     * Grafia corrente de `cronograma_paralizado` — é esta que se deve consumir.
-     *
-     * Entra no fim do arquivo, e não ao lado da coluna que substitui, porque inserir no meio
-     * deslocaria todas as colunas seguintes e quebraria quem lê o CSV por posição. Acrescentar
-     * no fim não move nenhuma coluna existente. Mesmo valor da depreciada.
-     */
-    @ReportColumn({ type: 'BOOLEAN', label: 'cronograma_paralisado' })
-    cronograma_paralisado: boolean | null;
 }
 
 /**

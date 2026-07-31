@@ -8,7 +8,7 @@
 
 | Arquivo | Fontes | Colunas | Doc |
 | --- | --- | --- | --- |
-| `acompanhamentos.csv` | `Obras`, `Projeto`, `Projetos` | 24 | [detalhes](./report-columns/acompanhamentos-csv.md) |
+| `acompanhamentos.csv` | `Obras`, `Projeto`, `Projetos` | 23 | [detalhes](./report-columns/acompanhamentos-csv.md) |
 | `aditivos.csv` | `Obras`, `Projeto`, `Projetos` | 12 | [detalhes](./report-columns/aditivos-csv.md) |
 | `analises-de-risco-ps.csv` | `PSMonitoramentoMensal` | 11 | [detalhes](./report-columns/analises-de-risco-ps-csv.md) |
 | `analises-qualitativas-ps.csv` | `PSMonitoramentoMensal` | 9 | [detalhes](./report-columns/analises-qualitativas-ps-csv.md) |

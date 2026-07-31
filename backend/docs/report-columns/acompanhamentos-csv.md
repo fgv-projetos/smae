@@ -6,7 +6,7 @@ Uma linha por item de acompanhamento (o acompanhamento se repete quando tem mais
 
 Fontes que produzem este arquivo: `Obras`, `Projeto`, `Projetos`
 
-24 colunas.
+23 colunas.
 
 ## `RelObrasAcompanhamentosCsvRow`
 
@@ -20,7 +20,7 @@ A ordem reproduz exatamente o antigo array `acompanhamentosFields`.
 | `obra_codigo` | `VARCHAR` | obra_codigo | — | — |
 | `data_registro` | `DATE` | data_registro | — | — |
 | `participantes` | `VARCHAR` | participantes | — | — |
-| `cronograma_paralizado` | `BOOLEAN` | cronograma_paralizado | — | — |
+| `cronograma_paralisado` | `BOOLEAN` | cronograma_paralisado | — | — |
 | `prazo_encaminhamento` | `DATE` | prazo_encaminhamento | — | — |
 | `pauta` | `VARCHAR` | pauta | — | — |
 | `pauta_texto` | `VARCHAR` | pauta_texto | — | — |
@@ -34,7 +34,6 @@ A ordem reproduz exatamente o antigo array `acompanhamentosFields`.
 | `pontos_atencao` | `VARCHAR` | pontos_atencao | — | — |
 | `pontos_atencao_texto` | `VARCHAR` | pontos_atencao_texto | — | — |
 | `riscos` | `VARCHAR` | riscos | — | — |
-| `cronograma_paralisado` | `BOOLEAN` | cronograma_paralisado | — | — |
 
 ## `RelProjetoAcompanhamentoCsvRow`
 
@@ -69,7 +68,7 @@ Custo em relação ao projeto todo. O rótulo já traz o `%`, então não há `u
 | `projeto_codigo` | `VARCHAR` | Código do Projeto | — | — |
 | `data_registro` | `DATE` | Data do Registro | — | — |
 | `participantes` | `VARCHAR` | Participantes | — | — |
-| `cronograma_paralizado` | `BOOLEAN` | Cronograma Paralisado | — | — |
+| `cronograma_paralisado` | `BOOLEAN` | Cronograma Paralisado | — | — |
 | `prazo_encaminhamento` | `DATE` | Prazo de Encaminhamento | — | — |
 | `pauta` | `VARCHAR` | Pauta | — | — |
 | `pauta_texto` | `VARCHAR` | Pauta Texto | — | — |
@@ -83,6 +82,5 @@ Custo em relação ao projeto todo. O rótulo já traz o `%`, então não há `u
 | `pontos_atencao` | `VARCHAR` | Pontos de Atenção | — | — |
 | `pontos_atencao_texto` | `VARCHAR` | Pontos de Atenção Texto | — | — |
 | `riscos` | `VARCHAR` | Códigos dos Riscos | — | — |
-| `cronograma_paralisado` | `BOOLEAN` | Cronograma Paralisado (corrente) | — | — |
 
 [← todos os arquivos](../report-columns.md)

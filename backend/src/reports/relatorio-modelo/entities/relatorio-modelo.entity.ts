@@ -66,9 +66,22 @@ export class RelatorioColunaDisponivelDto {
     @ApiProperty()
     name: string;
 
-    /** Cabeçalho padrão. Pode ser sobrescrito pelo modelo. */
+    /**
+     * Cabeçalho **efetivo** — o que vai sair no arquivo. Em `/:id/colunas` já é o do modelo
+     * quando ele renomeou a coluna; comparar com `label_original` diz se houve renomeação.
+     */
     @ApiProperty()
     label: string;
+
+    /**
+     * Cabeçalho **da fonte** (o do `@ReportColumn`), sempre preenchido. Igual a `label` quando o
+     * modelo não renomeou — logo `label !== label_original` é o teste de "renomeado pelo modelo".
+     *
+     * Existe porque a tela precisa dos dois lados: mostrar o rótulo entregue sem perder a
+     * referência do que a coluna é na origem (`Objeto` × `Descrição do objeto`).
+     */
+    @ApiProperty()
+    label_original: string;
 
     /** Tipo DuckDB da coluna (VARCHAR, DATE, DECIMAL(18,2), ...). */
     @ApiProperty()
@@ -77,9 +90,16 @@ export class RelatorioColunaDisponivelDto {
     @ApiProperty({ nullable: true, type: String })
     descricao: string | null;
 
-    /** Regras de apresentação padrão (casas decimais, moeda, formato de data...). */
+    /** Regras de apresentação **efetivas** (casas decimais, moeda, formato de data...). */
     @ApiPropertyOptional({ type: ReportColumnFormat, nullable: true })
     format: ReportColumnFormat | null;
+
+    /**
+     * Regras de apresentação **da fonte**, mesma semântica de `label_original`: igual a `format`
+     * quando o modelo não mexeu em `decimais`/`formato_data`.
+     */
+    @ApiPropertyOptional({ type: ReportColumnFormat, nullable: true })
+    format_original: ReportColumnFormat | null;
 }
 
 export class RelatorioArquivoColunasDto {

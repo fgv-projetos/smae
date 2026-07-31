@@ -1,5 +1,5 @@
 import { RelatorioModeloArquivoDto } from './dto/relatorio-modelo.dto';
-import { ReportColumnDef, ReportFileSchema } from './report-schema';
+import { ReportColumnDef, ReportColumnFormat, ReportFileSchema } from './report-schema';
 
 /** Referência do modelo que o schema desta execução não tem. */
 export type ModeloReferenciaIgnorada = {
@@ -20,9 +20,28 @@ export type ColunasDaFonte = Map<string, Set<string>>;
 export type RegistrarReferencia = (onde: ModeloReferenciaIgnorada['onde'], coluna: string) => void;
 
 /**
+ * Coluna final com o rastro do que o modelo sobrescreveu.
+ *
+ * A escrita do arquivo só olha `name`/`label`/`format` — os campos `*_original` existem para a
+ * prévia de `GET /relatorio-modelo/:id/colunas`, que precisa mostrar os dois lados ("Objeto" da
+ * fonte × "Descrição do objeto" do modelo). Sem eles o rótulo padrão era destruído no `...def` e
+ * a resposta não permitia distinguir renomeado de herdado.
+ *
+ * Só é preenchido quando houve sobrescrita — quem consome usa o efetivo como fallback (é o que a
+ * própria fonte declara nesse caso).
+ */
+export type ColunaResolvida = ReportColumnDef & {
+    /** Rótulo declarado no `@ReportColumn`, quando o modelo trocou o rótulo. */
+    label_original?: string;
+    /** Formatação declarada no `@ReportColumn`, quando o modelo trocou decimais/formato de data. */
+    format_original?: ReportColumnFormat;
+};
+
+/**
  * Resolve a lista final de colunas: a seleção do modelo (na ordem escolhida) ou,
  * na ausência dela, todas as colunas do schema na ordem declarada. Labels e
- * formatação do modelo sobrescrevem os padrões do schema.
+ * formatação do modelo sobrescrevem os padrões do schema, que ficam preservados em
+ * `label_original`/`format_original` (ver {@link ColunaResolvida}).
  *
  * A seleção do modelo é um **superconjunto**, e aqui ela é *recortada* contra o schema
  * desta execução: fica a interseção, na ordem que o modelo pediu. Isso é o que permite
@@ -48,11 +67,11 @@ export function resolverColunasDoModelo(
     schema: ReportFileSchema,
     cfg: RelatorioModeloArquivoDto,
     registrar: RegistrarReferencia
-): ReportColumnDef[] {
+): ColunaResolvida[] {
     if (!cfg.colunas?.length) return schema.colunas;
 
     const porNome = new Map(schema.colunas.map((c) => [c.name, c]));
-    const out: ReportColumnDef[] = [];
+    const out: ColunaResolvida[] = [];
 
     for (const sel of cfg.colunas) {
         const def = porNome.get(sel.coluna);
@@ -62,6 +81,10 @@ export function resolverColunasDoModelo(
             continue;
         }
 
+        // `sel.label` definido é sobrescrita mesmo quando repete o texto do schema: o modelo fixou
+        // aquele rótulo e continua fixo se a fonte renomear a coluna depois.
+        const trocouFormato = sel.decimais !== undefined || sel.formato_data !== undefined;
+
         out.push({
             ...def,
             label: sel.label ?? def.label,
@@ -70,6 +93,8 @@ export function resolverColunasDoModelo(
                 ...(sel.decimais !== undefined ? { decimalPlaces: sel.decimais } : {}),
                 ...(sel.formato_data !== undefined ? { dateFormat: sel.formato_data } : {}),
             },
+            ...(sel.label !== undefined ? { label_original: def.label } : {}),
+            ...(trocouFormato ? { format_original: def.format ?? {} } : {}),
         });
     }
 

@@ -42,6 +42,9 @@ class FixtureRow {
     @ReportColumn({ type: 'DATE', label: 'Vigência' })
     vigencia: Date;
 
+    @ReportColumn({ type: 'DECIMAL(18,2)', label: 'Valor', format: { decimalPlaces: 2, currency: 'R$' } })
+    valor: number;
+
     /** Só existe em uma das variantes da fonte — é a coluna que a execução recorta. */
     @ReportColumn({ type: 'VARCHAR', label: 'Título da Meta' })
     meta__titulo: string;
@@ -116,8 +119,11 @@ describe('listColunasDoModelo', () => {
         const arq = doFixture(r);
         expect(arq!.colunas.map((c) => c.name)).toEqual(['objeto', 'id']);
         expect(arq!.colunas[0].label).toBe('Descrição do objeto');
-        // Rótulo não sobrescrito mantém o do schema, e a descrição vem do decorador.
+        // O rótulo da fonte sobrevive à sobrescrita: é o que responde "que coluna é essa?".
+        expect(arq!.colunas[0].label_original).toBe('Objeto');
+        // Rótulo não sobrescrito mantém o do schema (nos dois campos), e a descrição vem do decorador.
         expect(arq!.colunas[1].label).toBe('ID');
+        expect(arq!.colunas[1].label_original).toBe('ID');
         expect(arq!.colunas[1].descricao).toBe('Identificador');
 
         // Contra a própria união não há o que recortar.
@@ -141,7 +147,53 @@ describe('listColunasDoModelo', () => {
 
         const r = await service.listColunasDoModelo(1, undefined, USER);
 
-        expect(doFixture(r)!.colunas.map((c) => c.name)).toEqual(['id', 'objeto', 'vigencia', 'meta__titulo']);
+        expect(doFixture(r)!.colunas.map((c) => c.name)).toEqual([
+            'id',
+            'objeto',
+            'vigencia',
+            'valor',
+            'meta__titulo',
+        ]);
+    });
+
+    it('arquivo não citado no modelo vem com original igual ao efetivo — não há sobrescrita', async () => {
+        const { service } = fazerService({ arquivos: [{ arquivo: 'outro-arquivo.csv' }] });
+
+        const r = await service.listColunasDoModelo(1, undefined, USER);
+
+        const valor = doFixture(r)!.colunas.find((c) => c.name === 'valor')!;
+        expect(valor.label_original).toBe(valor.label);
+        expect(valor.format_original).toEqual(valor.format);
+    });
+
+    it('formatação sobrescrita preserva a da fonte em format_original', async () => {
+        const { service } = fazerService({
+            arquivos: [
+                {
+                    arquivo: ARQUIVO,
+                    colunas: [
+                        { coluna: 'valor', decimais: 4 },
+                        { coluna: 'vigencia', formato_data: '%m/%Y', label: 'Mês de vigência' },
+                    ],
+                },
+            ],
+        });
+
+        const r = await service.listColunasDoModelo(1, undefined, USER);
+        const [valor, vigencia] = doFixture(r)!.colunas;
+
+        // Efetivo tem o valor do modelo; o original mostra de onde ele saiu (2 casas, R$).
+        expect(valor.format).toEqual({ decimalPlaces: 4, currency: 'R$' });
+        expect(valor.format_original).toEqual({ decimalPlaces: 2, currency: 'R$' });
+        // Só a formatação mudou: o rótulo é o mesmo nos dois campos.
+        expect(valor.label).toBe('Valor');
+        expect(valor.label_original).toBe('Valor');
+
+        expect(vigencia.label).toBe('Mês de vigência');
+        expect(vigencia.label_original).toBe('Vigência');
+        expect(vigencia.format).toEqual({ dateFormat: '%m/%Y' });
+        // Coluna sem formatação declarada: o original é vazio, e não o do modelo.
+        expect(vigencia.format_original).toEqual({});
     });
 
     it('com parâmetros, separa recorte esperado de coluna que a fonte não declara mais', async () => {

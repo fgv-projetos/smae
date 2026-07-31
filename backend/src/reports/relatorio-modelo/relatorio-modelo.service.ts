@@ -278,12 +278,16 @@ export class RelatorioModeloService {
             arquivos: schemas.map((s) => ({
                 arquivo: s.arquivo,
                 descricao: descricaoDoArquivo.get(s.arquivo) ?? null,
+                // Aqui não há modelo, então efetivo e original são a mesma coisa — os campos
+                // `*_original` existem para a tela não ter dois formatos de coluna para tratar.
                 colunas: s.colunas.map((c) => ({
                     name: c.name,
                     label: c.label,
+                    label_original: c.label,
                     type: c.type,
                     descricao: descricoes.get(c.name) ?? null,
                     format: c.format ?? null,
+                    format_original: c.format ?? null,
                 })),
             })),
         };
@@ -375,12 +379,16 @@ export class RelatorioModeloService {
             arquivos.push({
                 arquivo: schema.arquivo,
                 descricao: descricaoDoArquivo.get(schema.arquivo) ?? null,
+                // `label_original`/`format_original` só vêm preenchidos quando o modelo
+                // sobrescreveu; sem sobrescrita o original *é* o efetivo.
                 colunas: colunas.map((c) => ({
                     name: c.name,
                     label: c.label,
+                    label_original: c.label_original ?? c.label,
                     type: c.type,
                     descricao: descricoes.get(c.name) ?? null,
                     format: c.format ?? null,
+                    format_original: c.format_original ?? c.format ?? null,
                 })),
             });
         }
@@ -427,12 +435,15 @@ export class RelatorioModeloService {
         return this.arquivosDaFonte(fonte).map((a) => ({
             arquivo: a.arquivo,
             descricao: a.descricao,
+            // União da fonte, sem modelo: efetivo e original coincidem.
             colunas: a.colunas.map((c) => ({
                 name: c.name,
                 label: c.label,
+                label_original: c.label,
                 type: c.type,
                 descricao: a.descricoes.get(c.name) ?? null,
                 format: c.format ?? null,
+                format_original: c.format ?? null,
             })),
         }));
     }

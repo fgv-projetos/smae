@@ -170,6 +170,10 @@ export class RelatorioModeloController {
      * vai me dar". Exige só o privilégio de executar a fonte — usar um modelo não exige poder
      * administrá-lo.
      *
+     * Cada coluna vem com os dois lados do rótulo: `label` é o que sai no arquivo e
+     * `label_original` é o da fonte (iguais quando o modelo não renomeou) — mesma coisa para
+     * `format`/`format_original`.
+     *
      * Sem parâmetros o recorte é contra a união das variantes, ou seja, o superconjunto do que
      * sairá. Para o recorte exato de uma execução use `POST /relatorio-modelo/:id/colunas`.
      */

@@ -110,6 +110,7 @@ const rotasParaMenuPrincipal = [
   'Workflow',
   'configuracaoDemandas',
   'programaDeMetas.planosSetoriaisListar',
+  'modelosDeRelatorio.listar',
 ];
 
 export default [
@@ -1315,6 +1316,46 @@ export default [
                 'projeto.gruposObservadores.listar',
               ],
               rotaDeEscape: 'projeto.gruposObservadores.listar',
+            },
+          },
+        ],
+      },
+
+      {
+        path: 'modelos-de-relatorio',
+        component: () => import('@/views/modelosDeRelatorio/ModelosDeRelatorioRaiz.vue'),
+        meta: {
+          título: 'Modelos de relatório',
+          rotaPrescindeDeChave: true,
+          limitarÀsPermissões: [
+            'Reports.modelo_admin.CasaCivil',
+          ],
+        },
+        children: [
+          {
+            name: 'modelosDeRelatorio.listar',
+            path: '',
+            component: () => import('@/views/modelosDeRelatorio/ModelosDeRelatorioLista.vue'),
+          },
+          {
+            name: 'modelosDeRelatorio.criar',
+            path: 'novo',
+            component: () => import('@/views/modelosDeRelatorio/ModelosDeRelatorioCriarEditar.vue'),
+            meta: {
+              título: 'Novo modelo de relatório',
+              rotasParaMigalhasDePão: ['modelosDeRelatorio.listar'],
+              rotaDeEscape: 'modelosDeRelatorio.listar',
+            },
+          },
+          {
+            name: 'modelosDeRelatorio.editar',
+            path: ':modelosDeRelatorioId',
+            component: () => import('@/views/modelosDeRelatorio/ModelosDeRelatorioCriarEditar.vue'),
+            props: tiparPropsDeRota,
+            meta: {
+              título: 'Editar modelo de relatório',
+              rotasParaMigalhasDePão: ['modelosDeRelatorio.listar'],
+              rotaDeEscape: 'modelosDeRelatorio.listar',
             },
           },
         ],

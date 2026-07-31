@@ -6,8 +6,10 @@ import {
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+import CampoDeModeloDeRelatorio from '@/components/relatorios/CampoDeModeloDeRelatorio.vue';
 import esferasDeTransferencia from '@/consts/esferasDeTransferencia';
-import { relatórioDeTribunalDeContas as schema } from '@/consts/formSchemas';
+import schema from '@/consts/formSchemas/relatorioDeTribunalDeContas';
+import nulificadorTotal from '@/helpers/nulificadorTotal';
 import { useAlertStore } from '@/stores/alert.store';
 import { useRelatoriosStore } from '@/stores/relatorios.store.ts';
 import { useTipoDeTransferenciaStore } from '@/stores/tipoDeTransferencia.store';
@@ -22,7 +24,8 @@ const route = useRoute();
 const router = useRouter();
 
 const valoresIniciais = {
-  fonte: 'TribunalDeContas',
+  fonte: route.meta.fonteDoRelatorio,
+  modelo_id: '',
   parametros: {
     esfera: null,
     ano_inicio: null,
@@ -56,7 +59,11 @@ const onSubmit = handleSubmit.withControlled(async (valoresControlados) => {
     valoresControlados.parametros
       .ano_fim = parseInt(valoresControlados.parametros.ano_fim, 10);
 
-    if (await relatoriosStore.insert(valoresControlados)) {
+    // `modelo_id` chega como string vazia quando "Layout padrão" é selecionado (select nativo
+    // não reflete `null`) — nulificadorTotal converte para `null` antes de enviar.
+    const carga = nulificadorTotal(valoresControlados);
+
+    if (await relatoriosStore.insert(carga)) {
       alertStore.success(msg);
       router.push({ name: route.meta.rotaDeEscape });
     }
@@ -82,7 +89,6 @@ const onSubmit = handleSubmit.withControlled(async (valoresControlados) => {
     <Field
       name="fonte"
       type="hidden"
-      value="TribunalDeContas"
     />
     <div class="flex flexwrap g2 mb2">
       <div class="f1">
@@ -250,6 +256,8 @@ const onSubmit = handleSubmit.withControlled(async (valoresControlados) => {
         </div>
       </div>
     </div>
+
+    <CampoDeModeloDeRelatorio :schema="schema" />
 
     <Field
       name="parametros.tipo"

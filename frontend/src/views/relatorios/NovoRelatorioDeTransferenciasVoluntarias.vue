@@ -5,9 +5,11 @@ import {
 } from 'vee-validate';
 import { useRoute, useRouter } from 'vue-router';
 
+import CampoDeModeloDeRelatorio from '@/components/relatorios/CampoDeModeloDeRelatorio.vue';
 import esferasDeTransferencia from '@/consts/esferasDeTransferencia';
-import { relatórioDeTransferênciasVoluntárias as schema } from '@/consts/formSchemas';
+import schema from '@/consts/formSchemas/relatorioDeTransferenciasVoluntarias';
 import interfacesDeTransferências from '@/consts/interfacesDeTransferências';
+import nulificadorTotal from '@/helpers/nulificadorTotal';
 import truncate from '@/helpers/texto/truncate';
 import { useAlertStore } from '@/stores/alert.store';
 import { useOrgansStore } from '@/stores/organs.store';
@@ -25,7 +27,8 @@ const route = useRoute();
 const router = useRouter();
 
 const valoresIniciais = {
-  fonte: 'Transferencias',
+  fonte: route.meta.fonteDoRelatorio,
+  modelo_id: '',
   parametros: {
     ano: null,
     esfera: null,
@@ -56,7 +59,11 @@ const onSubmit = handleSubmit.withControlled(async (valoresControlados) => {
   try {
     const msg = 'Relatório em processamento, acompanhe na tela de listagem';
 
-    if (await relatoriosStore.insert(valoresControlados)) {
+    // `modelo_id` chega como string vazia quando "Layout padrão" é selecionado (select nativo
+    // não reflete `null`) — nulificadorTotal converte para `null` antes de enviar.
+    const carga = nulificadorTotal(valoresControlados);
+
+    if (await relatoriosStore.insert(carga)) {
       alertStore.success(msg);
       router.push({ name: route.meta.rotaDeEscape });
     }
@@ -68,7 +75,6 @@ const onSubmit = handleSubmit.withControlled(async (valoresControlados) => {
 ÓrgãosStore.getAll();
 partidosStore.buscarTudo();
 ParlamentaresStore.buscarTudo({ ipp: 500, possui_mandatos: true });
-
 </script>
 <template>
   <CabecalhoDePagina :formulario-sujo="false" />
@@ -90,7 +96,6 @@ ParlamentaresStore.buscarTudo({ ipp: 500, possui_mandatos: true });
     <Field
       name="fonte"
       type="hidden"
-      value="Transferencias"
     />
     <div class="flex flexwrap g2 mb2">
       <!-- ESFERA -->
@@ -404,6 +409,8 @@ ParlamentaresStore.buscarTudo({ ipp: 500, possui_mandatos: true });
         </div>
       </div>
     </div> <!-- Terceira linha da tela - Fim -->
+
+    <CampoDeModeloDeRelatorio :schema="schema" />
 
     <Field
       name="parametros.tipo"

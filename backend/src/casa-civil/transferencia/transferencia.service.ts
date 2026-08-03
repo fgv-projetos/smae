@@ -1107,7 +1107,6 @@ export class TransferenciaService {
                     },
                 },
                 workflow_fase_atual: {
-                    where: { removido_em: null },
                     select: {
                         id: true,
                         fase: true,

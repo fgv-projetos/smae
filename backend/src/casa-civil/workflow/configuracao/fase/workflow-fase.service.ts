@@ -98,12 +98,49 @@ export class WorkflowFaseService {
     }
 
     async remove(id: number, user: PessoaFromJwt) {
-        await this.prisma.workflowFase.update({
-            where: { id },
-            data: {
-                removido_por: user.id,
-                removido_em: new Date(Date.now()),
-            },
+        await this.prisma.$transaction(async (prismaTxn: Prisma.TransactionClient) => {
+            const self = await prismaTxn.workflowFase.findFirst({
+                where: {
+                    id,
+                    removido_em: null,
+                },
+                select: { id: true },
+            });
+            if (!self) throw new NotFoundException('Fase não encontrada');
+
+            // Uso na configuração: fase referenciada por algum fluxo/etapa ativo.
+            const emUsoConfig = await prismaTxn.fluxoFase.count({
+                where: {
+                    fase_id: id,
+                    removido_em: null,
+                },
+            });
+            if (emUsoConfig)
+                throw new HttpException('Fase não pode ser removida, pois está em uso na configuração de um workflow.', 400);
+
+            // Uso em execução: fase referenciada por alguma transferência ativa (fase atual ou andamento).
+            const emUsoTransferenciaAtual = await prismaTxn.transferencia.count({
+                where: {
+                    workflow_fase_atual_id: id,
+                    removido_em: null,
+                },
+            });
+            const emUsoAndamento = await prismaTxn.transferenciaAndamento.count({
+                where: {
+                    workflow_fase_id: id,
+                    removido_em: null,
+                },
+            });
+            if (emUsoTransferenciaAtual || emUsoAndamento)
+                throw new HttpException('Fase não pode ser removida, pois está em uso por uma transferência.', 400);
+
+            await prismaTxn.workflowFase.update({
+                where: { id },
+                data: {
+                    removido_por: user.id,
+                    removido_em: new Date(Date.now()),
+                },
+            });
         });
     }
 }

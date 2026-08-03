@@ -53,6 +53,15 @@ const sufixoDosCaminhos = props.sufixoDosCaminhos !== undefined
 const isExternalLink = computed(() => (typeof props.to === 'string' && props.to.startsWith('http'))
   || props.download);
 
+function linkPermitido(route) {
+  return !props.desabilitar
+    && (!route.meta?.limitarÀsPermissões || temPermissãoPara.value(route.meta.limitarÀsPermissões));
+}
+
+function exibirElemento(route) {
+  return linkPermitido(route) || props.desabilitar || props.exibirDesabilitado;
+}
+
 const propriedadesManipuladas = computed(() => {
   let { to } = props;
 
@@ -94,32 +103,29 @@ const propriedadesManipuladas = computed(() => {
     custom
   >
     <slot
-      v-if="$props.custom"
+      v-if="$props.custom && exibirElemento(route)"
       :href="href"
-      :navigate="navigate"
+      :navigate="linkPermitido(route) ? navigate : undefined"
       :route="route"
       :is-active="isActive"
       :is-exact-active="isExactActive"
+      :permitido="linkPermitido(route)"
     />
-    <a
-      v-else-if="
-        !$props.desabilitar
-          && (
-            !route.meta?.limitarÀsPermissões
-            || temPermissãoPara(route.meta.limitarÀsPermissões)
-          )
-      "
-      v-bind="$attrs"
-      :href="href"
-      @click="navigate"
-    >
-      <slot />
-    </a>
-    <span
-      v-else-if="$props.desabilitar || $props.exibirDesabilitado"
-      v-bind="$attrs"
-    >
-      <slot />
-    </span>
+    <template v-else-if="!$props.custom">
+      <a
+        v-if="linkPermitido(route)"
+        v-bind="$attrs"
+        :href="href"
+        @click="navigate"
+      >
+        <slot />
+      </a>
+      <span
+        v-else-if="$props.desabilitar || $props.exibirDesabilitado"
+        v-bind="$attrs"
+      >
+        <slot />
+      </span>
+    </template>
   </router-link>
 </template>

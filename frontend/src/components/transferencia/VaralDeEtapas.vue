@@ -373,6 +373,7 @@ const temPermissaoParaConfigurar = computed(() => temPermissãoPara.value(['Cada
           fechar e deletar workflow
         </button>
         <button
+          v-if="workflow?.pode_reiniciar_workflow"
           type="button"
           class="btn bgnone outline tvermelho"
           @click="reiniciarWorkflow()"

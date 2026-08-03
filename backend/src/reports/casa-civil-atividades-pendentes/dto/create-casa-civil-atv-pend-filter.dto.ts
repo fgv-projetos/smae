@@ -1,10 +1,11 @@
-import { IsArray, IsEnum, IsOptional, ValidateIf } from 'class-validator';
+import { IsArray, IsBoolean, IsEnum, IsOptional, ValidateIf } from 'class-validator';
 import { IsOnlyDate } from '../../../common/decorators/IsDateOnly';
 import { Transform } from 'class-transformer';
 import { DateTransform } from '../../../auth/transforms/date.transform';
 import { Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { TransferenciaTipoEsfera } from '@prisma/client';
+import { OptionalBooleanTransform } from '../../../auth/transforms/boolean.transform';
 
 export class CreateCasaCivilAtividadesPendentesFilterDto {
     @IsOptional()
@@ -36,4 +37,14 @@ export class CreateCasaCivilAtividadesPendentesFilterDto {
     @IsArray({ message: 'orgao_id: precisa ser uma array.' })
     @Expose()
     orgao_id?: number[];
+
+    /**
+     * Quando `true`, inclui transferências canceladas. Padrão (`false`/ausente): não
+     * apresenta essas linhas. Mesmo padrão do relatório de transferências.
+     */
+    @IsOptional()
+    @IsBoolean()
+    @Transform(OptionalBooleanTransform)
+    @Expose()
+    cancelada?: boolean;
 }

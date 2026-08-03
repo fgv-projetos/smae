@@ -1,5 +1,5 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { CampoVinculo } from '@prisma/client';
+import { CampoVinculo, DistribuicaoStatusTipo } from '@prisma/client';
 import { CsvWriterOptions, WriteCsvToFile } from 'src/common/helpers/CsvWriter';
 import { Date2YMD } from '../../common/date2ymd';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -35,6 +35,9 @@ export class TribunalDeContasService implements ReportableService, SchemaAwareRe
                     esfera: dto.esfera,
                     tipo_id: dto.tipo_id,
                     ano: dto.ano_inicio ? { gte: dto.ano_inicio, lte: dto.ano_fim } : undefined,
+                    // Por padrão, não apresenta transferências canceladas. O filtro
+                    // "cancelada" inclui-as. Mesmo padrão do relatório de transferências.
+                    cancelada: dto.cancelada ? undefined : false,
                 },
             },
             select: {
@@ -97,54 +100,73 @@ export class TribunalDeContasService implements ReportableService, SchemaAwareRe
             },
         });
 
-        const out: RelTribunalDeContasDto[] = distribuicoes.map((distribuicao) => {
-            const distribuicaoStatusRow = distribuicao.status[0] ? distribuicao.status[0] : null;
-            let statusReport: string | undefined;
-            if (distribuicaoStatusRow) {
-                statusReport = distribuicaoStatusRow.status
-                    ? distribuicaoStatusRow.status.nome
-                    : distribuicaoStatusRow.status_base?.nome;
-            }
+        // Tipos de status que, por padrão, não devem aparecer no relatório (mesmo critério
+        // usado no relatório de transferências para distribuições canceladas/declinadas/
+        // impedidas tecnicamente/redirecionadas).
+        const statusTiposExcluidos: DistribuicaoStatusTipo[] = [
+            DistribuicaoStatusTipo.Cancelada,
+            DistribuicaoStatusTipo.Declinada,
+            DistribuicaoStatusTipo.ImpedidaTecnicamente,
+            DistribuicaoStatusTipo.Redirecionada,
+        ];
 
-            // Construindo str de dotação(es)
-            // A str é formada por concatenação das dotações da distribuição e os vínculos de dotação.
-            // (unique dotações)
-            const dotacoes: string[] = distribuicao.dotacoes.map((d) => d.dotacao);
-            distribuicao.vinculos.forEach((vinculo) => {
-                if (vinculo.valor_vinculo && !dotacoes.includes(vinculo.valor_vinculo)) {
-                    dotacoes.push(vinculo.valor_vinculo);
+        const out: RelTribunalDeContasDto[] = distribuicoes
+            .filter((distribuicao) => {
+                if (dto.cancelada) return true;
+
+                const distribuicaoStatusRow = distribuicao.status[0] ? distribuicao.status[0] : null;
+                const statusTipo = distribuicaoStatusRow?.status?.tipo ?? distribuicaoStatusRow?.status_base?.tipo;
+
+                return !statusTipo || !statusTiposExcluidos.includes(statusTipo);
+            })
+            .map((distribuicao) => {
+                const distribuicaoStatusRow = distribuicao.status[0] ? distribuicao.status[0] : null;
+                let statusReport: string | undefined;
+                if (distribuicaoStatusRow) {
+                    statusReport = distribuicaoStatusRow.status
+                        ? distribuicaoStatusRow.status.nome
+                        : distribuicaoStatusRow.status_base?.nome;
                 }
-            });
-            const dotacaoStr = dotacoes.join(' | ');
 
-            return {
-                ano: distribuicao.transferencia.ano,
-                // Apenas os dígitos: é limpeza de dado exigida pelo Tribunal (não formatação),
-                // por isso continua na extração e não no pós-processamento.
-                emenda: distribuicao.transferencia.emenda
-                    ? String(distribuicao.transferencia.emenda).replace(/\D/g, '')
-                    : null,
-                programa: distribuicao.transferencia.programa
-                    ? String(distribuicao.transferencia.programa).replace(/\D/g, '')
-                    : null,
-                parlamentar: distribuicao.parlamentares.map((p) => p.parlamentar.nome_popular).join('|'),
-                status: statusReport ?? null,
-                // Valores monetários saem como string para não perder precisão do Decimal do
-                // Prisma: `toNumber()` passaria por double. O DuckDB relê a coluna já como
-                // DECIMAL(18,2), então a conversão é exata.
-                valor_repasse: distribuicao.valor?.toString() ?? null,
-                acao: distribuicao.objeto,
-                gestor_municipal: distribuicao.orgao_gestor.sigla + ' - ' + distribuicao.orgao_gestor.descricao,
-                prazo_vigencia: Date2YMD.toStringOrNull(distribuicao.vigencia) ?? null,
-                // Sem o hack `="..."`: o guard de texto do Excel é aplicado no pós-processamento.
-                // Vazio virou `null` (antes era a string ' - ') para o DuckDB ler como NULL.
-                dotacao_orcamentaria: dotacaoStr ? dotacaoStr : null,
-                rubrica_de_receita: distribuicao.rubrica_de_receita ?? '',
-                finalidade: distribuicao.finalidade ?? '',
-                valor_empenho: distribuicao.valor_empenho?.toString() ?? null,
-                liquidacao_pagamento: distribuicao.valor_liquidado?.toString() ?? null,
-            };
-        });
+                // Construindo str de dotação(es)
+                // A str é formada por concatenação das dotações da distribuição e os vínculos de dotação.
+                // (unique dotações)
+                const dotacoes: string[] = distribuicao.dotacoes.map((d) => d.dotacao);
+                distribuicao.vinculos.forEach((vinculo) => {
+                    if (vinculo.valor_vinculo && !dotacoes.includes(vinculo.valor_vinculo)) {
+                        dotacoes.push(vinculo.valor_vinculo);
+                    }
+                });
+                const dotacaoStr = dotacoes.join(' | ');
+
+                return {
+                    ano: distribuicao.transferencia.ano,
+                    // Apenas os dígitos: é limpeza de dado exigida pelo Tribunal (não formatação),
+                    // por isso continua na extração e não no pós-processamento.
+                    emenda: distribuicao.transferencia.emenda
+                        ? String(distribuicao.transferencia.emenda).replace(/\D/g, '')
+                        : null,
+                    programa: distribuicao.transferencia.programa
+                        ? String(distribuicao.transferencia.programa).replace(/\D/g, '')
+                        : null,
+                    parlamentar: distribuicao.parlamentares.map((p) => p.parlamentar.nome_popular).join('|'),
+                    status: statusReport ?? null,
+                    // Valores monetários saem como string para não perder precisão do Decimal do
+                    // Prisma: `toNumber()` passaria por double. O DuckDB relê a coluna já como
+                    // DECIMAL(18,2), então a conversão é exata.
+                    valor_repasse: distribuicao.valor?.toString() ?? null,
+                    acao: distribuicao.objeto,
+                    gestor_municipal: distribuicao.orgao_gestor.sigla + ' - ' + distribuicao.orgao_gestor.descricao,
+                    prazo_vigencia: Date2YMD.toStringOrNull(distribuicao.vigencia) ?? null,
+                    // Sem o hack `="..."`: o guard de texto do Excel é aplicado no pós-processamento.
+                    // Vazio virou `null` (antes era a string ' - ') para o DuckDB ler como NULL.
+                    dotacao_orcamentaria: dotacaoStr ? dotacaoStr : null,
+                    rubrica_de_receita: distribuicao.rubrica_de_receita ?? '',
+                    finalidade: distribuicao.finalidade ?? '',
+                    valor_empenho: distribuicao.valor_empenho?.toString() ?? null,
+                    liquidacao_pagamento: distribuicao.valor_liquidado?.toString() ?? null,
+                };
+            });
 
         return {
             linhas: out,

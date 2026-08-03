@@ -44,6 +44,10 @@ export class CasaCivilAtividadesPendentesService implements ReportableService, S
         AND tf.termino_planejado < now()::date
     `;
 
+        // Por padrão, não apresenta atividades de transferências canceladas. O filtro
+        // "cancelada" inclui-as. Mesmo padrão do relatório de transferências.
+        if (!params.cancelada) whereConditions = Prisma.sql`${whereConditions} AND t.cancelada = false`;
+
         if (params.tipo_id && params.tipo_id.length > 0)
             whereConditions = Prisma.sql`${whereConditions} AND tt.id = ANY(${params.tipo_id})`;
 

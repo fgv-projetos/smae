@@ -66,13 +66,21 @@ export class RunUpdateTaskService implements TaskableService {
     async executeJob(_params: CreateRunUpdateDto, taskId: string, context: TaskContext): Promise<any> {
         this.logger.log(`Executando tarefa de atualização em lote. ID da tarefa: ${taskId}`);
 
-        // Apenas atualizações em lote pendentes.
-        const atualizacaoEmLote = await this.prisma.atualizacaoEmLote.findUnique({
+        // Estados a partir dos quais o job pode (re)executar/retomar.
+        // 'Executando' está incluído propositalmente: se um job morrer no meio (ex.: OOM/SIGKILL)
+        // após já ter marcado 'Executando', o retry precisa reencontrar o registro e retomar
+        // (pulando os sucesso_ids) em vez de falhar com "não encontrada ou já processada".
+        //
+        // Porém, exige que a task associada NÃO esteja 'errored': se o reconciliador já deu o lote
+        // como perdido (marcando 'Abortado' e apagando o task_buffer), não se deve retomar. Durante
+        // uma execução/retry legítimo a task está 'running', então isso não bloqueia o fluxo normal.
+        const atualizacaoEmLote = await this.prisma.atualizacaoEmLote.findFirst({
             where: {
                 id: _params.atualizacao_em_lote_id,
                 status: {
-                    in: ['Pendente', 'ConcluidoParcialmente', 'Falhou', 'Abortado', 'Concluido'],
+                    in: ['Pendente', 'Executando', 'ConcluidoParcialmente', 'Falhou', 'Abortado', 'Concluido'],
                 },
+                task: { status: { not: 'errored' } },
             },
         });
         if (!atualizacaoEmLote) throw new Error('Atualização em lote não encontrada ou já processada');
@@ -120,15 +128,26 @@ export class RunUpdateTaskService implements TaskableService {
                         // Buscando título/nome da linha para logs.
                         const paramsBusca = this.preparaParamsParaFindOne(_params.tipo);
                         const registro = await service.findOne(paramsBusca.tipo, id, pessoaJwt, 'ReadWrite');
-                        // Armazena o registro no nosso log estendido
+                        // Armazena o registro no nosso log estendido.
+                        // IMPORTANTE: guardamos apenas o estado anterior das colunas afetadas,
+                        // e não o objeto completo do registro. Reter o objeto inteiro por linha
+                        // fazia o buffer crescer sem limite e estourava a memória (SIGKILL/OOM)
+                        // em lotes grandes. A "Versão Anterior" do relatório continua sendo gerada
+                        // a partir desse recorte enxuto.
                         const registroProcessamento: RegistroProcessamento = {
                             id: id,
                             nome: registro?.nome || registro?.titulo || registro?.descricao || 'Nome não identificado',
                             status: 'OK',
-                            registro: registro,
+                            registro: this.montaVersaoAnterior(registro, _params.ops),
                         };
 
-                        // Adiciona aos registros processados
+                        // Adiciona aos registros processados, substituindo qualquer entrada anterior
+                        // deste mesmo id. Numa retomada, o stash carregado pode já conter o resultado
+                        // de uma tentativa anterior desta linha (ex.: falha reprocessada) — sem isso o
+                        // relatório final teria entradas duplicadas/conflitantes para o mesmo id.
+                        resultadosEstendidos.registrosProcessados = resultadosEstendidos.registrosProcessados.filter(
+                            (r) => r.id !== id
+                        );
                         resultadosEstendidos.registrosProcessados.push(registroProcessamento);
                         // Armazena dados após cada registro ser buscado
                         await context.stashData<LogResultadosEstendido>(resultadosEstendidos);
@@ -193,7 +212,15 @@ export class RunUpdateTaskService implements TaskableService {
                                 // Por agora, a única entidade que é criada pela atualização em lote é a tarefa.
                                 // Então utilizando direto o serviço.
                                 // TODO?: Implementar interface para solução mais genérica.
-                                await this.tarefaService.create({ projeto_id: id }, paramsCriacaoTarefa.dto, pessoaJwt);
+                                // Passa a tx da linha: a criação da tarefa precisa ser atômica com o
+                                // resto da linha, senão um rollback deixaria tarefa órfã e um retry a
+                                // duplicaria.
+                                await this.tarefaService.create(
+                                    { projeto_id: id },
+                                    paramsCriacaoTarefa.dto,
+                                    pessoaJwt,
+                                    prismaTxn
+                                );
                             }
                         } catch (error) {
                             this.logger.error(`Erro ao atualizar ID ${id}: ${error.message}`);
@@ -223,6 +250,18 @@ export class RunUpdateTaskService implements TaskableService {
                         if (operacaoFalhou) {
                             throw new Error(`Rollback da transação para o ID ${id}`);
                         }
+
+                        // Marca o sucesso desta linha de forma transacional, junto com a própria
+                        // mutação. Assim, se o job morrer no meio e for retomado (status Executando),
+                        // as linhas já concluídas ficam persistidas em sucesso_ids e são puladas — o
+                        // que evita reprocessá-las e duplicar tarefas criadas por Add/CreateTarefa.
+                        await prismaTxn.atualizacaoEmLote.update({
+                            where: { id: _params.atualizacao_em_lote_id },
+                            data: {
+                                sucesso_ids: { push: id },
+                                n_sucesso: { increment: 1 },
+                            },
+                        });
                     });
 
                     n_sucesso++;
@@ -281,6 +320,21 @@ export class RunUpdateTaskService implements TaskableService {
         }
 
         return { success: true };
+    }
+
+    // Captura apenas o estado anterior das colunas que serão editadas, para a coluna
+    // "Versão Anterior" do relatório — sem reter o objeto completo do registro (evita OOM).
+    private montaVersaoAnterior(registro: any, ops: UpdateOperacaoDto[]): Record<string, any> {
+        const versaoAnterior: Record<string, any> = {};
+        if (!registro || typeof registro !== 'object') return versaoAnterior;
+
+        for (const op of ops) {
+            if (op.col in registro) {
+                versaoAnterior[op.col] = registro[op.col];
+            }
+        }
+
+        return versaoAnterior;
     }
 
     // Novo método para pré-processar as operações e adicionar operações implícitas
@@ -514,6 +568,10 @@ export class RunUpdateTaskService implements TaskableService {
     }
 
     private adicionarLogErro(error: any, id: number, nome: string, results_log: LogResultadosEstendido) {
+        // Remove qualquer falha anterior deste mesmo id (ex.: reprocessamento numa retomada),
+        // para não acumular entradas duplicadas de falha para o mesmo registro.
+        results_log.falhas = results_log.falhas.filter((f) => f.id !== id);
+
         if (error instanceof HttpException) {
             const errorResponse = this.extrairMensagemErro(error);
 

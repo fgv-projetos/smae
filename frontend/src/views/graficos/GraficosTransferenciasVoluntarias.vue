@@ -397,6 +397,7 @@ watch(
     <h5>ANÁLISE GERADA EM {{ localizeDate(dataCorrente) }}</h5>
     <button
       class="like-a__text margintop"
+      type="button"
       @click="exibirFiltros = !exibirFiltros"
     >
       <svg
@@ -840,6 +841,7 @@ watch(
           <img
             class="img"
             :src="`${baseUrl}/download/${parlamentar.parlamentar.foto}`"
+            :alt="`Fotografia de ${parlamentar.parlamentar.nome_popular}`"
           >
         </div>
         <p>{{ parlamentar.parlamentar.nome_popular }}</p>

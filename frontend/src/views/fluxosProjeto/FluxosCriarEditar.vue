@@ -403,6 +403,7 @@ watch(statusesDistribuicaoSelecionados, (newValue) => {
             :value="{ id: s.id, status_base: s.status_base }"
             type="checkbox"
             class="inputcheckbox"
+            :disabled="emFoco?.edicao_restrita"
             :class="{ 'error': errors['parametros.tipo'] }"
           />
           <span>

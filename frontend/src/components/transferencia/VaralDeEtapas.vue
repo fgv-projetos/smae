@@ -129,6 +129,7 @@ const temPermissaoParaConfigurar = computed(() => temPermissãoPara.value(['Cada
           Se for necessário <strong>reabrir a fase anterior</strong> ou
           <strong>excluir o workflow</strong>, clique em <button
             class="w900 like-a__text"
+            type="button"
             @click="abrirConfigurarWorkflow"
           >
             "Configurar Workflow"

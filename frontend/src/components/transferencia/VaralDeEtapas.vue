@@ -367,6 +367,7 @@ const temPermissaoParaConfigurar = computed(() => temPermissãoPara.value(['Cada
       </div>
       <div class="flex justifycenter flexwrap g1">
         <button
+          v-if="workflow && temPermissaoParaConfigurar"
           type="button"
           class="btn bgnone outline tvermelho"
           @click="deletarWorkflow()"

@@ -265,6 +265,7 @@ watch(statusesDistribuicaoSelecionados, (newValue) => {
         />
         <select
           v-model="esferaSelecionada"
+          id="esfera"
           name="esfera"
           class="inputtext light mb1"
           :class="{ 'error': errors.esfera }"
@@ -429,6 +430,7 @@ watch(statusesDistribuicaoSelecionados, (newValue) => {
       <hr class="mr2 f1">
       <button
         class="btn big"
+        type="submit"
         :disabled="isSubmitting || Object.keys(errors)?.length"
         :title="Object.keys(errors)?.length
           ? `Erros de preenchimento: ${Object.keys(errors)?.length}`
@@ -449,6 +451,7 @@ watch(statusesDistribuicaoSelecionados, (newValue) => {
     <button
       v-if="emFoco && !emFoco?.edicao_restrita"
       class="btn ml2"
+      type="button"
       @click="idDaEtapaEmFoco = 0"
     >
       Adicionar etapa
@@ -474,6 +477,7 @@ watch(statusesDistribuicaoSelecionados, (newValue) => {
           <button
             v-if="emFoco && !emFoco?.edicao_restrita"
             class="btn ml2"
+            type="button"
             @click="() => {
               idDoRelacionamentoComFase = 0;
               idDaMãeDaFase = etapa.id;
@@ -484,6 +488,7 @@ watch(statusesDistribuicaoSelecionados, (newValue) => {
           <button
             v-if="emFoco && !emFoco?.edicao_restrita"
             class="btn outline bgnone tcprimary mtauto"
+            type="button"
             :ordem="etapa.ordem"
             :workflow_etapa_de_id="etapa.workflow_etapa_de_id"
             :workflow_etapa_para_id="etapa.workflow_etapa_para_id"
@@ -494,6 +499,7 @@ watch(statusesDistribuicaoSelecionados, (newValue) => {
           <button
             v-if="emFoco && !emFoco?.edicao_restrita"
             class="like-a__text"
+            type="button"
             aria-label="excluir"
             title="excluir"
             @click="excluirEtapa(etapa.id)"
@@ -579,6 +585,7 @@ watch(statusesDistribuicaoSelecionados, (newValue) => {
                 <button
                   v-if="emFoco && !emFoco?.edicao_restrita"
                   class="bgnone like-a__text"
+                  type="button"
                   @click="() => {
                     idDaTarefaEmFoco = 0;
                     idDaMãeDaTarefa = fase.id;
@@ -596,6 +603,7 @@ watch(statusesDistribuicaoSelecionados, (newValue) => {
                 <button
                   v-if="emFoco && !emFoco?.edicao_restrita"
                   class="like-a__text"
+                  type="button"
                   aria-label="excluir"
                   title="excluir"
                   @click="excluirFase(fase.id)"
@@ -610,6 +618,7 @@ watch(statusesDistribuicaoSelecionados, (newValue) => {
                 <button
                   v-if="emFoco && !emFoco?.edicao_restrita"
                   class="bgnone like-a__text"
+                  type="button"
                   @click="() => {
                     idDoRelacionamentoComFase = fase.id;
                     idDaMãeDaFase = etapa.id;
@@ -652,6 +661,7 @@ watch(statusesDistribuicaoSelecionados, (newValue) => {
                 <button
                   v-if="emFoco && !emFoco?.edicao_restrita"
                   class="like-a__text"
+                  type="button"
                   aria-label="excluir"
                   title="excluir"
                   @click="excluirTarefa(tarefa.id)"
@@ -666,6 +676,7 @@ watch(statusesDistribuicaoSelecionados, (newValue) => {
                 <button
                   v-if="emFoco && !emFoco?.edicao_restrita"
                   class="bgnone like-a__text"
+                  type="button"
                   @click="() => {
                     idDaTarefaEmFoco = tarefa.id;
                     idDaMãeDaTarefa = fase.id;

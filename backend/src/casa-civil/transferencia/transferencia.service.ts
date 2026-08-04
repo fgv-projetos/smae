@@ -1111,6 +1111,7 @@ export class TransferenciaService {
                 pendente_preenchimento_valores: true,
                 valor: true,
                 secretaria_concedente_str: true,
+                cancelada: true,
                 workflow_etapa_atual: {
                     select: {
                         etapa_fluxo: true,
@@ -1251,6 +1252,7 @@ export class TransferenciaService {
                 andamento_fase: r.workflow_fase_atual ? r.workflow_fase_atual.fase : null,
                 fase_status: r.workflow_fase_atual && faseStatusAtual ? faseStatusAtual : null,
                 classificacao: r.classificacao,
+                cancelada: r.cancelada,
                 orgao_gestor: r.distribuicao_recursos.length
                     ? r.distribuicao_recursos.reduce((acc: IdSiglaDescricao[], curr) => {
                           // Se o órgão gestor já foi adicionado, não adiciona novamente.

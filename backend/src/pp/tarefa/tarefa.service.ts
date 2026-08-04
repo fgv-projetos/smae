@@ -67,11 +67,21 @@ export class TarefaService {
         private readonly graphvizService: GraphvizService
     ) {}
 
-    async loadOrCreateByInput(dto: TarefaCronogramaInput, user: PessoaFromJwt): Promise<number> {
+    async loadOrCreateByInput(
+        dto: TarefaCronogramaInput,
+        user: PessoaFromJwt,
+        prismaCtx?: Prisma.TransactionClient
+    ): Promise<number> {
         if (dto.tarefa_cronograma_id) return dto.tarefa_cronograma_id; // skip query
 
+        // Quando chamado dentro de uma transação (ex.: reinício de workflow, onde o
+        // `tarefa_cronograma` é criado pela procedure na mesma transação e ainda não foi
+        // commitado), precisamos resolver/criar o cronograma usando o mesmo client — caso
+        // contrário `this.prisma` não enxerga a linha e um cronograma duplicado seria criado.
+        const prisma = prismaCtx ?? this.prisma;
+
         if (dto.projeto_id) {
-            const exists = await this.prisma.tarefaCronograma.findFirst({
+            const exists = await prisma.tarefaCronograma.findFirst({
                 where: {
                     projeto_id: dto.projeto_id,
                     removido_em: null,
@@ -79,7 +89,7 @@ export class TarefaService {
                 select: { id: true },
             });
             if (exists) return exists.id;
-            const create = await this.prisma.tarefaCronograma.create({
+            const create = await prisma.tarefaCronograma.create({
                 data: {
                     projeto_id: dto.projeto_id,
                     criado_em: new Date(Date.now()),
@@ -91,7 +101,7 @@ export class TarefaService {
         }
 
         if (dto.transferencia_id) {
-            const exists = await this.prisma.tarefaCronograma.findFirst({
+            const exists = await prisma.tarefaCronograma.findFirst({
                 where: {
                     transferencia_id: dto.transferencia_id,
                     removido_em: null,
@@ -100,7 +110,7 @@ export class TarefaService {
             });
             if (exists) return exists.id;
 
-            const create = await this.prisma.tarefaCronograma.create({
+            const create = await prisma.tarefaCronograma.create({
                 data: {
                     transferencia_id: dto.transferencia_id,
                     criado_em: new Date(Date.now()),
@@ -1094,7 +1104,7 @@ export class TarefaService {
         prismaTx?: Prisma.TransactionClient
     ): Promise<RecordWithId> {
         dto = RemoveUndefinedFields(dto);
-        const tarefaCronoId = await this.loadOrCreateByInput(tarefaCronoInput, user);
+        const tarefaCronoId = await this.loadOrCreateByInput(tarefaCronoInput, user, prismaTx);
 
         const update = async (prismaTx: Prisma.TransactionClient): Promise<RecordWithId> => {
             const now = new Date(Date.now());
@@ -1241,8 +1251,7 @@ export class TarefaService {
                 (dto as any).inicio_planejado_calculado = inicio_planejado_calculado;
                 (dto as any).termino_planejado_calculado = termino_planejado_calculado;
                 (dto as any).ordem_topologica_inicio_planejado = calcDependencias!.ordem_topologica_inicio_planejado;
-                (dto as any).ordem_topologica_termino_planejado =
-                    calcDependencias!.ordem_topologica_termino_planejado;
+                (dto as any).ordem_topologica_termino_planejado = calcDependencias!.ordem_topologica_termino_planejado;
 
                 await prismaTx.tarefaDependente.deleteMany({ where: { tarefa_id: tarefa.id } });
 
@@ -1434,18 +1443,18 @@ export class TarefaService {
             }
 
             const updateData = {
-                    ...dto,
-                    ...this.buildCustoUpdateDto(
-                        (dto as any).custo_estimado,
-                        (dto as any).custo_estimado_anualizado,
-                        (dto as any).custo_real,
-                        (dto as any).custo_real_anualizado
-                    ),
-                    dependencias: undefined,
-                    atualizado_em: now,
-                    atualizado_por: user.id,
-                    atualizado_em_usuario: now,
-                };
+                ...dto,
+                ...this.buildCustoUpdateDto(
+                    (dto as any).custo_estimado,
+                    (dto as any).custo_estimado_anualizado,
+                    (dto as any).custo_real,
+                    (dto as any).custo_real_anualizado
+                ),
+                dependencias: undefined,
+                atualizado_em: now,
+                atualizado_por: user.id,
+                atualizado_em_usuario: now,
+            };
             logger.log(`Dados para update tarefa ${tarefa.id}: ${JSON.stringify(updateData)}`);
 
             const updatedSelf = await prismaTx.tarefa.update({

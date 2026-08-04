@@ -43,6 +43,7 @@ export class TransferenciaDto {
     andamento_fase: string | null;
     fase_status: string | null;
     classificacao: ClassificacaoDto | null;
+    cancelada: boolean;
 }
 
 export class ListTransferenciaDto {

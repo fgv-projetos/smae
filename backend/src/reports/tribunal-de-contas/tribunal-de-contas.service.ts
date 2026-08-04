@@ -13,6 +13,7 @@ import {
     Path2FileName,
     ReportableService,
 } from '../utils/utils.service';
+import { FilterTransferenciaCancelada } from 'src/casa-civil/transferencia/dto/filter-transferencia.dto';
 import { CreateRelTribunalDeContasDto } from './dto/create-tribunal-de-contas.dto';
 import { RelTribunalDeContasCsvRow } from './entities/tribunal-de-contas-csv.entity';
 import { RelatorioTribunalDeContasDto, RelTribunalDeContasDto } from './entities/tribunal-de-contas.entity';
@@ -35,9 +36,16 @@ export class TribunalDeContasService implements ReportableService, SchemaAwareRe
                     esfera: dto.esfera,
                     tipo_id: dto.tipo_id,
                     ano: dto.ano_inicio ? { gte: dto.ano_inicio, lte: dto.ano_fim } : undefined,
-                    // Por padrão, não apresenta transferências canceladas. O filtro
-                    // "cancelada" inclui-as. Mesmo padrão do relatório de transferências.
-                    cancelada: dto.cancelada ? undefined : false,
+                    // Filtro em 3 estados (mesmo esquema do relatório de transferências). Só é
+                    // seguro restringir por transferência.cancelada no estado padrão (NaoIncluir);
+                    // em Apenas não filtramos aqui porque uma distribuição pode estar cancelada
+                    // mesmo com a transferência ativa — a seleção final é feita no filtro por status
+                    // abaixo. Ausência do parâmetro equivale a NaoIncluir.
+                    cancelada:
+                        dto.cancelada === FilterTransferenciaCancelada.Incluir ||
+                        dto.cancelada === FilterTransferenciaCancelada.Apenas
+                            ? undefined
+                            : false,
                 },
             },
             select: {
@@ -57,6 +65,7 @@ export class TribunalDeContasService implements ReportableService, SchemaAwareRe
                         emenda: true,
                         ano: true,
                         programa: true,
+                        cancelada: true,
                     },
                 },
                 parlamentares: {
@@ -112,12 +121,20 @@ export class TribunalDeContasService implements ReportableService, SchemaAwareRe
 
         const out: RelTribunalDeContasDto[] = distribuicoes
             .filter((distribuicao) => {
-                if (dto.cancelada) return true;
+                // Incluir: todas as linhas.
+                if (dto.cancelada === FilterTransferenciaCancelada.Incluir) return true;
 
                 const distribuicaoStatusRow = distribuicao.status[0] ? distribuicao.status[0] : null;
                 const statusTipo = distribuicaoStatusRow?.status?.tipo ?? distribuicaoStatusRow?.status_base?.tipo;
+                const distribuicaoCancelada = !!statusTipo && statusTiposExcluidos.includes(statusTipo);
 
-                return !statusTipo || !statusTiposExcluidos.includes(statusTipo);
+                // Apenas: só as canceladas, seja no nível da transferência ou da distribuição.
+                if (dto.cancelada === FilterTransferenciaCancelada.Apenas)
+                    return distribuicao.transferencia.cancelada || distribuicaoCancelada;
+
+                // NaoIncluir (padrão): a transferência já vem filtrada (cancelada = false) na query;
+                // aqui removemos as distribuições canceladas/declinadas/impedidas/redirecionadas.
+                return !distribuicaoCancelada;
             })
             .map((distribuicao) => {
                 const distribuicaoStatusRow = distribuicao.status[0] ? distribuicao.status[0] : null;

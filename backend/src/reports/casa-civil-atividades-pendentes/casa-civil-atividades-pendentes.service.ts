@@ -11,6 +11,7 @@ import {
     Path2FileName,
     ReportableService,
 } from '../utils/utils.service';
+import { FilterTransferenciaCancelada } from 'src/casa-civil/transferencia/dto/filter-transferencia.dto';
 import { CreateCasaCivilAtividadesPendentesFilterDto } from './dto/create-casa-civil-atv-pend-filter.dto';
 import { RelCasaCivilAtividadesPendentesCsvRow } from './entities/casa-civil-atividades-pendentes-csv.entity';
 import { RelCasaCivilAtividadesPendentes } from './entities/casa-civil-atividades-pendentes.entity';
@@ -44,9 +45,13 @@ export class CasaCivilAtividadesPendentesService implements ReportableService, S
         AND tf.termino_planejado < now()::date
     `;
 
-        // Por padrão, não apresenta atividades de transferências canceladas. O filtro
-        // "cancelada" inclui-as. Mesmo padrão do relatório de transferências.
-        if (!params.cancelada) whereConditions = Prisma.sql`${whereConditions} AND t.cancelada = false`;
+        // Filtro de canceladas em 3 estados (mesmo esquema do relatório de transferências):
+        // NaoIncluir (padrão) => só não canceladas; Incluir => todas; Apenas => só canceladas.
+        if (params.cancelada === FilterTransferenciaCancelada.Apenas) {
+            whereConditions = Prisma.sql`${whereConditions} AND t.cancelada = true`;
+        } else if (params.cancelada !== FilterTransferenciaCancelada.Incluir) {
+            whereConditions = Prisma.sql`${whereConditions} AND t.cancelada = false`;
+        }
 
         if (params.tipo_id && params.tipo_id.length > 0)
             whereConditions = Prisma.sql`${whereConditions} AND tt.id = ANY(${params.tipo_id})`;

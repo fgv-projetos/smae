@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TransferenciaTipoEsfera } from '@prisma/client';
-import { IsBoolean, IsEnum, IsNumber, IsOptional } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional } from 'class-validator';
 import { Expose, Transform } from 'class-transformer';
-import { OptionalBooleanTransform } from '../../../auth/transforms/boolean.transform';
+import { FilterTransferenciaCancelada } from 'src/casa-civil/transferencia/dto/filter-transferencia.dto';
 
 export class CreateRelTribunalDeContasDto {
     @IsOptional()
@@ -29,13 +29,25 @@ export class CreateRelTribunalDeContasDto {
     tipo_id?: number;
 
     /**
-     * Quando `true`, inclui transferências e distribuições canceladas/declinadas/impedidas
-     * tecnicamente/redirecionadas. Padrão (`false`/ausente): não apresenta essas linhas.
-     * Mesmo padrão do relatório de transferências.
+     * Controla a exibição das transferências canceladas e das distribuições
+     * canceladas/declinadas/impedidas tecnicamente/redirecionadas:
+     * - `NaoIncluir` (padrão/ausente): não apresenta essas linhas;
+     * - `Incluir`: apresenta todas, inclusive as canceladas;
+     * - `Apenas`: apresenta somente as canceladas.
+     *
+     * Aceita também os valores legados `true` (equivalente a `Incluir`) e `false`
+     * (equivalente a `NaoIncluir`) por compatibilidade. Mesmo padrão do relatório de transferências.
      */
     @IsOptional()
-    @IsBoolean()
-    @Transform(OptionalBooleanTransform)
+    @ApiProperty({ enum: FilterTransferenciaCancelada, enumName: 'FilterTransferenciaCancelada' })
+    @IsEnum(FilterTransferenciaCancelada, {
+        message: 'Precisa ser um dos seguintes valores: ' + Object.values(FilterTransferenciaCancelada).join(', '),
+    })
+    @Transform(({ value }) => {
+        if (value === true || value === 'true') return FilterTransferenciaCancelada.Incluir;
+        if (value === false || value === 'false') return FilterTransferenciaCancelada.NaoIncluir;
+        return value;
+    })
     @Expose()
-    cancelada?: boolean;
+    cancelada?: FilterTransferenciaCancelada;
 }

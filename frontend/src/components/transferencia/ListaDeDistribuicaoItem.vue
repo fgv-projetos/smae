@@ -427,7 +427,7 @@ const registrosSei = computed(() => {
 
                 <dl class="f1">
                   <dt class="t16 w700 mb05 tamarelo">
-                    Número do contrato
+                    Número do instrumento
                   </dt>
 
                   <dd>

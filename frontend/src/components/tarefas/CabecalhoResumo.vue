@@ -32,8 +32,8 @@ const emFocoFiltrado = computed(() => props.emFoco.tarefa_cronograma || props.em
     </h2>
 
     <div
-      v-if="$route.meta.entidadeMãe === 'projeto'
-        || $route.meta.entidadeMãe === 'obras'
+      v-if="($route.meta.entidadeMãe === 'projeto'
+        || $route.meta.entidadeMãe === 'obras')
         && $props.emFoco.projeto_etapa"
       class="etapa mb2"
     >

@@ -220,7 +220,7 @@ watch(valoresIniciais, (novosValores) => {
   <LoadingComponent v-if="chamadasPendentes.emFoco" />
 
   <form
-    v-else
+    :aria-busy="chamadasPendentes.emFoco"
     class="flex column g2"
     @submit.prevent="onSubmit"
   >

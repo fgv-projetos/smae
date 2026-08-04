@@ -25,6 +25,7 @@ const partidoStore = usePartidosStore();
 const parlamentarStore = useParlamentaresStore();
 const tipoDeTransferenciaStore = useTipoDeTransferenciaStore();
 
+const prefixoDaPaginacaoDeTransferencias = 'transferencias_';
 const listaEsferas = Object.values(esferasDeTransferencia).map((item) => ({
   id: item.valor,
   nome: item.nome,
@@ -265,10 +266,10 @@ async function buscarTransferencias() {
   carregandoTransferencias.value = true;
 
   const paramsLimpos = Object.entries(route.query).reduce((acc, [key, value]) => {
-    if (!key.startsWith('transferencias_')) {
+    if (!key.startsWith(prefixoDaPaginacaoDeTransferencias)) {
       acc[key] = value;
     } else {
-      acc[key.replace('transferencias_', '')] = value;
+      acc[key.replace(prefixoDaPaginacaoDeTransferencias, '')] = value;
     }
     return acc;
   }, {});
@@ -302,6 +303,11 @@ function scrollPaginaParaTabela() {
   }
 }
 
+function atualizarTabelaDeTransferencias() {
+  buscarTransferencias();
+  scrollPaginaParaTabela();
+}
+
 async function iniciar() {
   fluxosEtapasProjetos.buscarTudo();
   parlamentarStore.buscarTudo({ ipp: -1 });
@@ -323,7 +329,7 @@ async function iniciar() {
 
 iniciar();
 
-function resetarPaginacao() {
+async function resetarPaginacao() {
   paginacaoTransferencias.value = {
     temMais: true,
     paginas: 1,
@@ -336,40 +342,33 @@ function resetarPaginacao() {
 
   const querySemTransferencias = Object.fromEntries(
     Object.entries(route.query).filter(
-      ([key]) => !key.startsWith('transferencias_'),
+      ([key]) => !key.startsWith(prefixoDaPaginacaoDeTransferencias),
     ),
   );
 
-  router.replace({
+  await router.replace({
     query: {
       ...querySemTransferencias,
-      transferencias_pagina: 1,
+      [`${prefixoDaPaginacaoDeTransferencias}pagina`]: 1,
     },
   });
 }
 
+// TO-DO: isso poderia ser bem mais simples!
 watch(
   () => route.query,
-  (queryNova, queryAnterior) => {
-    const queryStringsDosFiltrosNova = Object
+  async (queryNova, queryAnterior) => {
+    const novaQueryDosFiltrosExcluindoPaginacaoDasTransf = Object
       .fromEntries(Object.entries(queryNova)
-        .filter(([key]) => !key.startsWith('transferencias_')));
+        .filter(([key]) => !key.startsWith(prefixoDaPaginacaoDeTransferencias)));
 
-    const queryStringsDosFiltrosAntiga = Object
+    const velhaQueryDosFiltrosExcluindoPaginacaoDasTransf = Object
       .fromEntries(Object.entries(queryAnterior)
-        .filter(([key]) => !key.startsWith('transferencias_')));
+        .filter(([key]) => !key.startsWith(prefixoDaPaginacaoDeTransferencias)));
 
-    const queryStringsDeTransferenciasNova = Object.fromEntries(Object.entries(queryNova).filter(([key]) => key.startsWith('transferencias_')));
-    const queryStringsDeTransferenciasAntiga = Object.fromEntries(Object.entries(queryAnterior).filter(([key]) => key.startsWith('transferencias_')));
-
-    const teveMudancaNaQueryDosFiltros = !isEqual(
-      queryStringsDosFiltrosNova,
-      queryStringsDosFiltrosAntiga,
-    );
-
-    const teveMudancaNaQueryDasTransferencias = !isEqual(
-      queryStringsDeTransferenciasNova,
-      queryStringsDeTransferenciasAntiga,
+    const teveMudancaNosFiltrosAlemDaPaginacaoDasTransf = !isEqual(
+      novaQueryDosFiltrosExcluindoPaginacaoDasTransf,
+      velhaQueryDosFiltrosExcluindoPaginacaoDasTransf,
     );
 
     filtrosEscolhidos.value = {
@@ -381,14 +380,12 @@ watch(
       parlamentar_ids: route.query.parlamentar_ids?.map((id) => Number(id)) || [],
     };
 
-    if (teveMudancaNaQueryDosFiltros) {
-      resetarPaginacao(); // resetar a paginação já faz o request para buscar as transferências
+    if (teveMudancaNosFiltrosAlemDaPaginacaoDasTransf) {
+      await resetarPaginacao();
       buscarGraficos();
     }
 
-    if (teveMudancaNaQueryDasTransferencias) {
-      buscarTransferencias();
-    }
+    buscarTransferencias();
   },
 );
 </script>
@@ -883,8 +880,8 @@ watch(
         v-if="paginacaoTransferencias.temMais"
         class="mt2 bgt"
         v-bind="paginacaoTransferencias"
-        prefixo="transferencias_"
-        @troca-de-pagina-solicitada="scrollPaginaParaTabela"
+        :prefixo="prefixoDaPaginacaoDeTransferencias"
+        @troca-de-pagina-solicitada="atualizarTabelaDeTransferencias()"
       />
       <LoadingComponent
         v-if="carregandoTransferencias"

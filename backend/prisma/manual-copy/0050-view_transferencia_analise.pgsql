@@ -28,18 +28,28 @@ SELECT
     t.ano
    FROM transferencia t
    LEFT JOIN distribuicao_recurso dr ON dr.transferencia_id = t.id AND dr.removido_em IS NULL AND NOT EXISTS (
-        -- Verifica se a distribuição está em um status terminal (que não permite novos registros:
-        -- Cancelada, Declinada, ImpedidaTecnicamente, Redirecionada, Finalizada). Não usamos a coluna
-        -- "tipo", pois os statuses base "Cancelada", "Declinada", "ImpedidaTecnicamente" e "Redirecionada"
-        -- compartilham o mesmo tipo genérico "Terminal", tornando o filtro por tipo inefetivo.
+        -- Exclui distribuições que passaram por um status "terminal inválido"
+        -- (Cancelada, Declinada, ImpedidaTecnicamente, Redirecionada, Finalizada), pois não
+        -- representam mais a distribuição válida da transferência.
+        --
+        -- O enum DistribuicaoStatusTipo tem duas gerações de valores: a antiga, com nomes
+        -- literais (Cancelada, Declinada, ...), e a nova/genérica usada pelos status base atuais
+        -- (Terminal agrupa Cancelada/Declinada/ImpedidaTecnicamente/Redirecionada; ConcluidoComSucesso
+        -- corresponde a Finalizada). Precisamos cobrir ambas. NÃO usamos permite_novos_registros
+        -- porque dados legados (seed com upsert update:{}) deixaram esse flag inconsistente.
         SELECT 1
         FROM distribuicao_recurso_status drs
-        -- Rows de status podem estar ligadas à um status base ou a um status customizado. ambos possuem a coluna permite_novos_registros
+        -- Rows de status podem estar ligadas à um status base ou a um status customizado. ambos possuem a coluna tipo
         LEFT JOIN distribuicao_status ds ON ds.id = drs.status_id AND ds.removido_em IS NULL
         LEFT JOIN distribuicao_status_base dsb ON dsb.id = drs.status_base_id
         WHERE drs.distribuicao_id = dr.id
           AND drs.removido_em IS NULL
-          AND COALESCE(ds.permite_novos_registros, dsb.permite_novos_registros) = false
+          AND COALESCE(ds.tipo, dsb.tipo)::text IN (
+                -- enum antigo (nomes literais)
+                'Cancelada', 'Declinada', 'ImpedidaTecnicamente', 'Redirecionada', 'Finalizada',
+                -- enum novo (genérico) usado pelos status base atuais
+                'Terminal', 'ConcluidoComSucesso'
+          )
     )
     WHERE t.removido_em IS NULL;
 

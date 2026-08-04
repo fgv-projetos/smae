@@ -7,6 +7,7 @@ import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import CampoDeModeloDeRelatorio from '@/components/relatorios/CampoDeModeloDeRelatorio.vue';
+import canceladaTransferencia from '@/consts/canceladaTransferencia';
 import esferasDeTransferencia from '@/consts/esferasDeTransferencia';
 import schema from '@/consts/formSchemas/relatorioDeTribunalDeContas';
 import nulificadorTotal from '@/helpers/nulificadorTotal';
@@ -32,7 +33,7 @@ const valoresIniciais = {
     ano_fim: null,
     tipo_id: null,
     tipo: 'Geral',
-    cancelada: false,
+    cancelada: 'NaoIncluir',
   },
   eh_publico: null,
 };
@@ -268,16 +269,13 @@ const onSubmit = handleSubmit.withControlled(async (valoresControlados) => {
           as="select"
           class="inputtext light mb1"
           :class="{ 'error': errors['parametros.cancelada'] }"
-          @change="!$event.target.value ? setFieldValue('parametros.cancelada',null) : null"
         >
-          <option value="">
-            Selecionar
-          </option>
-          <option :value="true">
-            Sim
-          </option>
-          <option :value="false">
-            Não
+          <option
+            v-for="item in Object.values(canceladaTransferencia)"
+            :key="item.valor"
+            :value="item.valor"
+          >
+            {{ item.nome }}
           </option>
         </Field>
         <div class="error-msg">

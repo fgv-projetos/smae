@@ -1,7 +1,7 @@
+import canceladaTransferencia from '@/consts/canceladaTransferencia';
 import esferasDeTransferencia from '@/consts/esferasDeTransferencia';
 import {
   array,
-  boolean,
   date,
   mixed,
   object,
@@ -11,10 +11,10 @@ import relatorioValidacaoBase from './relatorioValidacaoBase';
 
 export default relatorioValidacaoBase.concat(object({
   parametros: object({
-    cancelada: boolean()
+    cancelada: mixed()
       .label('Considera canceladas')
-      .nullable()
-      .default(false),
+      .oneOf(Object.keys(canceladaTransferencia))
+      .default('NaoIncluir'),
     data_inicio: date()
       .label('Data de início')
       .nullable()

@@ -5,6 +5,7 @@ import { useRoute } from 'vue-router';
 
 import FiltroParaPagina from '@/components/FiltroParaPagina.vue';
 import SmaeTable from '@/components/SmaeTable/SmaeTable.vue';
+import canceladaTransferencia from '@/consts/canceladaTransferencia';
 import esferasDeTransferencia from '@/consts/esferasDeTransferencia';
 import schema from '@/consts/formSchemas/transferenciasVoluntariasFiltro';
 import combinadorDeListas from '@/helpers/combinadorDeListas';
@@ -42,7 +43,13 @@ const camposDeFiltro = [{
     },
     cancelada: {
       tipo: 'select',
-      opcoes: [{ id: 'true', label: 'Sim' }, { id: 'false', label: 'Não' }],
+      // 'NaoIncluir' (padrão do backend quando o campo está ausente) usa id vazio: fica
+      // implícito na URL (sem `cancelada=`) em vez de escrever o valor por extenso.
+      opcoes: [
+        { id: '', label: canceladaTransferencia.NaoIncluir.nome },
+        { id: canceladaTransferencia.Incluir.valor, label: canceladaTransferencia.Incluir.nome },
+        { id: canceladaTransferencia.Apenas.valor, label: canceladaTransferencia.Apenas.nome },
+      ],
     },
     preenchimento_completo: {
       tipo: 'select',

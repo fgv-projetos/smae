@@ -537,8 +537,12 @@ const registrosSei = computed(() => {
     <div class="flex justifycenter">
       <button
         class="btn with-icon bgnone tcprimary"
-        aria-label="Fechar erro"
-        title="Fechar erro"
+        aria-label="Expandir/contrair detalhamento da distribuição de recursos"
+        title="Expandir/contrair detalhamento da distribuição de recursos"
+        type="button"
+        :aria-expanded="estaExpandido"
+        :aria-controls="`resumo-da-distribuicao-de-recursos--${distribuicao.transferencia_id}`"
+        :aria-busy="distribuicoesPendentes.lista"
         @click="alternaExpandido"
       >
         <svg

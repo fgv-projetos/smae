@@ -46,11 +46,11 @@ export const useWorkflowAndamentoStore = defineStore('workflowAndamento', {
         const resposta = await this.requestS.get(`${baseUrl}/workflow-andamento/`, {
           transferencia_id: Number(this.route.params.transferenciaId) || undefined,
           ...params,
-        });
+        }) as WorkflowAndamentoDto;
 
         if (typeof resposta === 'object') {
           this.workflow = resposta;
-          this.etapaEmFoco = this.workflow.fluxo.find((etapa) => etapa.atual) || null;
+          this.etapaEmFoco = this.workflow?.fluxo?.find((etapa) => etapa.atual) || null;
         } else {
           this.workflow = null;
           this.etapaEmFoco = null;
@@ -62,7 +62,7 @@ export const useWorkflowAndamentoStore = defineStore('workflowAndamento', {
     },
 
     setEtapaEmFoco(id: number): void {
-      this.etapaEmFoco = this.workflow?.fluxo.find((etapa) => etapa.id === id) || null;
+      this.etapaEmFoco = this.workflow?.fluxo?.find((etapa) => etapa.id === id) || null;
     },
 
     async buscarHistorico(transferênciaId?: number): Promise<void> {
@@ -71,7 +71,7 @@ export const useWorkflowAndamentoStore = defineStore('workflowAndamento', {
       try {
         const resposta = await this.requestS.get(`${baseUrl}/transferencia/${id}/historico`, {
           id,
-        });
+        }) as TransferenciaHistoricoDto;
 
         if (typeof resposta === 'object') {
           this.historico = resposta;

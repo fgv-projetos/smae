@@ -230,6 +230,36 @@ describe('FiltroParaPagina', () => {
       expect(autocomplete.exists()).toBe(true);
     });
 
+    it('renderiza a opção vazia "-" por padrão em campo select', () => {
+      const wrapper = montar({
+        formulario: [{
+          campos: {
+            status: { tipo: 'select', opcoes: ['ativo', 'inativo'] },
+          },
+        }],
+      });
+
+      const rotulos = wrapper.findAll('option').map((o) => o.text());
+      expect(rotulos).toContain('-');
+    });
+
+    it('omite a opção vazia "-" quando as opções já têm uma entrada com id vazio', () => {
+      const wrapper = montar({
+        formulario: [{
+          campos: {
+            status: {
+              tipo: 'select',
+              opcoes: [{ id: '', label: 'Todos' }, { id: 'ativo', label: 'Ativo' }],
+            },
+          },
+        }],
+      });
+
+      const rotulos = wrapper.findAll('option').map((o) => o.text());
+      expect(rotulos).not.toContain('-');
+      expect(rotulos).toContain('Todos');
+    });
+
     it('renderiza múltiplos campos em múltiplas linhas', () => {
       const wrapper = montar({
         formulario: [

@@ -127,6 +127,14 @@ function padronizarOpcoes(opcoes: Opcoes): OpcaoPadronizada[] {
   });
 }
 
+// Se as opções já trazem uma entrada vazia (ex.: id: ''), o "-" genérico ficaria
+// duplicado — nesse caso ele é omitido automaticamente.
+function possuiOpcaoVazia(opcoes?: Opcoes): boolean {
+  if (!opcoes?.length) return false;
+
+  return padronizarOpcoes(opcoes).some((opcao) => opcao.id === '' || opcao.id === null);
+}
+
 watch(formularioSujo, () => {
   emit('update:formularioSujo', formularioSujo.value);
 });
@@ -248,7 +256,10 @@ if (props.autoSubmit) {
                 :aria-invalid="!!errors[campoNome]"
                 :aria-errormessage="errors[campoNome] ? `err__${campoNome}` : undefined"
               >
-                <option :value="null">
+                <option
+                  v-if="!possuiOpcaoVazia(campo.opcoes)"
+                  :value="null"
+                >
                   -
                 </option>
                 <template v-if="campo.opcoes?.length">

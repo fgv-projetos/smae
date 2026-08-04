@@ -26,7 +26,11 @@ import { PessoaFromJwt } from '../../auth/models/PessoaFromJwt';
 import { BlocoNotaService } from '../../bloco-nota/bloco-nota/bloco-nota.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateTransferenciaAnexoDto, CreateTransferenciaDto } from './dto/create-transferencia.dto';
-import { FilterTransferenciaDto, FilterTransferenciaHistoricoDto } from './dto/filter-transferencia.dto';
+import {
+    FilterTransferenciaCancelada,
+    FilterTransferenciaDto,
+    FilterTransferenciaHistoricoDto,
+} from './dto/filter-transferencia.dto';
 import {
     CompletarTransferenciaDto,
     UpdateTransferenciaAnexoDto,
@@ -1073,8 +1077,14 @@ export class TransferenciaService {
             where: {
                 removido_em: null,
                 AND: this.permissionSet(user),
-                // Por padrão não apresenta canceladas; o filtro "cancelada" as inclui.
-                cancelada: filters.cancelada ? undefined : false,
+                // Por padrão não apresenta canceladas. O filtro "cancelada" controla os 3 estados:
+                // NaoIncluir (padrão) => somente não canceladas; Incluir => todas; Apenas => só canceladas.
+                cancelada:
+                    filters.cancelada === FilterTransferenciaCancelada.Incluir
+                        ? undefined
+                        : filters.cancelada === FilterTransferenciaCancelada.Apenas
+                          ? true
+                          : false,
                 esfera: filters.esfera,
                 pendente_preenchimento_valores:
                     filters.preenchimento_completo != undefined ? !filters.preenchimento_completo : undefined,

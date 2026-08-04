@@ -3,7 +3,15 @@ import { TransferenciaHistoricoAcao, TransferenciaTipoEsfera } from '@prisma/cli
 import { Transform, TransformFnParams, Type } from 'class-transformer';
 import { IsOptional, IsString, MaxLength, IsInt, Max, Min, IsEnum, IsBoolean } from 'class-validator';
 import { MAX_LENGTH_DEFAULT } from 'src/common/consts';
-import { OptionalBooleanTransform } from 'src/auth/transforms/boolean.transform';
+
+export enum FilterTransferenciaCancelada {
+    /** Padrão: não apresenta transferências canceladas. */
+    NaoIncluir = 'NaoIncluir',
+    /** Apresenta todas as transferências, inclusive as canceladas. */
+    Incluir = 'Incluir',
+    /** Apresenta apenas as transferências canceladas. */
+    Apenas = 'Apenas',
+}
 
 export class FilterTransferenciaDto {
     @IsOptional()
@@ -50,13 +58,25 @@ export class FilterTransferenciaDto {
     palavra_chave?: string;
 
     /**
-     * Quando `true`, inclui também as transferências canceladas. Padrão (`false`/ausente):
-     * não apresenta transferências canceladas.
+     * Controla a exibição das transferências canceladas:
+     * - `NaoIncluir` (padrão/ausente): não apresenta as canceladas;
+     * - `Incluir`: apresenta todas, inclusive as canceladas;
+     * - `Apenas`: apresenta somente as canceladas.
+     *
+     * Aceita também os valores legados `true` (equivalente a `Incluir`) e `false`
+     * (equivalente a `NaoIncluir`) por compatibilidade.
      */
     @IsOptional()
-    @IsBoolean()
-    @Transform(OptionalBooleanTransform)
-    cancelada?: boolean;
+    @ApiProperty({ enum: FilterTransferenciaCancelada, enumName: 'FilterTransferenciaCancelada' })
+    @IsEnum(FilterTransferenciaCancelada, {
+        message: 'Precisa ser um dos seguintes valores: ' + Object.values(FilterTransferenciaCancelada).join(', '),
+    })
+    @Transform(({ value }: TransformFnParams) => {
+        if (value === true || value === 'true') return FilterTransferenciaCancelada.Incluir;
+        if (value === false || value === 'false') return FilterTransferenciaCancelada.NaoIncluir;
+        return value;
+    })
+    cancelada?: FilterTransferenciaCancelada;
 }
 
 export class FilterTransferenciaHistoricoDto {

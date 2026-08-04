@@ -28,15 +28,15 @@ SELECT
     t.ano
    FROM transferencia t
    LEFT JOIN distribuicao_recurso dr ON dr.transferencia_id = t.id AND dr.removido_em IS NULL AND NOT EXISTS (
-        -- Verifica se a distribuição não possui um dos seguintes statuses: "Cancelada", "ImpedidaTecnicamente", "Finalizada"
+        -- Verifica se a distribuição não possui um dos seguintes statuses: "Cancelada", "Declinada", "ImpedidaTecnicamente", "Redirecionada", "Finalizada"
         SELECT 1
-        FROM distribuicao_recurso_status drs 
+        FROM distribuicao_recurso_status drs
         -- Rows de status podem estar ligadas à um status base ou a um status customizado. ambos possuem uma coluna tipo
         LEFT JOIN distribuicao_status ds ON ds.id = drs.status_id AND ds.removido_em IS NULL
         LEFT JOIN distribuicao_status_base dsb ON dsb.id = drs.status_base_id
         WHERE drs.distribuicao_id = dr.id
           AND drs.removido_em IS NULL
-          AND (ds.tipo IN ('Cancelada', 'ImpedidaTecnicamente', 'Finalizada') OR dsb.tipo IN ('Cancelada', 'ImpedidaTecnicamente', 'Finalizada'))
+          AND (ds.tipo IN ('Cancelada', 'Declinada', 'ImpedidaTecnicamente', 'Redirecionada', 'Finalizada') OR dsb.tipo IN ('Cancelada', 'Declinada', 'ImpedidaTecnicamente', 'Redirecionada', 'Finalizada'))
     )
     WHERE t.removido_em IS NULL;
 

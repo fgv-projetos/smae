@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TransferenciaInterface, TransferenciaTipoEsfera } from '@prisma/client';
 import { Expose, Transform, Type } from 'class-transformer';
-import { IsBoolean, IsEnum, IsInt, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsEnum, IsInt, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
 import { MAX_LENGTH_MEDIO } from 'src/common/consts';
-import { OptionalBooleanTransform } from 'src/auth/transforms/boolean.transform';
+import { FilterTransferenciaCancelada } from 'src/casa-civil/transferencia/dto/filter-transferencia.dto';
 
 export enum TipoRelatorioTransferencia {
     'Geral' = 'Geral',
@@ -71,14 +71,27 @@ export class CreateRelTransferenciasDto {
     parlamentar_id?: number;
 
     /**
-     * Quando `true`, inclui transferências canceladas e distribuições canceladas/declinadas/
-     * impedidas tecnicamente/redirecionadas. Padrão (`false`/ausente): não apresenta essas linhas.
+     * Controla a exibição das transferências canceladas e das distribuições
+     * canceladas/declinadas/impedidas tecnicamente/redirecionadas:
+     * - `NaoIncluir` (padrão/ausente): não apresenta essas linhas;
+     * - `Incluir`: apresenta todas, inclusive as canceladas;
+     * - `Apenas`: apresenta somente as canceladas.
+     *
+     * Aceita também os valores legados `true` (equivalente a `Incluir`) e `false`
+     * (equivalente a `NaoIncluir`) por compatibilidade.
      */
     @IsOptional()
-    @IsBoolean()
-    @Transform(OptionalBooleanTransform)
+    @ApiProperty({ enum: FilterTransferenciaCancelada, enumName: 'FilterTransferenciaCancelada' })
+    @IsEnum(FilterTransferenciaCancelada, {
+        message: 'Precisa ser um dos seguintes valores: ' + Object.values(FilterTransferenciaCancelada).join(', '),
+    })
+    @Transform(({ value }) => {
+        if (value === true || value === 'true') return FilterTransferenciaCancelada.Incluir;
+        if (value === false || value === 'false') return FilterTransferenciaCancelada.NaoIncluir;
+        return value;
+    })
     @Expose()
-    cancelada?: boolean;
+    cancelada?: FilterTransferenciaCancelada;
 
     /**
      * @example "Analitico"

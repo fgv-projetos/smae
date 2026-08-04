@@ -8,6 +8,7 @@ import { getReportRowSchema } from '../post-process/report-column.decorator';
 import { ReportFileSchema, SchemaAwareReportableService } from '../post-process/report-schema';
 import { ReportContext } from '../relatorios/helpers/reports.contexto';
 import { DefaultCsvOptions, FileOutput, Path2FileName, ReportableService } from '../utils/utils.service';
+import { FilterTransferenciaCancelada } from 'src/casa-civil/transferencia/dto/filter-transferencia.dto';
 import { CreateRelTransferenciasDto } from './dto/create-transferencias.dto';
 import { RelTransferenciaCronogramaCsvRow, RelTransferenciasCsvRow } from './entities/transferencias-csv.entity';
 import {
@@ -288,8 +289,14 @@ export class TransferenciasService implements ReportableService, SchemaAwareRepo
                 NOT: [{ transferencia_id: null }],
                 removido_em: null,
                 transferencia: {
-                    // Mesmo default do relatório: não apresenta canceladas salvo se dto.cancelada.
-                    cancelada: dto.cancelada ? undefined : false,
+                    // Mesmo esquema de 3 estados do relatório:
+                    // NaoIncluir (padrão) => só não canceladas; Incluir => todas; Apenas => só canceladas.
+                    cancelada:
+                        dto.cancelada === FilterTransferenciaCancelada.Incluir
+                            ? undefined
+                            : dto.cancelada === FilterTransferenciaCancelada.Apenas
+                              ? true
+                              : false,
                     esfera: dto.esfera ?? undefined,
                     interface: dto.interface ?? undefined,
                     ano: dto.ano ?? undefined,
@@ -423,9 +430,18 @@ export class TransferenciasService implements ReportableService, SchemaAwareRepo
 
         whereConditions.push(`t.removido_em IS NULL`);
 
-        // Por padrão, não apresenta transferências canceladas nem distribuições
-        // canceladas/declinadas/impedidas tecnicamente/redirecionadas. O filtro "cancelada" inclui-as.
-        if (!filters.cancelada) {
+        // Filtro de canceladas em 3 estados, considerando cancelamento no nível da transferência
+        // (t.cancelada) e no nível da distribuição (tipos Cancelada/Declinada/ImpedidaTecnicamente/
+        // Redirecionada):
+        // - NaoIncluir (padrão): oculta ambas;
+        // - Incluir: não filtra (todas);
+        // - Apenas: mostra somente as canceladas em qualquer um dos níveis.
+        if (filters.cancelada === FilterTransferenciaCancelada.Apenas) {
+            whereConditions.push(
+                `(t.cancelada = true
+                  OR COALESCE(dsb.tipo::text, ds.tipo::text) IN ('Cancelada', 'Declinada', 'ImpedidaTecnicamente', 'Redirecionada'))`
+            );
+        } else if (filters.cancelada !== FilterTransferenciaCancelada.Incluir) {
             whereConditions.push(
                 `t.cancelada = false`,
                 `(dr.id IS NULL

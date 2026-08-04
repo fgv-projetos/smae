@@ -440,38 +440,10 @@ const registrosSei = computed(() => {
             <div class="flex g2 flexwrap mb2">
               <dl class="f1">
                 <dt class="t16 w700 mb05 tamarelo">
-                  Número do contrato
-                </dt>
-                <dd>
-                  {{ distribuicao.contrato || '-' }}
-                </dd>
-              </dl>
-              <dl class="f1">
-                <dt class="t16 w700 mb05 tamarelo">
-                  Data de vigência
-                </dt>
-                <dd>
-                  {{ distribuicao.vigencia
-                    ? dateToField(distribuicao.vigencia)
-                    : '-' }}
-                </dd>
-              </dl>
-              <dl class="f1">
-                <dt class="t16 w700 mb05 tamarelo">
                   Motivo do aditamento
                 </dt>
                 <dd>
                   {{ distribuicao.aditamentos[0]?.justificativa || ' - ' }}
-                </dd>
-              </dl>
-              <dl class="f1">
-                <dt class="t16 w700 mb05 tamarelo">
-                  Data de conclusão da suspensiva
-                </dt>
-                <dd>
-                  {{ distribuicao.conclusao_suspensiva
-                    ? dateToField(distribuicao.conclusao_suspensiva)
-                    : '-' }}
                 </dd>
               </dl>
             </div>

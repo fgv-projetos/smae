@@ -28,15 +28,18 @@ SELECT
     t.ano
    FROM transferencia t
    LEFT JOIN distribuicao_recurso dr ON dr.transferencia_id = t.id AND dr.removido_em IS NULL AND NOT EXISTS (
-        -- Verifica se a distribuição não possui um dos seguintes statuses: "Cancelada", "Declinada", "ImpedidaTecnicamente", "Redirecionada", "Finalizada"
+        -- Verifica se a distribuição está em um status terminal (que não permite novos registros:
+        -- Cancelada, Declinada, ImpedidaTecnicamente, Redirecionada, Finalizada). Não usamos a coluna
+        -- "tipo", pois os statuses base "Cancelada", "Declinada", "ImpedidaTecnicamente" e "Redirecionada"
+        -- compartilham o mesmo tipo genérico "Terminal", tornando o filtro por tipo inefetivo.
         SELECT 1
         FROM distribuicao_recurso_status drs
-        -- Rows de status podem estar ligadas à um status base ou a um status customizado. ambos possuem uma coluna tipo
+        -- Rows de status podem estar ligadas à um status base ou a um status customizado. ambos possuem a coluna permite_novos_registros
         LEFT JOIN distribuicao_status ds ON ds.id = drs.status_id AND ds.removido_em IS NULL
         LEFT JOIN distribuicao_status_base dsb ON dsb.id = drs.status_base_id
         WHERE drs.distribuicao_id = dr.id
           AND drs.removido_em IS NULL
-          AND (ds.tipo IN ('Cancelada', 'Declinada', 'ImpedidaTecnicamente', 'Redirecionada', 'Finalizada') OR dsb.tipo IN ('Cancelada', 'Declinada', 'ImpedidaTecnicamente', 'Redirecionada', 'Finalizada'))
+          AND COALESCE(ds.permite_novos_registros, dsb.permite_novos_registros) = false
     )
     WHERE t.removido_em IS NULL;
 

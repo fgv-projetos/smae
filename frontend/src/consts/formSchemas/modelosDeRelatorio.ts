@@ -19,7 +19,7 @@ export default object({
                   .label('Coluna')
                   .required('Selecione a coluna'),
                 label: string()
-                  .label('Nome')
+                  .label('Cabeçalho personalizado')
                   .nullableOuVazio(),
               }),
             ),

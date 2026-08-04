@@ -460,7 +460,6 @@ watch(valoresIniciais, (novosValores) => {
                         <Field
                           :name="`config.arquivos[${idx}].colunas[${colIdx}].label`"
                           type="text"
-                          placeholder="Título (opcional)"
                           class="inputtext light"
                           :disabled="colunaEhTravada(
                             field.value.arquivo, campoDeColuna.value?.coluna

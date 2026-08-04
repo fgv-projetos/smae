@@ -1970,6 +1970,12 @@ export class TransferenciaService {
 
                 await this.startWorkflow(transferencia_id, workflowAtivo.id, prismaTxn, user);
 
+                // Roda o pós-processamento (tarefas de distribuição/órgãos + topologia) DENTRO da
+                // mesma transação. Assim o reinício é atômico: qualquer falha aqui reverte tudo e
+                // preserva o workflow anterior, em vez de deixar o workflow recriado sem as tarefas
+                // de distribuição/atribuição de órgãos (e o mesmo buraco no cronograma).
+                await this.posStartWorkflow(transferencia_id, user, prismaTxn);
+
                 await prismaTxn.transferenciaHistorico.create({
                     data: {
                         transferencia_id: transferencia_id,
@@ -1989,8 +1995,6 @@ export class TransferenciaService {
                 timeout: 50000,
             }
         );
-
-        await this.posStartWorkflow(transferencia_id, user);
 
         this.updateVetoresBusca(transferencia_id).catch((err) => {
             console.error(`Background task updateVetoresBusca failed for transferencia ${transferencia_id}`, err);
@@ -2059,8 +2063,16 @@ export class TransferenciaService {
      * responsabilidade de outro órgão das distribuições e revalida a topologia do cronograma,
      * propagando as projeções para as tarefas de etapa e de acompanhamento de etapa.
      */
-    private async posStartWorkflow(transferencia_id: number, user: PessoaFromJwt) {
-        await this.prisma.$transaction(async (prismaTxn: Prisma.TransactionClient) => {
+    private async posStartWorkflow(
+        transferencia_id: number,
+        user: PessoaFromJwt,
+        prismaTxExterna?: Prisma.TransactionClient
+    ) {
+        // Quando `prismaTxExterna` é informada (ex.: reinício de workflow), o pós-processamento roda
+        // dentro da MESMA transação que criou o workflow/cronograma, garantindo atomicidade: se algo
+        // aqui falhar, todo o reinício é revertido e o workflow anterior é preservado, em vez de
+        // deixar a transferência com workflow criado porém sem as tarefas de distribuição/órgãos.
+        const processa = async (prismaTxn: Prisma.TransactionClient) => {
             // Caso a transferência possua distribuição(es).
             // Criamos as tarefas que não são responsabilidade própria.
             const distribuicoes = await prismaTxn.distribuicaoRecurso.findMany({
@@ -2203,7 +2215,13 @@ export class TransferenciaService {
                 }
             }
             await Promise.all(updates);
-        });
+        };
+
+        if (prismaTxExterna) {
+            await processa(prismaTxExterna);
+        } else {
+            await this.prisma.$transaction(processa);
+        }
     }
 
     private async startWorkflow(

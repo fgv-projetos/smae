@@ -1,11 +1,4 @@
-import {
-    forwardRef,
-    HttpException,
-    Inject,
-    Injectable,
-    InternalServerErrorException,
-    Logger,
-} from '@nestjs/common';
+import { forwardRef, HttpException, Inject, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import {
     DistribuicaoSolicitacaoStatus,
     DistribuicaoStatusTipo,
@@ -38,6 +31,7 @@ import {
 } from './entities/distribuicao-recurso.entity';
 import { WorkflowService } from '../workflow/configuracao/workflow.service';
 import { Date2YMD } from '../../common/date2ymd';
+import { distribuicaoStatusPrejudicado } from './distribuicao-status.helpers';
 import { TransferenciaService } from '../transferencia/transferencia.service';
 import { PaginatedWithPagesDto, PAGINATION_TOKEN_TTL } from 'src/common/dto/paginated.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -2230,7 +2224,30 @@ export class DistribuicaoRecursoService {
         }
     }
 
+    /**
+     * Retorna `true` quando o status atual (mais recente) da distribuição é um status prejudicado
+     * (`Cancelada`/`Declinada`/`ImpedidaTecnicamente`/`Redirecionada`). Distribuições nesse estado
+     * estão fora do fluxo ativo e não devem gerar tarefas de acompanhamento no cronograma.
+     */
+    async distribuicaoEstaPrejudicada(prismaTx: Prisma.TransactionClient, distribuicao_id: number): Promise<boolean> {
+        const ultimoStatus = await prismaTx.distribuicaoRecursoStatus.findFirst({
+            where: { distribuicao_id, removido_em: null },
+            orderBy: [{ data_troca: 'desc' }, { id: 'desc' }],
+            select: {
+                status_base: { select: { tipo: true } },
+                status: { select: { tipo: true, removido_em: true } },
+            },
+        });
+
+        return distribuicaoStatusPrejudicado(ultimoStatus);
+    }
+
     async _createTarefasOutroOrgao(prismaTx: Prisma.TransactionClient, distribuicao_id: number, user: PessoaFromJwt) {
+        // Distribuições prejudicadas (canceladas/declinadas/impedidas/redirecionadas) não recebem
+        // tarefas de acompanhamento — evita, entre outros, que o reinício de workflow reprocesse
+        // uma distribuição cancelada e deixe o cronograma inconsistente.
+        if (await this.distribuicaoEstaPrejudicada(prismaTx, distribuicao_id)) return;
+
         const distribuicaoRecurso = await prismaTx.distribuicaoRecurso.findFirst({
             where: { id: distribuicao_id, removido_em: null },
             select: {

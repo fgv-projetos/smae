@@ -353,6 +353,7 @@ watch(statusesDistribuicaoSelecionados, (newValue) => {
           class="inputtext light mb1"
           :class="{ errors: errors.termino }"
           maxlength="10"
+          :disabled="emFoco?.edicao_restrita"
           @blur="($e) => { !$e.target.value ? $e.target.value = '' : null; }"
           @update:model-value="($v) => { setFieldValue('termino', $v || null); }"
         />
@@ -368,6 +369,7 @@ watch(statusesDistribuicaoSelecionados, (newValue) => {
         <Field
           name="ativo"
           type="checkbox"
+          :disabled="emFoco?.edicao_restrita"
           :value="true"
           :unchecked-value="false"
           class="inputcheckbox mr1"

@@ -13,6 +13,7 @@ import ListaReordenavel from '@/components/ListaReordenavel.vue';
 import FONTES_POR_SISTEMA from '@/consts/fontesDeRelatoriosPorSistema';
 import schema from '@/consts/formSchemas/modelosDeRelatorio';
 import escaparDaRota from '@/helpers/escaparDaRota';
+import nulificadorTotal from '@/helpers/nulificadorTotal';
 import { useAlertStore } from '@/stores/alert.store';
 import { useAuthStore } from '@/stores/auth.store';
 import { useModelosDeRelatorioStore } from '@/stores/modelosDeRelatorio.store';
@@ -154,9 +155,11 @@ function aoEscolherArquivo(idx, evento) {
     return;
   }
 
+  // `label` fica em branco (não sugerido com o padrão da fonte): é opcional — só é enviado se a
+  // pessoa realmente quiser renomear a coluna.
   setFieldValue(`config.arquivos[${idx}].colunas`, arquivo.colunas.map((coluna) => ({
     coluna: coluna.name,
-    label: coluna.label,
+    label: '',
   })));
   setFieldValue(`config.arquivos[${idx}].order_by`, []);
 }
@@ -172,12 +175,7 @@ function aoTrocarFonte(evento) {
 
 const onSubmit = handleSubmit(async (formValues) => {
   try {
-    // `formValues` já sai pronto pro backend: os nomes compostos (`config.arquivos`,
-    // `config.xlsx_tipado`) dispensam remontar `config`, e `nullableOuVazio()` no schema
-    // (descricao, colunas.label) já troca `''` por `null` na validação. Linhas
-    // de arquivo sem seleção nem chegam aqui — `arquivo` é `required()`, então `handleSubmit`
-    // barra o envio antes de chamar este callback.
-    const payload = { ...formValues };
+    const payload = nulificadorTotal(formValues);
 
     if (props.modelosDeRelatorioId) {
       delete payload.fonte;

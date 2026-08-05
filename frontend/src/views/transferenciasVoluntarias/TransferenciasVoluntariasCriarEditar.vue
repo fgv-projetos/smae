@@ -29,7 +29,9 @@ const classificacaoStore = useClassificacaoStore();
 const partidoStore = usePartidosStore();
 const ÓrgãosStore = useOrgansStore();
 
-const { chamadasPendentes, erro, itemParaEdicao } = storeToRefs(TransferenciasVoluntarias);
+const {
+  chamadasPendentes, erro, itemParaEdicao, emFoco,
+} = storeToRefs(TransferenciasVoluntarias);
 const { órgãosComoLista } = storeToRefs(ÓrgãosStore);
 const { lista: tipoTransferenciaComoLista } = storeToRefs(TipoDeTransferenciaStore);
 const { lista: classificacaoComoLista } = storeToRefs(classificacaoStore);
@@ -158,13 +160,25 @@ watch(itemParaEdicao, (novosValores) => {
 });
 </script>
 <template>
-  <div class="flex spacebetween center mb2 mt2">
-    <TítuloDePágina />
-    <hr class="ml2 f1">
-    <CheckClose
-      :formulario-sujo="formularioSujo"
-    />
-  </div>
+  <CabecalhoDePagina
+    class="flex spacebetween center mb2 mt2"
+    :formulario-sujo="formularioSujo"
+  >
+    <template
+      v-if="emFoco?.cancelada"
+      #icone
+    >
+      <span class="tipinfo right flex">
+        <svg
+          width="24"
+          height="24"
+          color="#ee3b2b"
+        ><use xlink:href="#i_zero" /></svg><div>
+          Transferência cancelada
+        </div>
+      </span>
+    </template>
+  </CabecalhoDePagina>
 
   <form @submit.prevent="onSubmit">
     <div class="flex g2 mb1">

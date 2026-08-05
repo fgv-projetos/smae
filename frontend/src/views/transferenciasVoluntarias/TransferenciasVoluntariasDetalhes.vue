@@ -99,6 +99,21 @@ nextTick(() => {
 <template>
   <CabecalhoDePagina>
     <template
+      v-if="transferenciaEmFoco?.cancelada"
+      #icone
+    >
+      <span class="tipinfo right flex">
+        <svg
+          width="24"
+          height="24"
+          color="#ee3b2b"
+        ><use xlink:href="#i_zero" /></svg><div>
+          Transferência cancelada
+        </div>
+      </span>
+    </template>
+
+    <template
       v-if="transferenciaEmFoco && !transferenciaEmFoco.cancelada
         && (temPermissãoPara('CadastroWorkflows.editar')
           || temPermissãoPara('CadastroTransferencia.editar'))"

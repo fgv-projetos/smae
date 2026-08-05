@@ -48,6 +48,21 @@ const rotaTemDetalhe = computed(() => {
   return ultimaRota.name === route.name;
 });
 
+const tituloDoItem = (item) => (
+  (item.meta?.tituloParaMigalhaDePao && (
+    typeof item.meta.tituloParaMigalhaDePao === 'function'
+      ? item.meta.tituloParaMigalhaDePao()
+      : item.meta.tituloParaMigalhaDePao
+  ))
+  || item.meta?.títuloParaMenu
+  || (item.meta.título && (
+    typeof item.meta.título === 'function'
+      ? item.meta.título()
+      : item.meta.título
+  ))
+  || item.name
+);
+
 </script>
 <template>
   <nav
@@ -67,22 +82,14 @@ const rotaTemDetalhe = computed(() => {
           ]"
           :to="item.href"
         >
-          {{
-            truncate(
-              item.meta?.tituloParaMigalhaDePao && (
-                typeof item.meta.tituloParaMigalhaDePao === 'function' ?
-                  item.meta.tituloParaMigalhaDePao()
-                  : item.meta.tituloParaMigalhaDePao
-              )
-                || item.meta?.títuloParaMenu
-                || item.meta.título && (
-                  typeof item.meta.título === 'function' ?
-                    item.meta.título()
-                    : item.meta.título
-                )
-                || item.name
-              , 50)
-          }}
+          <slot
+            :name="`item--${k + 1}__texto`"
+            v-bind="item"
+            :titulo="tituloDoItem(item)"
+            :titulo-truncado="truncate(tituloDoItem(item), 50)"
+          >
+            {{ truncate(tituloDoItem(item), 50) }}
+          </slot>
         </component>
       </li>
       <li
@@ -124,22 +131,7 @@ const rotaTemDetalhe = computed(() => {
         </template>
 
         <template v-else>
-          {{
-            truncate(
-              $route.meta?.tituloParaMigalhaDePao && (
-                typeof $route.meta.tituloParaMigalhaDePao === 'function' ?
-                  $route.meta.tituloParaMigalhaDePao()
-                  : $route.meta.tituloParaMigalhaDePao
-              )
-                || $route.meta?.títuloParaMenu
-                || $route.meta?.título && (
-                  typeof $route.meta?.título === 'function' ?
-                    $route.meta?.título()
-                    : $route.meta?.título
-                )
-                || $route.name
-              , 50)
-          }}
+          {{ truncate(tituloDoItem(route), 50) }}
         </template>
       </li>
     </ul>

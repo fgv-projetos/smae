@@ -95,20 +95,20 @@ watch([
 
 </script>
 <template>
-  <div class="flex spacebetween center mb2">
-    <TítuloDePágina />
-    <hr class="ml2 f1">
-    <router-link
-      v-if="temPermissãoPara([
-        'CadastroTransferencia.administrador',
-        'CadastroTransferencia.inserir'
-      ]) "
-      :to="{ name: 'TransferenciasVoluntariaCriar' }"
-      class="btn big ml1"
-    >
-      Nova transferência
-    </router-link>
-  </div>
+  <CabecalhoDePagina>
+    <template #acoes>
+      <router-link
+        v-if="temPermissãoPara([
+          'CadastroTransferencia.administrador',
+          'CadastroTransferencia.inserir'
+        ]) "
+        :to="{ name: 'TransferenciasVoluntariaCriar' }"
+        class="btn big ml1"
+      >
+        Nova transferência
+      </router-link>
+    </template>
+  </CabecalhoDePagina>
 
   <FiltroParaPagina
     class="mb2"

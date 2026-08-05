@@ -321,6 +321,7 @@ export default {
         títuloParaMenu: 'Recurso financeiro',
         rotasParaMenuSecundário,
         limitarÀsPermissões: 'CadastroTransferencia.editar',
+        rotaDeEscape: 'TransferenciasVoluntariasDetalhes',
         rotasParaMigalhasDePão: [
           'TransferenciasVoluntariasListar',
           'TransferenciasVoluntariasDetalhes',

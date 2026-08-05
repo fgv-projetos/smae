@@ -10,7 +10,6 @@ import {
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import TituloDaPagina from '@/components/TituloDaPagina.vue';
 import { arquivo as schemaDoFormulário } from '@/consts/formSchemas';
 import dateTimeToDate from '@/helpers/dateTimeToDate';
 import requestS from '@/helpers/requestS.ts';
@@ -112,11 +111,7 @@ watch(arquivoParaEdição, (novosValores) => {
 </script>
 
 <template>
-  <div class="flex spacebetween center mb2">
-    <TituloDaPagina />
-    <hr class="ml2 f1">
-    <CheckClose :formulario-sujo="formularioSujo" />
-  </div>
+  <CabecalhoDePagina :formulario-sujo="formularioSujo" />
 
   <form
     v-if="!(chamadasPendentes?.arquivos?.loading || erro) && !curfile?.loading"

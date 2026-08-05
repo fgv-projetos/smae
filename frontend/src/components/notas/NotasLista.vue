@@ -83,16 +83,16 @@ watch(statusSelecionado, (novoValor) => {
 });
 </script>
 <template>
-  <div class="flex spacebetween center mb2">
-    <h1>{{ $route?.meta?.título || "Notas" }}</h1>
-    <hr class="ml2 f1">
-    <SmaeLink
-      :to="{ name: 'notasCriar' }"
-      class="btn big ml1"
-    >
-      Nova nota
-    </SmaeLink>
-  </div>
+  <CabecalhoDePagina>
+    <template #acoes>
+      <SmaeLink
+        :to="{ name: 'notasCriar' }"
+        class="btn big ml1"
+      >
+        Nova nota
+      </SmaeLink>
+    </template>
+  </CabecalhoDePagina>
 
   <div class="mb1">
     <label class="label">Filtrar por status</label>

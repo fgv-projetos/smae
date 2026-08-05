@@ -113,11 +113,7 @@ const labelCampoVinculo = computed(() => {
 </script>
 
 <template>
-  <div class="flex spacebetween center mb2">
-    <h2>Editar Vínculo</h2>
-    <hr class="ml2 f1">
-    <CheckClose :formulario-sujo="formularioSujo" />
-  </div>
+  <CabecalhoDePagina formulario-sujo="formularioSujo" />
 
   <LoadingComponent v-if="chamadasPendentes.lista" />
 

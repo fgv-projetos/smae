@@ -16,21 +16,21 @@ export default {
 };
 </script>
 <template>
-  <div class="flex spacebetween center mb2 mt2">
-    <TítuloDePágina> Documentos </TítuloDePágina>
-    <hr class="ml2 f1">
-    <SmaeLink
-      :to="{
-        name: 'TransferenciasVoluntariasEnviarArquivo',
-        params: {
-          transferenciaId,
-        },
-      }"
-      class="btn ml2"
-    >
-      Novo arquivo
-    </SmaeLink>
-  </div>
+  <CabecalhoDePagina>
+    <template #acoes>
+      <SmaeLink
+        :to="{
+          name: 'TransferenciasVoluntariasEnviarArquivo',
+          params: {
+            transferenciaId,
+          },
+        }"
+        class="btn ml2"
+      >
+        Novo arquivo
+      </SmaeLink>
+    </template>
+  </CabecalhoDePagina>
 
   <DocumentosDaTransferencia />
 </template>

@@ -71,13 +71,7 @@ onUnmounted(() => {
 
 <template>
   <div>
-    <div class="flex spacebetween center mb2 mt2">
-      <TítuloDePágina />
-
-      <hr class="ml2 f1">
-
-      <CheckClose :formulario-sujo="formularioSujo" />
-    </div>
+    <CabecalhoDePagina :formulario-sujo="formularioSujo" />
 
     <LoadingComponent v-if="chamadasPendentes.lista" />
 

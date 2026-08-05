@@ -48,10 +48,21 @@ export class WorkflowAndamentoService {
         if (!transferencia) throw new NotFoundException('Transferência não configurada');
 
         if (!transferencia.andamentoWorkflow.length || !transferencia.workflow_id) {
-            // Mesmo sem workflow/andamento, uma transferência cancelada precisa expor o status
-            // para o front-end não oferecer ações de workflow.
-            if (transferencia.cancelada) return { transferencia_cancelada: true } as WorkflowAndamentoDto;
-            return;
+            // Sem andamento (workflow nunca iniciado, ou excluído via "limpar-workflow"), não há
+            // fluxo para exibir. Ainda assim é preciso expor `pode_reiniciar_workflow`: sem isso o
+            // front-end nunca ofereceria a opção de reiniciar e a transferência ficaria travada
+            // sem workflow algum.
+            const workflowAtivoDoTipo = await this.resolveWorkflowAtivoDoTipo(transferencia.tipo_id);
+            const naoCancelada = !transferencia.cancelada;
+            return {
+                transferencia_cancelada: transferencia.cancelada,
+                possui_proxima_etapa: false,
+                pode_passar_para_proxima_etapa: false,
+                pode_reabrir_fase: false,
+                pode_reiniciar_workflow: naoCancelada && workflowAtivoDoTipo != null,
+                workflow_desatualizado:
+                    workflowAtivoDoTipo != null && workflowAtivoDoTipo.id != transferencia.workflow_id,
+            } as WorkflowAndamentoDto;
         }
 
         const workflow = await this.workflowService.findOne(transferencia.workflow_id, user);
@@ -258,6 +269,21 @@ export class WorkflowAndamentoService {
         return fluxoProxEtapa != null && fluxoProxEtapa.fases.length > 0;
     }
 
+    /**
+     * Workflow ativo (não removido) para o tipo da transferência — é ele que seria associado
+     * caso a transferência seja (re)iniciada via `reiniciarWorkflow`.
+     */
+    private async resolveWorkflowAtivoDoTipo(tipo_id: number): Promise<{ id: number } | null> {
+        return this.prisma.workflow.findFirst({
+            where: {
+                transferencia_tipo_id: tipo_id,
+                removido_em: null,
+                ativo: true,
+            },
+            select: { id: true },
+        });
+    }
+
     private async computeWorkflowActionFlags(
         transferencia: { id: number; tipo_id: number; workflow_id: number | null; cancelada: boolean },
         etapaAtualId: number,
@@ -292,14 +318,7 @@ export class WorkflowAndamentoService {
 
         // O reinício só é possível se houver workflow ativo para o tipo da transferência,
         // pois é ele que será associado à transferência.
-        const workflowAtivoDoTipo = await this.prisma.workflow.findFirst({
-            where: {
-                transferencia_tipo_id: transferencia.tipo_id,
-                removido_em: null,
-                ativo: true,
-            },
-            select: { id: true },
-        });
+        const workflowAtivoDoTipo = await this.resolveWorkflowAtivoDoTipo(transferencia.tipo_id);
         const pode_reiniciar_workflow = naoCancelada && workflowAtivoDoTipo != null;
         // Indica que o fluxo ativo do tipo mudou (ex.: decreto alterou o fluxo retroativamente).
         const workflow_desatualizado =

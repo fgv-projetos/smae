@@ -13,14 +13,25 @@ import {
  * recriado porém sem atribuição de órgãos (e o mesmo buraco no cronograma).
  */
 describe('distribuicao-status.helpers', () => {
-    it('lista exatamente os 4 status prejudicados', () => {
+    it('lista os status prejudicados das duas gerações do enum (literais + Terminal)', () => {
         expect([...STATUS_DISTRIBUICAO_PREJUDICADOS].sort()).toEqual(
             [
                 DistribuicaoStatusTipo.Cancelada,
                 DistribuicaoStatusTipo.Declinada,
                 DistribuicaoStatusTipo.ImpedidaTecnicamente,
                 DistribuicaoStatusTipo.Redirecionada,
+                // enum novo/genérico: os status base atuais gravam os terminais como `Terminal`
+                DistribuicaoStatusTipo.Terminal,
             ].sort()
+        );
+    });
+
+    it('reconhece a distribuição cancelada gravada com o tipo genérico Terminal (regressão do reinício)', () => {
+        // Os status base atuais (ex.: "Cancelada", "Declinada") têm tipo = Terminal. Sem cobrir esse
+        // valor, _createTarefasOutroOrgao reprocessa a distribuição cancelada e o reinício estoura
+        // "Tarefa não encontrada".
+        expect(distribuicaoStatusPrejudicado({ status_base: { tipo: DistribuicaoStatusTipo.Terminal }, status: null })).toBe(
+            true
         );
     });
 

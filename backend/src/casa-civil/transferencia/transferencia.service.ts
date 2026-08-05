@@ -2095,8 +2095,15 @@ export class TransferenciaService {
 
             const tarefas = await prismaTxn.tarefa.findMany({
                 where: {
+                    // Somente tarefas vivas do cronograma ativo: uma transferência acumula cronogramas
+                    // removidos (de reinícios/limpezas anteriores) cujas tarefas soft-deletadas ainda
+                    // mantêm linhas em tarefa_dependente. Sem este filtro, essas tarefas removidas
+                    // entram no loop abaixo e o `tarefaService.update` (que exige removido_em IS NULL)
+                    // estoura "Tarefa não encontrada", travando o reinício do workflow.
+                    removido_em: null,
                     tarefa_cronograma: {
                         transferencia_id: transferencia_id,
+                        removido_em: null,
                     },
                 },
                 select: {
@@ -2140,8 +2147,13 @@ export class TransferenciaService {
             // Atualizando previsão de término para tarefas de fase de etapa e tarefas de acompanhamento da etapa.
             const tarefaEtapasAcompanhamentos = await prismaTxn.tarefa.findMany({
                 where: {
+                    // Mesmo motivo do filtro acima: ignora tarefas/cronogramas removidos, senão uma
+                    // tarefa de etapa órfã de um cronograma antigo seria reprocessada e a busca da
+                    // tarefa filha (removido_em IS NULL) falharia.
+                    removido_em: null,
                     tarefa_cronograma: {
                         transferencia_id: transferencia_id,
+                        removido_em: null,
                     },
                     termino_planejado: null,
                     db_projecao_termino: null,

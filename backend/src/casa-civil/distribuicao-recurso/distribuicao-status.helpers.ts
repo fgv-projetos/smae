@@ -3,13 +3,26 @@ import { DistribuicaoStatusTipo } from '@prisma/client';
 /**
  * Status "prejudicados" de uma distribuição: linhas fora do fluxo ativo, que não devem receber
  * tarefas de acompanhamento no cronograma (mesmo conceito de "linha prejudicada" já usado nos
- * relatórios/painéis para ocultar distribuições).
+ * relatórios/painéis para ocultar distribuições — ver view_transferencia_analise).
+ *
+ * O enum `DistribuicaoStatusTipo` tem duas gerações de valores: a antiga, com nomes literais
+ * (`Cancelada`/`Declinada`/`ImpedidaTecnicamente`/`Redirecionada`), e a nova/genérica usada pelos
+ * status base atuais, em que esses quatro status terminais foram unificados sob `Terminal`.
+ * Precisamos cobrir AMBAS as gerações — caso contrário uma distribuição cancelada gravada como
+ * `Terminal` não é reconhecida como prejudicada e o reinício de workflow volta a estourar
+ * "Tarefa não encontrada" (ver distribuicao-status.helpers.spec.ts).
+ *
+ * `Finalizada`/`ConcluidoComSucesso` (conclusão com sucesso) NÃO entra nesta lista: uma distribuição
+ * finalizada permanece válida e mantém suas tarefas ao reiniciar o workflow.
  */
 export const STATUS_DISTRIBUICAO_PREJUDICADOS: DistribuicaoStatusTipo[] = [
+    // enum antigo (nomes literais)
     DistribuicaoStatusTipo.Cancelada,
     DistribuicaoStatusTipo.Declinada,
     DistribuicaoStatusTipo.ImpedidaTecnicamente,
     DistribuicaoStatusTipo.Redirecionada,
+    // enum novo (genérico) usado pelos status base atuais: agrupa os quatro terminais acima
+    DistribuicaoStatusTipo.Terminal,
 ];
 
 /** Shape mínimo do "último status" de uma distribuição, como lido de `distribuicao_recurso_status`. */

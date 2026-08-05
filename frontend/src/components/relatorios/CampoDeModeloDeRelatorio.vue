@@ -3,7 +3,9 @@ import { storeToRefs } from 'pinia';
 import {
   ErrorMessage, Field, useFieldError, useFormValues,
 } from 'vee-validate';
-import { computed, onUnmounted } from 'vue';
+import {
+  computed, onUnmounted, ref, useTemplateRef, watch,
+} from 'vue';
 import { useRoute } from 'vue-router';
 
 import ListaAninhada from '@/components/ListaAninhada.vue';
@@ -59,11 +61,28 @@ async function aoDetalhar() {
   if (detalhamentoAtual.value) return;
 
   modelosDeRelatorioStore.buscarDetalhamento({
-    fonte: route.meta.fonteDoRelatorio,
     parametros: valoresDoForm.value.parametros,
     modeloId: valoresDoForm.value.modelo_id,
   });
 }
+
+const detalhesEl = useTemplateRef('detalhesEl');
+const detalhesAbertos = ref(false);
+
+function aoAlternarDetalhes() {
+  detalhesAbertos.value = detalhesEl.value?.open ?? false;
+}
+
+// `parametros` muda a cada campo do formulário — todo detalhamento em cache (de qualquer modelo,
+// não só o escolhido) reflete os parâmetros de antes e fica desatualizado. Se o `<details>`
+// estiver aberto, busca de novo na hora; senão só limpa e deixa pro próximo `aoDetalhar`.
+watch(() => valoresDoForm.value.parametros, () => {
+  detalhamento.value = {};
+
+  if (detalhesAbertos.value) {
+    aoDetalhar();
+  }
+}, { deep: true });
 </script>
 
 <template>
@@ -113,6 +132,8 @@ async function aoDetalhar() {
 
     <details
       v-if="modeloSelecionado"
+      ref="detalhesEl"
+      @toggle="aoAlternarDetalhes"
     >
       <summary
         class="like-a__text addlink"

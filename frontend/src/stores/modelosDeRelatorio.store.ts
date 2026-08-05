@@ -8,6 +8,7 @@ import type {
   ListRelatorioFontesDto,
   ListRelatorioModeloDto,
   RelatorioArquivoColunasDto,
+  RelatorioModeloColunasDto,
   RelatorioModeloDetailDto,
   RelatorioModeloItemDto,
 } from '@back/reports/relatorio-modelo/entities/relatorio-modelo.entity';
@@ -34,11 +35,11 @@ interface Estado {
   // Chaveado por fonte: o formulário de criação deixa a fonte a cargo do usuário (um select), e
   // várias fontes podem ter suas colunas já carregadas ao mesmo tempo nessa mesma store.
   colunas: Partial<Record<Fonte, ListRelatorioColunasDto>>;
-  // Detalhamento de colunas para uma combinação de parâmetros (`POST /relatorio-modelo/colunas`),
-  // pedido sob demanda pela tela de novo relatório. Chaveado por `modelo_id` (`''` = "padrão") —
-  // se a pessoa alternar entre modelos já vistos na mesma sessão, reaproveita a resposta em vez de
-  // chamar a API de novo.
-  detalhamento: Record<string, ListRelatorioColunasDto>;
+  // Detalhamento de colunas de um modelo específico (`POST /relatorio-modelo/:id/colunas`), pedido
+  // sob demanda pela tela de novo relatório. Chaveado por `modelo_id` — a store não confere o
+  // cache sozinha (`buscarDetalhamento` sempre busca), então isso só serve pra reaproveitamento se
+  // quem chama checar antes (ver `aoDetalhar` em `CampoDeModeloDeRelatorio.vue`).
+  detalhamento: Record<string, RelatorioModeloColunasDto>;
   chamadasPendentes: ChamadasPendentes;
   erros: Erros;
 }
@@ -126,16 +127,15 @@ export const useModelosDeRelatorioStore = (
       this.chamadasPendentes.colunas = false;
     },
 
-    // Detalhamento das colunas que uma combinação de parâmetros vai produzir (`POST .../colunas`)
-    // — diferente de `buscarFontes`/`colunas`, que trazem a união de todas as variantes da fonte
-    // (o que se usa pra montar um modelo, não pra saber o que uma execução específica devolve).
-    // Sempre busca — cachear por `modeloId` pra evitar repetir a chamada ao alternar entre
-    // modelos já vistos é decisão de quem chama (ver `detalhamento` no state), não desta action:
-    // assim quem quiser forçar uma nova busca, mesmo já tendo cache, ainda pode.
+    // Detalhamento das colunas que este modelo entrega (`POST /relatorio-modelo/:id/colunas`) —
+    // diferente de `buscarFontes`/`colunas`, que trazem a união de todas as variantes da fonte (o
+    // que se usa pra montar um modelo, não pra saber o que um modelo específico já configurado
+    // devolve). Sempre busca — cachear por `modeloId` pra evitar repetir a chamada ao alternar
+    // entre modelos já vistos é decisão de quem chama (ver `detalhamento` no state), não desta
+    // action: assim quem quiser forçar uma nova busca, mesmo já tendo cache, ainda pode.
     async buscarDetalhamento(params: {
-      fonte: Fonte;
       parametros?: Record<string, unknown>;
-      modeloId: string | number;
+      modeloId: number;
     }): Promise<void> {
       const chave = String(params.modeloId);
 
@@ -144,9 +144,9 @@ export const useModelosDeRelatorioStore = (
 
       try {
         this.detalhamento[chave] = (await this.requestS.post(
-          `${baseUrl}/relatorio-modelo/colunas`,
-          { fonte: params.fonte, parametros: params.parametros },
-        )) as ListRelatorioColunasDto;
+          `${baseUrl}/relatorio-modelo/${params.modeloId}/colunas`,
+          { parametros: params.parametros },
+        )) as RelatorioModeloColunasDto;
       } catch (error_) {
         this.erros.detalhamento = error_;
       }

@@ -40,6 +40,7 @@ export class RelTransferenciasDto {
     secretaria_concedente: string | null;
     interface: string;
     esfera: string;
+    status: string;
     orgao_concedente: IdSiglaDescricao;
 
     distribuicao_recurso: {

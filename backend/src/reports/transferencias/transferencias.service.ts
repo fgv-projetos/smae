@@ -65,6 +65,7 @@ class RetornoDbTransferencias {
     secretaria_concedente_str: string | null;
     interface: string;
     esfera: string;
+    cancelada: boolean;
     cargo: string | null;
     partido_id: number | null;
     partido_sigla: string | null;
@@ -180,6 +181,7 @@ export class TransferenciasService implements ReportableService, SchemaAwareRepo
                 t.secretaria_concedente_str,
                 t.interface,
                 t.esfera,
+                t.cancelada,
                 tt.nome as tipo_transferencia,
                 cl.nome as classificacao,
                 o1.id AS orgao_concedente_id,
@@ -512,6 +514,7 @@ export class TransferenciasService implements ReportableService, SchemaAwareRepo
                 secretaria_concedente: db.secretaria_concedente_str,
                 interface: db.interface,
                 esfera: db.esfera,
+                status: db.cancelada ? 'Cancelada' : 'Ativa',
                 tipo_transferencia: db.tipo_transferencia,
                 classificacao: db.classificacao,
 

@@ -455,12 +455,7 @@ export class WorkflowService {
         });
         if (!row) throw new NotFoundException('Workflow não encontrado');
 
-        const emUso = await this.prisma.transferencia.count({
-            where: {
-                removido_em: null,
-                workflow_id: row.id,
-            },
-        });
+        const emUso = await this.workflowEmUso(row.id, this.prisma);
 
         return {
             id: row.id,
@@ -468,7 +463,7 @@ export class WorkflowService {
             ativo: row.ativo,
             inicio: Date2YMD.toString(row.inicio),
             termino: Date2YMD.toStringOrNull(row.termino),
-            edicao_restrita: emUso ? true : false,
+            edicao_restrita: emUso,
             transferencia_tipo: {
                 id: row.transferencia_tipo.id,
                 nome: row.transferencia_tipo.nome,
@@ -548,14 +543,40 @@ export class WorkflowService {
     }
 
     async verificaEdicao(id: number, prismaTxn: Prisma.TransactionClient) {
+        if (await this.workflowEmUso(id, prismaTxn))
+            throw new HttpException('Workflow não pode ser editado, pois há uma Transferência que o utiliza.', 400);
+    }
+
+    /**
+     * Verifica se o workflow está "em uso" e deve ter a edição travada.
+     *
+     * Duas fontes de uso:
+     *  1. Transferência ativa (não removida) referenciando o workflow (`transferencia.workflow_id`).
+     *  2. Histórico de andamento: qualquer linha em `transferencia_andamento` que pertença a uma
+     *     etapa deste workflow (via `fluxo.workflow_id`), **mesmo que removida** (`removido_em not null`).
+     *     Isso trava o workflow quando a transferência já trocou de tipo/workflow ou foi removida,
+     *     mas deixou histórico gerado — preservando a integridade desse histórico.
+     */
+    async workflowEmUso(id: number, prismaTxn: Prisma.TransactionClient): Promise<boolean> {
         const transferenciaEmAndamento = await prismaTxn.transferencia.count({
             where: {
                 workflow_id: id,
                 removido_em: null,
             },
         });
-        if (transferenciaEmAndamento)
-            throw new HttpException('Workflow não pode ser editado, pois há uma Transferência que o utiliza.', 400);
+        if (transferenciaEmAndamento) return true;
+
+        const andamentoHistorico = await prismaTxn.transferenciaAndamento.count({
+            where: {
+                workflow_etapa: {
+                    OR: [
+                        { fluxoSaida: { some: { workflow_id: id } } },
+                        { fluxoDestino: { some: { workflow_id: id } } },
+                    ],
+                },
+            },
+        });
+        return andamentoHistorico > 0;
     }
 
     async configValida(id: number, prismaTxn?: Prisma.TransactionClient): Promise<boolean> {

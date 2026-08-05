@@ -123,6 +123,13 @@ export class RelTransferenciasCsvRow {
     @ReportColumn({ type: 'VARCHAR', label: 'Esfera' })
     esfera: string;
 
+    @ReportColumn({
+        type: 'VARCHAR',
+        label: 'Status',
+        descricao: 'Situação da transferência: "Cancelada" quando cancelada, senão "Ativa".',
+    })
+    status: string | null;
+
     @ReportColumn({ type: 'VARCHAR', label: 'Parlamentares' })
     parlamentares_info: string | null;
 
@@ -338,6 +345,7 @@ export const COLUNAS_PADRAO_TRANSFERENCIAS_POR_TIPO: Record<TipoRelatorioTransfe
         'plano_de_acao',
         'interface',
         'esfera',
+        'status',
         'parlamentares_info',
         'orgao_concedente__descricao',
         'distribuicao_recurso__id',
@@ -371,6 +379,7 @@ export const COLUNAS_PADRAO_TRANSFERENCIAS_POR_TIPO: Record<TipoRelatorioTransfe
         'identificador',
         'ano',
         'objeto',
+        'status',
         'parlamentares_info',
         'valor',
         'valor_total',

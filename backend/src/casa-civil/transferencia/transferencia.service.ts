@@ -232,6 +232,10 @@ export class TransferenciaService {
                 });
                 if (!self) throw new HttpException('Transferência não encontrada', 404);
 
+                // Transferência cancelada é terminal e não permite mais atualizações.
+                if (self.cancelada)
+                    throw new HttpException('Transferência cancelada não permite atualização.', 400);
+
                 /*Validação para caso seja informada a classificação realize a validação de existência
                  */
                 if (dto.classificacao_id != null) {
@@ -651,6 +655,15 @@ export class TransferenciaService {
         const agora = new Date(Date.now());
         const updated = await this.prisma.$transaction(
             async (prismaTxn: Prisma.TransactionClient): Promise<RecordWithId> => {
+                const atual = await prismaTxn.transferencia.findFirst({
+                    where: { id, removido_em: null },
+                    select: { cancelada: true },
+                });
+                if (!atual) throw new HttpException('Transferência não encontrada', 404);
+                // Transferência cancelada é terminal e não permite mais atualizações.
+                if (atual.cancelada)
+                    throw new HttpException('Transferência cancelada não permite atualização.', 400);
+
                 // “VALOR DO REPASSE”  é a soma de “Custeio” + Investimento”
                 if (Number(dto.valor).toFixed(2) != (+dto.custeio + +dto.investimento).toFixed(2))
                     throw new HttpException(

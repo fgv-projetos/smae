@@ -67,6 +67,10 @@ const título = typeof route?.meta?.título === 'function'
 
   hyphens: auto;
   margin: 0;
+
+  > * {
+    flex-shrink: 0;
+  }
 }
 
 .título-da-página__ícone {

@@ -26,6 +26,13 @@ defineProps({
     </p>
 
     <TituloDePagina id="titulo-da-pagina">
+      <template
+        v-if="$slots.icone?.()"
+        #icone
+      >
+        <slot name="icone" />
+      </template>
+
       <slot name="titulo" />
     </TituloDePagina>
 

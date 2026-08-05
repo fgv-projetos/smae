@@ -93,6 +93,13 @@ const arquivosDaFontePorNome = computed(
 // novos valores, causando `campoDeColuna.value` undefined.
 const chaveDosArquivos = ref(0);
 
+// Contador por índice de arquivo, pro mesmo propósito de `chaveDosArquivos`: `aoEscolherArquivo`
+// substitui `colunas`/`order_by` inteiros via `setFieldValue`, não via `push`/`remove`/`move` do
+// próprio FieldArray, e o `fields` interno desses dois FieldArrays não resincroniza de forma
+// confiável quando o array é trocado por fora assim — sem o remount, fica desatualizado. Contorna
+// um bug de sincronização do FieldArray no Chrome/Edge (o Firefox não é afetado).
+const chavesDeColunas = ref({});
+
 function obterInfoDoArquivo(arquivo) {
   return arquivosDaFontePorNome.value[arquivo];
 }
@@ -152,6 +159,7 @@ function aoEscolherArquivo(idx, evento) {
   if (!arquivo) {
     setFieldValue(`config.arquivos[${idx}].colunas`, []);
     setFieldValue(`config.arquivos[${idx}].order_by`, []);
+    chavesDeColunas.value[idx] = (chavesDeColunas.value[idx] || 0) + 1;
     return;
   }
 
@@ -162,6 +170,7 @@ function aoEscolherArquivo(idx, evento) {
     label: '',
   })));
   setFieldValue(`config.arquivos[${idx}].order_by`, []);
+  chavesDeColunas.value[idx] = (chavesDeColunas.value[idx] || 0) + 1;
 }
 
 // Só roda na criação — na edição a fonte fica desabilitada (não é editável depois de criado),
@@ -412,6 +421,7 @@ watch(valoresIniciais, (novosValores) => {
               />
 
               <FieldArray
+                :key="chavesDeColunas[idx] || 0"
                 v-slot="{
                   fields: camposDeColuna,
                   push: adicionarColuna,
@@ -432,6 +442,7 @@ watch(valoresIniciais, (novosValores) => {
                           :schema="schema"
                         />
                         <Field
+                          :key="colIdx"
                           :name="`config.arquivos[${idx}].colunas[${colIdx}].coluna`"
                           as="select"
                           class="inputtext light"
@@ -458,6 +469,7 @@ watch(valoresIniciais, (novosValores) => {
                           :schema="schema"
                         />
                         <Field
+                          :key="colIdx"
                           :name="`config.arquivos[${idx}].colunas[${colIdx}].label`"
                           type="text"
                           class="inputtext light"
@@ -512,6 +524,7 @@ watch(valoresIniciais, (novosValores) => {
               />
 
               <FieldArray
+                :key="chavesDeColunas[idx] || 0"
                 v-slot="{
                   fields: camposDeOrdenacao,
                   push: adicionarOrdenacao,
@@ -532,6 +545,7 @@ watch(valoresIniciais, (novosValores) => {
                           :schema="schema"
                         />
                         <Field
+                          :key="ordemIdx"
                           :name="`config.arquivos[${idx}].order_by[${ordemIdx}].coluna`"
                           as="select"
                           class="inputtext light"
@@ -582,6 +596,7 @@ watch(valoresIniciais, (novosValores) => {
                           :schema="schema"
                         />
                         <Field
+                          :key="ordemIdx"
                           :name="`config.arquivos[${idx}].order_by[${ordemIdx}].direcao`"
                           as="select"
                           class="inputtext light"

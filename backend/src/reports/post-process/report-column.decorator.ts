@@ -49,7 +49,7 @@ export function ReportColumn(options: ReportColumnOptions): PropertyDecorator {
 
 /** Marca a classe como o conjunto de linhas de um arquivo de relatório. */
 export function ReportRows(options: ReportRowsOptions): ClassDecorator {
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     return (target: Function) => {
         Reflect.defineMetadata(ARQUIVO, options, target);
         REGISTRO.push(target as unknown as ReportRowClass);

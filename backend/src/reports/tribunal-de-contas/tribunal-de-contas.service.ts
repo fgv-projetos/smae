@@ -1,5 +1,5 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { CampoVinculo, DistribuicaoStatusTipo } from '@prisma/client';
+import { CampoVinculo } from '@prisma/client';
 import { CsvWriterOptions, WriteCsvToFile } from 'src/common/helpers/CsvWriter';
 import { Date2YMD } from '../../common/date2ymd';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -14,6 +14,7 @@ import {
     ReportableService,
 } from '../utils/utils.service';
 import { FilterTransferenciaCancelada } from 'src/casa-civil/transferencia/dto/filter-transferencia.dto';
+import { distribuicaoStatusPrejudicado } from 'src/casa-civil/distribuicao-recurso/distribuicao-status.helpers';
 import { CreateRelTribunalDeContasDto } from './dto/create-tribunal-de-contas.dto';
 import { RelTribunalDeContasCsvRow } from './entities/tribunal-de-contas-csv.entity';
 import { RelatorioTribunalDeContasDto, RelTribunalDeContasDto } from './entities/tribunal-de-contas.entity';
@@ -109,24 +110,18 @@ export class TribunalDeContasService implements ReportableService, SchemaAwareRe
             },
         });
 
-        // Tipos de status que, por padrão, não devem aparecer no relatório (mesmo critério
-        // usado no relatório de transferências para distribuições canceladas/declinadas/
-        // impedidas tecnicamente/redirecionadas).
-        const statusTiposExcluidos: DistribuicaoStatusTipo[] = [
-            DistribuicaoStatusTipo.Cancelada,
-            DistribuicaoStatusTipo.Declinada,
-            DistribuicaoStatusTipo.ImpedidaTecnicamente,
-            DistribuicaoStatusTipo.Redirecionada,
-        ];
-
         const out: RelTribunalDeContasDto[] = distribuicoes
             .filter((distribuicao) => {
                 // Incluir: todas as linhas.
                 if (dto.cancelada === FilterTransferenciaCancelada.Incluir) return true;
 
+                // Distribuição "cancelada" = último status prejudicado (Cancelada/Declinada/
+                // ImpedidaTecnicamente/Redirecionada). A checagem é centralizada no helper para cobrir
+                // as duas gerações do enum de status: os status base atuais gravam esses terminais como
+                // `Terminal`, e uma lista literal desatualizada deixava a distribuição cancelada/
+                // redistribuída aparecer no relatório.
                 const distribuicaoStatusRow = distribuicao.status[0] ? distribuicao.status[0] : null;
-                const statusTipo = distribuicaoStatusRow?.status?.tipo ?? distribuicaoStatusRow?.status_base?.tipo;
-                const distribuicaoCancelada = !!statusTipo && statusTiposExcluidos.includes(statusTipo);
+                const distribuicaoCancelada = distribuicaoStatusPrejudicado(distribuicaoStatusRow);
 
                 // Apenas: só as canceladas, seja no nível da transferência ou da distribuição.
                 if (dto.cancelada === FilterTransferenciaCancelada.Apenas)

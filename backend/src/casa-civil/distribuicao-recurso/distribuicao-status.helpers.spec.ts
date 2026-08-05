@@ -2,6 +2,8 @@ import { DistribuicaoStatusTipo } from '@prisma/client';
 import {
     distribuicaoStatusPrejudicado,
     resolveTipoStatusDistribuicao,
+    STATUS_DISTRIBUICAO_DEFAULT_NAO_CONTABILIZA,
+    STATUS_DISTRIBUICAO_DEFAULT_SEM_NOVOS_REGISTROS,
     STATUS_DISTRIBUICAO_PREJUDICADOS,
 } from './distribuicao-status.helpers';
 
@@ -94,6 +96,54 @@ describe('distribuicao-status.helpers', () => {
                     status: { tipo: DistribuicaoStatusTipo.Cancelada, removido_em: null },
                 })
             ).toBe(DistribuicaoStatusTipo.Registrada);
+        });
+    });
+
+    describe('defaults de status customizado (derivados do tipo)', () => {
+        // Espelha a derivação em distribuicao-status.service ao criar um status customizado.
+        const contabiliza = (tipo: DistribuicaoStatusTipo) => !STATUS_DISTRIBUICAO_DEFAULT_NAO_CONTABILIZA.includes(tipo);
+        const permiteNovos = (tipo: DistribuicaoStatusTipo) =>
+            !STATUS_DISTRIBUICAO_DEFAULT_SEM_NOVOS_REGISTROS.includes(tipo);
+
+        it('preserva o comportamento dos literais antigos', () => {
+            // contabiliza=false apenas para Cancelada/ImpedidaTecnicamente (comportamento original).
+            expect(contabiliza(DistribuicaoStatusTipo.Cancelada)).toBe(false);
+            expect(contabiliza(DistribuicaoStatusTipo.ImpedidaTecnicamente)).toBe(false);
+            expect(contabiliza(DistribuicaoStatusTipo.Declinada)).toBe(true);
+            expect(contabiliza(DistribuicaoStatusTipo.Redirecionada)).toBe(true);
+            expect(contabiliza(DistribuicaoStatusTipo.Finalizada)).toBe(true);
+
+            // permite_novos=false para Cancelada/ImpedidaTecnicamente/Finalizada (comportamento original).
+            expect(permiteNovos(DistribuicaoStatusTipo.Cancelada)).toBe(false);
+            expect(permiteNovos(DistribuicaoStatusTipo.ImpedidaTecnicamente)).toBe(false);
+            expect(permiteNovos(DistribuicaoStatusTipo.Finalizada)).toBe(false);
+            expect(permiteNovos(DistribuicaoStatusTipo.Declinada)).toBe(true);
+            expect(permiteNovos(DistribuicaoStatusTipo.Redirecionada)).toBe(true);
+        });
+
+        it('estende para os tipos genéricos atuais', () => {
+            // Terminal (cancelado/impedido/declinado/redirecionado): não contabiliza e não permite novos.
+            expect(contabiliza(DistribuicaoStatusTipo.Terminal)).toBe(false);
+            expect(permiteNovos(DistribuicaoStatusTipo.Terminal)).toBe(false);
+
+            // ConcluidoComSucesso (espelha Finalizada): contabiliza, mas não permite novos.
+            expect(contabiliza(DistribuicaoStatusTipo.ConcluidoComSucesso)).toBe(true);
+            expect(permiteNovos(DistribuicaoStatusTipo.ConcluidoComSucesso)).toBe(false);
+
+            // EncerradoSemSucesso (terminal sem sucesso): não contabiliza e não permite novos.
+            expect(contabiliza(DistribuicaoStatusTipo.EncerradoSemSucesso)).toBe(false);
+            expect(permiteNovos(DistribuicaoStatusTipo.EncerradoSemSucesso)).toBe(false);
+        });
+
+        it('mantém status ativos como contabilizáveis e abertos a novos registros', () => {
+            for (const tipo of [
+                DistribuicaoStatusTipo.Registrada,
+                DistribuicaoStatusTipo.NaoIniciado,
+                DistribuicaoStatusTipo.EmAndamento,
+            ]) {
+                expect(contabiliza(tipo)).toBe(true);
+                expect(permiteNovos(tipo)).toBe(true);
+            }
         });
     });
 });

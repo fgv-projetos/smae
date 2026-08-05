@@ -25,6 +25,49 @@ export const STATUS_DISTRIBUICAO_PREJUDICADOS: DistribuicaoStatusTipo[] = [
     DistribuicaoStatusTipo.Terminal,
 ];
 
+/**
+ * Mesma lista de {@link STATUS_DISTRIBUICAO_PREJUDICADOS} formatada para uso direto em cláusula
+ * SQL `IN (...)` (ex.: relatório de transferências, que monta o WHERE por string). Fonte única:
+ * evita que uma geração do enum seja esquecida em um dos lugares. Os valores vêm de um enum
+ * controlado do Prisma — não há entrada de usuário —, então a interpolação é segura.
+ */
+export const STATUS_DISTRIBUICAO_PREJUDICADOS_SQL_IN = STATUS_DISTRIBUICAO_PREJUDICADOS.map(
+    (tipo) => `'${tipo}'`
+).join(', ');
+
+/**
+ * Defaults do editor de status customizado (`distribuicao-status.service`): quando o usuário não
+ * informa os flags no DTO, eles são derivados do `tipo`. As listas cobrem as DUAS gerações do enum
+ * — os literais antigos (`Cancelada`/`ImpedidaTecnicamente`/`Finalizada`) e os genéricos atuais
+ * (`Terminal`/`ConcluidoComSucesso`/`EncerradoSemSucesso`) —, senão um status terminal criado com o
+ * tipo novo assumia silenciosamente os defaults de um status ativo.
+ *
+ * São apenas defaults (sobrescritíveis) e não espelham os flags dos status base legados, que estão
+ * inconsistentes no seed (ver comentário em view_transferencia_analise).
+ */
+
+/** Tipos cujo valor, por padrão, NÃO é contabilizado (terminais/cancelados sem sucesso). */
+export const STATUS_DISTRIBUICAO_DEFAULT_NAO_CONTABILIZA: DistribuicaoStatusTipo[] = [
+    // enum antigo
+    DistribuicaoStatusTipo.Cancelada,
+    DistribuicaoStatusTipo.ImpedidaTecnicamente,
+    // enum novo (genérico)
+    DistribuicaoStatusTipo.Terminal,
+    DistribuicaoStatusTipo.EncerradoSemSucesso,
+];
+
+/** Tipos que, por padrão, NÃO permitem novos registros (qualquer situação terminal, com ou sem sucesso). */
+export const STATUS_DISTRIBUICAO_DEFAULT_SEM_NOVOS_REGISTROS: DistribuicaoStatusTipo[] = [
+    // enum antigo
+    DistribuicaoStatusTipo.Cancelada,
+    DistribuicaoStatusTipo.ImpedidaTecnicamente,
+    DistribuicaoStatusTipo.Finalizada,
+    // enum novo (genérico)
+    DistribuicaoStatusTipo.Terminal,
+    DistribuicaoStatusTipo.ConcluidoComSucesso,
+    DistribuicaoStatusTipo.EncerradoSemSucesso,
+];
+
 /** Shape mínimo do "último status" de uma distribuição, como lido de `distribuicao_recurso_status`. */
 export type UltimoStatusDistribuicao = {
     status_base: { tipo: DistribuicaoStatusTipo } | null;

@@ -1,8 +1,12 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { DistribuicaoStatusTipo, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { RecordWithId } from '../../../common/dto/record-with-id.dto';
 import { PessoaFromJwt } from '../../../auth/models/PessoaFromJwt';
 import { PrismaService } from '../../../prisma/prisma.service';
+import {
+    STATUS_DISTRIBUICAO_DEFAULT_NAO_CONTABILIZA,
+    STATUS_DISTRIBUICAO_DEFAULT_SEM_NOVOS_REGISTROS,
+} from '../distribuicao-status.helpers';
 import { CreateDistribuicaoStatusDto } from './dto/create-distribuicao-status.dto';
 import { UpdateDistribuicaoStatusDto } from './dto/update-distribuicao-status.dto';
 import { DistribuicaoStatusDto, ListDistribuicaoStatusDto } from './entities/distribuicao-status.dto';
@@ -24,30 +28,17 @@ export class DistribuicaoStatusService {
                 if (similarExists > 0)
                     throw new HttpException('Nome igual ou semelhante já existe em outro registro ativo', 400);
 
-                let valor_contabilizado_calc: boolean;
-                // let valor_contabilizado_calc: boolean | undefined = dto.valor_distribuicao_contabilizado;
-                if (dto.valor_distribuicao_contabilizado == undefined) {
-                    // Define pelo tipo
-                    valor_contabilizado_calc =
-                        dto.tipo == DistribuicaoStatusTipo.Cancelada ||
-                        dto.tipo == DistribuicaoStatusTipo.ImpedidaTecnicamente
-                            ? false
-                            : true;
-                } else {
-                    valor_contabilizado_calc = dto.valor_distribuicao_contabilizado;
-                }
+                // Defaults derivados do tipo quando o usuário não informa os flags. As listas cobrem
+                // as duas gerações do enum (literais antigos + genéricos atuais) — ver helpers.
+                const valor_contabilizado_calc =
+                    dto.valor_distribuicao_contabilizado == undefined
+                        ? !STATUS_DISTRIBUICAO_DEFAULT_NAO_CONTABILIZA.includes(dto.tipo)
+                        : dto.valor_distribuicao_contabilizado;
 
-                let permite_novos_registros: boolean;
-                if (dto.permite_novos_registros == undefined) {
-                    permite_novos_registros =
-                        dto.tipo == DistribuicaoStatusTipo.Cancelada ||
-                        dto.tipo == DistribuicaoStatusTipo.ImpedidaTecnicamente ||
-                        dto.tipo == DistribuicaoStatusTipo.Finalizada
-                            ? false
-                            : true;
-                } else {
-                    permite_novos_registros = dto.permite_novos_registros;
-                }
+                const permite_novos_registros =
+                    dto.permite_novos_registros == undefined
+                        ? !STATUS_DISTRIBUICAO_DEFAULT_SEM_NOVOS_REGISTROS.includes(dto.tipo)
+                        : dto.permite_novos_registros;
 
                 const transferenciaTipoDistribuicaoStatus = await prismaTxn.distribuicaoStatus.create({
                     data: {

@@ -9,6 +9,7 @@ import { ReportFileSchema, SchemaAwareReportableService } from '../post-process/
 import { ReportContext } from '../relatorios/helpers/reports.contexto';
 import { DefaultCsvOptions, FileOutput, Path2FileName, ReportableService } from '../utils/utils.service';
 import { FilterTransferenciaCancelada } from 'src/casa-civil/transferencia/dto/filter-transferencia.dto';
+import { STATUS_DISTRIBUICAO_PREJUDICADOS_SQL_IN } from 'src/casa-civil/distribuicao-recurso/distribuicao-status.helpers';
 import { CreateRelTransferenciasDto } from './dto/create-transferencias.dto';
 import { RelTransferenciaCronogramaCsvRow, RelTransferenciasCsvRow } from './entities/transferencias-csv.entity';
 import {
@@ -431,22 +432,25 @@ export class TransferenciasService implements ReportableService, SchemaAwareRepo
         whereConditions.push(`t.removido_em IS NULL`);
 
         // Filtro de canceladas em 3 estados, considerando cancelamento no nível da transferência
-        // (t.cancelada) e no nível da distribuição (tipos Cancelada/Declinada/ImpedidaTecnicamente/
-        // Redirecionada):
+        // (t.cancelada) e no nível da distribuição (status prejudicados: Cancelada/Declinada/
+        // ImpedidaTecnicamente/Redirecionada). A lista de tipos vem de STATUS_DISTRIBUICAO_PREJUDICADOS
+        // (fonte única) e cobre as duas gerações do enum — os status base atuais gravam esses terminais
+        // como `Terminal`, então a lista literal antiga deixava a distribuição cancelada/redistribuída
+        // aparecer no relatório.
         // - NaoIncluir (padrão): oculta ambas;
         // - Incluir: não filtra (todas);
         // - Apenas: mostra somente as canceladas em qualquer um dos níveis.
         if (filters.cancelada === FilterTransferenciaCancelada.Apenas) {
             whereConditions.push(
                 `(t.cancelada = true
-                  OR COALESCE(dsb.tipo::text, ds.tipo::text) IN ('Cancelada', 'Declinada', 'ImpedidaTecnicamente', 'Redirecionada'))`
+                  OR COALESCE(dsb.tipo::text, ds.tipo::text) IN (${STATUS_DISTRIBUICAO_PREJUDICADOS_SQL_IN}))`
             );
         } else if (filters.cancelada !== FilterTransferenciaCancelada.Incluir) {
             whereConditions.push(
                 `t.cancelada = false`,
                 `(dr.id IS NULL
                   OR COALESCE(dsb.tipo::text, ds.tipo::text) IS NULL
-                  OR COALESCE(dsb.tipo::text, ds.tipo::text) NOT IN ('Cancelada', 'Declinada', 'ImpedidaTecnicamente', 'Redirecionada'))`
+                  OR COALESCE(dsb.tipo::text, ds.tipo::text) NOT IN (${STATUS_DISTRIBUICAO_PREJUDICADOS_SQL_IN}))`
             );
         }
 

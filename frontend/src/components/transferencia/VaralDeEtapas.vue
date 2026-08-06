@@ -89,10 +89,10 @@ function deletarWorkflow() {
   alertStore.confirmAction('Tem certeza?', async () => {
     if (await workflowAndamento.deletarWorkflow()) {
       await workflowAndamento.buscar();
-      alertStore.success('Workflow deletado!');
+      alertStore.success('Workflow excluído!');
       configurarWorkflow.value = false;
     }
-  }, 'Deletar');
+  }, 'Excluir');
 }
 
 function reiniciarWorkflow() {
@@ -367,12 +367,12 @@ const temPermissaoParaConfigurar = computed(() => temPermissãoPara.value(['Cada
       </div>
       <div class="flex justifycenter flexwrap g1">
         <button
-          v-if="workflow && temPermissaoParaConfigurar"
+          v-if="workflow?.pode_limpar_workflow"
           type="button"
           class="btn bgnone outline tvermelho"
           @click="deletarWorkflow()"
         >
-          fechar e deletar workflow
+          excluir workflow
         </button>
         <button
           v-if="workflow?.pode_reiniciar_workflow"

@@ -60,6 +60,7 @@ export class WorkflowAndamentoService {
                 pode_passar_para_proxima_etapa: false,
                 pode_reabrir_fase: false,
                 pode_reiniciar_workflow: naoCancelada && workflowAtivoDoTipo != null,
+                pode_limpar_workflow: this.computePodeLimparWorkflow(transferencia, user),
                 workflow_desatualizado:
                     workflowAtivoDoTipo != null && workflowAtivoDoTipo.id != transferencia.workflow_id,
             } as WorkflowAndamentoDto;
@@ -134,6 +135,7 @@ export class WorkflowAndamentoService {
             pode_passar_para_proxima_etapa: pode_passar_para_proxima_etapa,
             pode_reabrir_fase: pode_reabrir_fase,
             pode_reiniciar_workflow: pode_reiniciar_workflow,
+            pode_limpar_workflow: this.computePodeLimparWorkflow(transferencia, user),
             workflow_desatualizado: workflow_desatualizado,
             transferencia_cancelada: transferencia.cancelada,
             fluxo: await Promise.all(
@@ -282,6 +284,35 @@ export class WorkflowAndamentoService {
             },
             select: { id: true },
         });
+    }
+
+    /**
+     * Regra da ação "limpar/excluir workflow", portada do front-end (botão em VaralDeEtapas):
+     * só é oferecida quando há workflow associado à transferência. A única diferença em relação ao
+     * front é o privilégio: aqui é liberado exclusivamente para administradores da Casa Civil
+     * (`CadastroTransferencia.administrador`). Transferência cancelada não permite nenhuma
+     * movimentação do workflow, então a ação também é bloqueada nesse caso.
+     *
+     * Além disso, exige que existam linhas de andamento válidas (não removidas): logo após uma
+     * exclusão não há andamento para limpar, então não faz sentido oferecer a ação novamente antes
+     * de um novo workflow ser iniciado (evita repetir a mesma ação e o comportamento "estranho").
+     */
+    private computePodeLimparWorkflow(
+        transferencia: {
+            workflow_id: number | null;
+            cancelada: boolean;
+            andamentoWorkflow: { id: number }[];
+        },
+        user: PessoaFromJwt
+    ): boolean {
+        const naoCancelada = !transferencia.cancelada;
+        const possuiAndamentoValido = transferencia.andamentoWorkflow.length > 0;
+        return (
+            naoCancelada &&
+            transferencia.workflow_id != null &&
+            possuiAndamentoValido &&
+            user.hasSomeRoles(['CadastroTransferencia.administrador'])
+        );
     }
 
     private async computeWorkflowActionFlags(

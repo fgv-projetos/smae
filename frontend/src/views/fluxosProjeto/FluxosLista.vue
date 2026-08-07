@@ -87,7 +87,7 @@ tipoDeTransferenciaStore.buscarTudo();
     <template #acoes>
       <SmaeLink
         :to="{ name: 'fluxosCriar' }"
-        class="btn big ml2"
+        class="btn big"
       >
         Novo fluxo
       </SmaeLink>

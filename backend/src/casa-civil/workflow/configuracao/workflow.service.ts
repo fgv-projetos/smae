@@ -590,14 +590,13 @@ export class WorkflowService {
         });
         if (transferenciaEmAndamento) return true;
 
+        // Verifica se há histórico de andamentos de transferências deste workflow (inclusive removidas).
+        // Importante: filtrar pela transferência do workflow, e não pela etapa base (workflow_etapa),
+        // pois as etapas (WorkflowEtapa) são compartilhadas entre workflows. Filtrar pela etapa gera
+        // falso-positivo, marcando como "em uso" um workflow novo apenas por reutilizar uma etapa-base.
         const andamentoHistorico = await prismaTxn.transferenciaAndamento.count({
             where: {
-                workflow_etapa: {
-                    OR: [
-                        { fluxoSaida: { some: { workflow_id: id } } },
-                        { fluxoDestino: { some: { workflow_id: id } } },
-                    ],
-                },
+                transferencia: { workflow_id: id },
             },
         });
         return andamentoHistorico > 0;

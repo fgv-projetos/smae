@@ -118,7 +118,11 @@ tipoDeTransferenciaStore.buscarTudo();
         atributosDaCelula: { class: 'cell--data' },
         atributosDaColuna: { class: 'col--data' },
       },
-      { chave: 'ativo', label: 'Ativo' },
+      {
+        chave: 'ativo',
+        label: 'Ativo',
+        atributosDaColuna: { class: 'col--minimum' },
+      },
       {
         chave: 'inicio',
         label: 'Início da vigência',

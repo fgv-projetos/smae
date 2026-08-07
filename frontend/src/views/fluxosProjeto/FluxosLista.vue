@@ -112,9 +112,19 @@ tipoDeTransferenciaStore.buscarTudo();
       { chave: 'nome', label: 'Nome' },
       { chave: 'esfera', label: 'Esfera' },
       { chave: 'transferencia_tipo.nome', label: 'Tipo de transferência' },
-      { chave: 'termino', label: 'Fim da vigência' },
+      {
+        chave: 'termino',
+        label: 'Fim da vigência',
+        atributosDaCelula: { class: 'cell--data' },
+        atributosDaColuna: { class: 'col--data' },
+      },
       { chave: 'ativo', label: 'Ativo' },
-      { chave: 'inicio', label: 'Início da vigência' },
+      {
+        chave: 'inicio',
+        label: 'Início da vigência',
+        atributosDaCelula: { class: 'cell--data' },
+        atributosDaColuna: { class: 'col--data' },
+      },
     ]"
     :carregando="chamadasPendentes.lista"
     :erro="erro"

@@ -268,7 +268,18 @@ export class WorkflowAndamentoService {
             },
         });
 
-        return fluxoProxEtapa != null && fluxoProxEtapa.fases.length > 0;
+        const possuiProximaEtapa = fluxoProxEtapa != null && fluxoProxEtapa.fases.length > 0;
+
+        // Caso não haja fluxo partindo da próxima etapa (ex: "Finalizada"), o workflow terminou.
+        // Verificando se precisa ajustar col de controle.
+        if (!possuiProximaEtapa && transferencia.workflow_finalizado == false) {
+            await this.prisma.transferencia.update({
+                where: { id: transferencia.id },
+                data: { workflow_finalizado: true },
+            });
+        }
+
+        return possuiProximaEtapa;
     }
 
     /**
